@@ -1,0 +1,84 @@
+---
+// src/pages/software/[...slug].astro
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { db } from '../../db/client';
+
+// 1. Generate a page for every Software Provider in the DB
+export async function getStaticPaths() {
+	// Get all providers (e.g. netent, pragmatic, swintt)
+	const providers = db.prepare('SELECT * FROM software_providers').all();
+
+	return providers.map((provider: any) => ({
+		params: { slug: provider.id }, // The URL will be /software/netent
+		props: { provider },
+	}));
+}
+
+// 2. Get data for the specific provider
+const { provider } = Astro.props;
+
+// 3. Query all slots that belong to this provider
+const slots = db
+	.prepare(
+		`
+    SELECT * FROM slots 
+    WHERE provider_id = ?
+`
+	)
+	.all(provider.id) as any[]; // Using 'any' for quick fix, ideally use interface
+---
+
+<BaseLayout
+	title={`${provider.name} Slots | Best ${provider.name} Casinos in Canada`}
+	description={`Play the best free slots by ${provider.name}. List of top RTP games and casinos offering ${provider.name} titles.`}
+>
+	<div class='bg-slate-900 text-white py-12 mb-12'>
+		<div class='container mx-auto px-4'>
+			<h1 class='text-4xl font-bold mb-4'>{provider.name} Slots</h1>
+			<p class='text-xl text-slate-300'>
+				We found <strong>{slots.length}</strong> free demos available in our database.
+			</p>
+		</div>
+	</div>
+
+	<div class='container mx-auto px-4 py-8'>
+		{
+			slots.length === 0 ? (
+				<div class='text-center py-20 bg-gray-50 rounded-xl border border-dashed border-gray-300'>
+					<p class='text-gray-500'>No slots found for {provider.name} yet.</p>
+				</div>
+			) : (
+				/* Reusing your Grid Layout */
+				<div class='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
+					{slots.map((slot) => (
+						<article class='group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col'>
+							<a
+								href={`/slots/${slot.slug}`}
+								class='relative aspect-[4/3] bg-gray-200 block overflow-hidden'
+							>
+								<img
+									src={slot.image_url}
+									alt={`${slot.title} demo`}
+									class='w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500'
+									loading='lazy'
+									onerror="this.style.display='none'"
+								/>
+								<div class='hidden absolute inset-0 items-center justify-center bg-gray-100 text-gray-400 text-xs font-mono'>
+									No Image
+								</div>
+							</a>
+							<div class='p-4'>
+								<h3 class='font-bold text-gray-900 text-lg leading-tight group-hover:text-blue-600'>
+									<a href={`/slots/${slot.slug}`}>{slot.title}</a>
+								</h3>
+								<div class='mt-2 text-sm text-gray-500'>
+									RTP: <span class='text-green-600 font-bold'>{slot.rtp}%</span>
+								</div>
+							</div>
+						</article>
+					))}
+				</div>
+			)
+		}
+	</div>
+</BaseLayout>
