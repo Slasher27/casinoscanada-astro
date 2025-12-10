@@ -83,12 +83,12 @@ const topCasinos = db
 							{casino.bonus_offer || 'Check Site'}
 						</span>
 
-						{casino.bonus_spins ||
-							(0 > 0 && (
-								<span class='block text-xs text-gray-500 font-bold'>
-									+ {casino.bonus_spins} Free Spins
-								</span>
-							))}
+						{/* Validates that spins exist AND are greater than 0 */}
+						{(casino.bonus_spins || 0) > 0 && (
+							<span class='block text-xs text-gray-500 font-bold'>
+								+ {casino.bonus_spins} Free Spins
+							</span>
+						)}
 					</div>
 
 					<div class='col-span-6 md:col-span-2 text-center'>
