@@ -1,0 +1,77 @@
+---
+import { db } from '../../db/client';
+
+// Fetch just the top 3 for the widget
+type Casino = {
+	id: string;
+	name: string;
+	website_url: string;
+	payout_speed_minutes: number;
+	payout_ratio: number;
+	logo_url?: string;
+};
+const top3 = db
+	.prepare('SELECT * FROM casinos ORDER BY payout_ratio DESC LIMIT 3')
+	.all() as Casino[];
+---
+
+<div
+	class='bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden not-prose'
+>
+	<div class='bg-slate-900 p-3 text-center'>
+		<h3 class='text-white font-bold text-sm uppercase tracking-wider m-0'>
+			🏆 Top Picks
+		</h3>
+	</div>
+
+	<div class='divide-y divide-gray-100'>
+		{
+			top3.map((casino, index) => (
+				<div class='p-4 flex items-center gap-3 hover:bg-blue-50 transition-colors group'>
+					<div class='font-bold text-gray-300 text-lg group-hover:text-blue-500'>
+						#{index + 1}
+					</div>
+
+					<div class='w-10 h-10 shrink-0'>
+						{casino.logo_url ? (
+							<img
+								src={casino.logo_url}
+								alt={casino.name}
+								class='w-full h-full object-contain rounded-full'
+							/>
+						) : (
+							<div class='w-full h-full bg-gray-200 rounded-full' />
+						)}
+					</div>
+
+					<div class='flex-grow'>
+						<a
+							href={`/reviews/${casino.id}-casino`}
+							class='font-bold text-slate-800 text-sm block hover:underline'
+						>
+							{casino.name}
+						</a>
+						<span class='text-xs text-green-600 font-bold'>
+							✓ {casino.payout_speed_minutes} Min Payout
+						</span>
+					</div>
+
+					<a
+						href={casino.website_url}
+						class='bg-red-600 text-white text-xs font-bold py-2 px-3 rounded shadow hover:bg-red-700 transition'
+					>
+						Play
+					</a>
+				</div>
+			))
+		}
+	</div>
+
+	<div class='p-3 bg-gray-50 text-center border-t border-gray-100'>
+		<a
+			href='/reviews'
+			class='text-xs font-bold text-blue-600 hover:text-blue-800'
+			>View All Reviews &rarr;</a
+		>
+	</div>
+</div>

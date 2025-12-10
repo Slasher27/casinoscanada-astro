@@ -1,0 +1,85 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { db } from '../../db/client';
+
+// 1. Get all markdown reviews
+const reviews = await getCollection('reviews');
+
+// 2. Get all casino data from SQLite
+// Returns an array of objects: [{ id: 'bitstarz', owner: 'Dama N.V.', ... }]
+const allCasinos = db.prepare('SELECT * FROM casinos').all();
+
+// 3. Create a helper map for fast lookup
+// This lets us say casinoMap.get('bitstarz') to get that specific casino's data
+const casinoMap = new Map(allCasinos.map((c: any) => [c.id, c]));
+---
+
+<BaseLayout
+	title='Best Online Casinos in Canada (2025 Reviews)'
+	description='Browse our honest reviews of the top online casinos in Canada. Filter by payout speed, bonus size, and more.'
+>
+	<div class='text-center mb-12'>
+		<h1 class='text-4xl font-extrabold mb-4'>Top Rated Casino Reviews</h1>
+		<p class='text-lg text-gray-600 max-w-2xl mx-auto'>
+			We have tested {reviews.length} casinos for licensing, payout speeds, and fairness.
+		</p>
+	</div>
+
+	<div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
+		{
+			reviews.map((review) => {
+				// Look up the DB data for this specific review
+				const data = casinoMap.get(review.data.casinoId);
+
+				// Fallbacks in case DB data is missing
+				const payout = data
+					? `${data.payout_speed_minutes} Mins`
+					: review.data.payoutTime;
+				const owner = data ? data.owner : 'Unknown Owner';
+
+				return (
+					<a href={`/reviews/${review.slug}`} class='group no-underline'>
+						<article class='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-xl hover:border-blue-300 transition-all duration-300 h-full flex flex-col'>
+							<div class='p-6 border-b border-gray-100 bg-gray-50 group-hover:bg-blue-50 transition-colors'>
+								<h2 class='text-2xl font-bold text-gray-800 m-0 group-hover:text-blue-700'>
+									{review.data.title.split(':')[0]} {/* Cleans up title */}
+								</h2>
+								<p class='text-sm text-gray-500 mt-1'>{owner}</p>
+							</div>
+
+							<div class='p-6 flex-grow'>
+								<div class='flex justify-between items-center mb-4'>
+									<div class='flex flex-col'>
+										<span class='text-xs uppercase text-gray-400 font-bold tracking-wider'>
+											Rating
+										</span>
+										<span class='text-xl font-bold text-yellow-600'>
+											★ {review.data.rating}/5
+										</span>
+									</div>
+									<div class='flex flex-col text-right'>
+										<span class='text-xs uppercase text-gray-400 font-bold tracking-wider'>
+											Payout
+										</span>
+										<span class='text-xl font-bold text-green-600'>
+											{payout}
+										</span>
+									</div>
+								</div>
+
+								<p class='text-gray-600 line-clamp-3 text-sm'>
+									{review.data.metaDescription}
+								</p>
+							</div>
+
+							<div class='p-4 bg-gray-50 border-t border-gray-100 text-center text-blue-600 font-bold group-hover:bg-blue-600 group-hover:text-white transition-colors'>
+								Read Full Review &rarr;
+							</div>
+						</article>
+					</a>
+				);
+			})
+		}
+	</div>
+</BaseLayout>

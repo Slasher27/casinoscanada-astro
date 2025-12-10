@@ -1,0 +1,5 @@
+```text
+User-agent: *
+Allow: /
+
+Sitemap: https://casinoscanada.online/sitemap-index.xml

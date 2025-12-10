@@ -1,0 +1,112 @@
+---
+import { db } from '../../db/client';
+
+// 1. Define the shape of our data (TypeScript loves this)
+type Casino = {
+	id: string;
+	name: string;
+	website_url: string;
+	payout_ratio: number;
+	payout_speed_minutes: number;
+	logo_url?: string;
+	bonus_offer?: string;
+	bonus_spins?: number;
+	// Add other fields if needed
+};
+
+// 2. Fetch data and tell TypeScript it's an array of 'Casino' objects
+const topCasinos = db
+	.prepare('SELECT * FROM casinos ORDER BY payout_ratio DESC LIMIT 5')
+	.all() as Casino[];
+---
+
+<div
+	class='bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden not-prose'
+>
+	<div
+		class='hidden md:grid grid-cols-12 gap-4 bg-gray-100 p-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-200'
+	>
+		<div class='col-span-1'>Rank</div>
+		<div class='col-span-4'>Casino</div>
+		<div class='col-span-3 text-center'>Bonus</div>
+		<div class='col-span-2 text-center'>Payout</div>
+		<div class='col-span-2 text-center'>Action</div>
+	</div>
+
+	<div class='divide-y divide-gray-100'>
+		{
+			topCasinos.map((casino, index) => (
+				<div class='grid grid-cols-1 md:grid-cols-12 gap-4 items-center p-4 hover:bg-blue-50 transition-colors'>
+					<div class='col-span-1 flex items-center gap-2 md:block'>
+						<span class='md:hidden font-bold text-gray-500'>Rank:</span>
+						<div class='w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold'>
+							{index + 1}
+						</div>
+					</div>
+
+					<div class='col-span-11 md:col-span-4 flex items-center gap-4'>
+						<div class='w-12 h-12 flex items-center justify-center shrink-0'>
+							{casino.logo_url ? (
+								<img
+									src={casino.logo_url}
+									alt={`${casino.name} logo`}
+									class='w-full h-full object-contain rounded-lg'
+									width='48'
+									height='48'
+								/>
+							) : (
+								/* Fallback to Letter if image is missing */
+								<div class='w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center text-red-600 font-bold text-xl'>
+									{casino.name.charAt(0)}
+								</div>
+							)}
+						</div>
+						<div>
+							<a
+								href={`/reviews/${casino.id}-casino`}
+								class='text-lg font-bold text-blue-900 hover:underline block'
+							>
+								{casino.name}
+							</a>
+							<div class='flex items-center gap-1 text-xs text-green-600 font-bold'>
+								<span>✓ {casino.payout_ratio}% RTP</span>
+							</div>
+						</div>
+					</div>
+
+					<div class='col-span-12 md:col-span-3 text-center bg-yellow-50 md:bg-transparent p-2 md:p-0 rounded-lg'>
+						<span class='block text-xs text-gray-400 font-bold uppercase md:hidden'>
+							Bonus
+						</span>
+
+						<span class='font-bold text-gray-900 block'>
+							{casino.bonus_offer || 'Check Site'}
+						</span>
+
+						{casino.bonus_spins ||
+							(0 > 0 && (
+								<span class='block text-xs text-gray-500 font-bold'>
+									+ {casino.bonus_spins} Free Spins
+								</span>
+							))}
+					</div>
+
+					<div class='col-span-6 md:col-span-2 text-center'>
+						<span class='font-bold text-slate-700'>
+							{casino.payout_speed_minutes} Mins
+						</span>
+					</div>
+
+					<div class='col-span-6 md:col-span-2 text-right md:text-center'>
+						<a
+							href={casino.website_url}
+							class='inline-block bg-red-600 text-white font-bold py-2 px-6 rounded text-sm hover:bg-red-700 transition'
+						>
+							Play Now
+						</a>
+					</div>
+				</div>
+			))
+		}
+	</div>
+</div>

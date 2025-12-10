@@ -1,0 +1,43 @@
+---
+import MobileMenu from './MobileMenu.svelte';
+
+const navLinks = [
+	{ text: 'Casino Reviews', href: '/reviews' },
+	{ text: 'Banking Guides', href: '/guides/banking' },
+	{ text: 'Bonuses', href: '/bonuses' }, // We will build this page later
+];
+---
+
+<header class='bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm'>
+	<div
+		class='container mx-auto px-4 h-16 flex items-center justify-between relative'
+	>
+		<a href='/' class='flex items-center gap-2 no-underline'>
+			<span class='text-red-600 text-3xl'>🍁</span>
+			<span class='text-2xl font-black text-slate-900 tracking-tight'>
+				Casinos<span class='text-red-600'>Canada</span>
+			</span>
+		</a>
+
+		<nav class='hidden md:flex items-center gap-8'>
+			{
+				navLinks.map((link) => (
+					<a
+						href={link.href}
+						class='text-sm font-bold text-slate-600 hover:text-red-600 uppercase tracking-wide transition-colors'
+					>
+						{link.text}
+					</a>
+				))
+			}
+			<a
+				href='/#top-list'
+				class='bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold py-2 px-6 rounded-full transition-transform hover:scale-105'
+			>
+				Top Lists
+			</a>
+		</nav>
+
+		<MobileMenu client:load />
+	</div>
+</header>

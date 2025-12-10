@@ -1,0 +1,41 @@
+/casinos-canada-v2
+├── public/                     # Static assets (images, robots.txt, icons)
+│   ├── images/
+│   │   ├── casinos/            # Brand logos (optimized)
+│   │   └── slots/
+│   ├── favicon.svg
+│   └── robots.txt              # Critical for SEO indexing
+├── src/
+│   ├── components/             # Reusable UI parts
+│   │   ├── common/             # Shared (Header, Footer, SEOHead)
+│   │   ├── interactive/        # Svelte Components (Islands)
+│   │   │   ├── BonusFilter.svelte
+│   │   │   └── WageringCalc.svelte
+│   │   └── ui/                 # Dumb UI (Buttons, Cards - can be Astro or Svelte)
+│   ├── content/                # The "Text" Database (MDX)
+│   │   ├── config.ts           # Define schemas for collections (Typescript validation)
+│   │   ├── reviews/            # Casino Reviews
+│   │   │   ├── bitstarz.mdx
+│   │   │   └── spin-casino.mdx
+│   │   └── guides/             # Educational content (Banking, Strategies)
+│   │       └── how-to-deposit.md
+│   ├── db/                     # The "Stats" Database
+│   │   ├── client.ts           # SQLite connection setup (better-sqlite3 or Turso)
+│   │   ├── schema.sql          # DB Tables definition
+│   │   └── seed.ts             # Script to populate initial data
+│   ├── layouts/                # Page wrappers
+│   │   ├── BaseLayout.astro    # <html>, <head>, global styles
+│   │   └── ReviewLayout.astro  # Specific layout for reviews (Sidebar, ToC)
+│   ├── pages/                  # File-based Routing
+│   │   ├── index.astro         # Homepage
+│   │   ├── reviews/
+│   │   │   ├── [slug].astro    # Dynamic route for reviews
+│   │   │   └── index.astro     # "All Reviews" directory
+│   │   ├── bonuses/            # Bonus comparison pages
+│   │   └── api/                # Server endpoints (if needed for HTMX/Search)
+│   └── styles/
+│       └── global.css          # Tailwind directives
+├── astro.config.mjs            # Astro Configuration
+├── tailwind.config.mjs         # Tailwind Configuration
+├── tsconfig.json               # TypeScript Config
+└── package.json
