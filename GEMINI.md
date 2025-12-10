@@ -102,3 +102,11 @@
 * `npm run build`: Build for production.
 * `npm run preview`: Preview the build locally.
 * `npx astro sync`: Sync content collection types.
+
+## Change Log - Dec 10, 2025
+
+* **Architecture Update:** Modified `src/layouts/BaseLayout.astro` to accept a `mainClass` prop (allows full-width sections).
+* **New Component:** Created `src/components/ui/SlotsSection.astro` (Static UI for homepage).
+* **New Page:** Created `src/pages/slots/index.astro` (The Slots Silo homepage).
+* **New Template:** Created `src/pages/slots/[slug].astro` (Dynamic single slot pages).
+* **Next Steps:** Need to add real slot images to `public/images/slots/` and connect the "Review" pages.

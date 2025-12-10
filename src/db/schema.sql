@@ -1,5 +1,6 @@
 -- 1. DROP CHILD TABLES FIRST (The "Connector" tables)
 DROP TABLE IF EXISTS casino_software;
+DROP TABLE IF EXISTS slots;  -- <--- ADD THIS LINE HERE
 
 -- 2. DROP PARENT TABLES SECOND
 DROP TABLE IF EXISTS casinos;
@@ -35,3 +36,23 @@ CREATE TABLE casino_software (
   FOREIGN KEY(casino_id) REFERENCES casinos(id),
   FOREIGN KEY(provider_id) REFERENCES software_providers(id)
 );
+
+-- 4. The Slots Table
+CREATE TABLE slots (
+  slug TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  provider_id TEXT NOT NULL,
+  rtp REAL, -- e.g. 96.5
+  volatility TEXT, -- 'High', 'Medium', 'Low'
+  max_win TEXT, -- 'x10,000'
+  paylines TEXT, -- '25' or 'Cluster Pays'
+  release_date TEXT,
+  description TEXT,
+  image_url TEXT,
+  featured BOOLEAN DEFAULT 0,
+  FOREIGN KEY(provider_id) REFERENCES software_providers(id)
+);
+
+-- 5. Optional: Indexes for faster searching
+CREATE INDEX idx_slots_provider ON slots(provider_id);
+CREATE INDEX idx_slots_rtp ON slots(rtp);

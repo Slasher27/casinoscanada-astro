@@ -1,0 +1,95 @@
+---
+// src/pages/slots/index.astro
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { db } from '../../db/client';
+
+// 1. Define the shape of your database row
+interface SlotSql {
+	slug: string;
+	title: string;
+	provider_id: string;
+	provider_name: string; // We get this from the JOIN
+	rtp: number; // SQLite returns REAL as number
+	volatility: string;
+	max_win: string;
+	paylines: string;
+	release_date: string;
+	description: string;
+	image_url: string;
+	featured: number; // SQLite booleans are 0 or 1
+}
+
+// 2. Query with explicit casting
+const allSlots = db
+	.prepare(
+		`
+    SELECT slots.*, software_providers.name as provider_name 
+    FROM slots 
+    JOIN software_providers ON slots.provider_id = software_providers.id
+`
+	)
+	.all() as SlotSql[];
+// ^^^ The 'as SlotSql[]' fixes the 'unknown' error
+---
+
+<BaseLayout
+	title='Free Online Slots Canada | Play 100+ Demos (No Download)'
+	description='Play the best free online slots in Canada. No download or registration required.'
+>
+	<section
+		class='bg-blue-900 text-white py-16 rounded-2xl mb-12 px-6 text-center'
+	>
+		<h1 class='text-4xl md:text-5xl font-bold mb-4'>Free Online Slots</h1>
+		<p class='text-xl text-blue-100 max-w-2xl mx-auto'>
+			Try over {allSlots.length} free demo slots before you play for real money.
+		</p>
+	</section>
+
+	<div class='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-16'>
+		{
+			allSlots.map((slot) => (
+				<article class='group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col'>
+					<a
+						href={`/slots/${slot.slug}`}
+						class='relative aspect-[4/3] bg-gray-200 block overflow-hidden'
+					>
+						<img
+							src={slot.image_url}
+							alt={`${slot.title} demo slot`}
+							class='w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500'
+							loading='lazy'
+							onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+						/>
+						<div class='hidden absolute inset-0 items-center justify-center bg-gray-100 text-gray-400 text-xs font-mono'>
+							No Image
+						</div>
+					</a>
+
+					<div class='p-4 flex flex-col flex-grow'>
+						<div class='mb-auto'>
+							<div class='text-xs text-gray-500 mb-1'>{slot.provider_name}</div>
+							<h3 class='font-bold text-gray-900 text-lg leading-tight group-hover:text-blue-600 transition-colors'>
+								<a href={`/slots/${slot.slug}`}>{slot.title}</a>
+							</h3>
+						</div>
+
+						<div class='mt-4 pt-4 border-t border-gray-100 grid grid-cols-2 gap-2 text-xs'>
+							<div class='text-center p-1 bg-gray-50 rounded'>
+								<span class='block text-gray-400 uppercase tracking-wider text-[10px]'>
+									RTP
+								</span>
+								<span class='font-bold text-gray-700'>{slot.rtp}%</span>
+							</div>
+							<div class='text-center p-1 bg-gray-50 rounded'>
+								<span class='block text-gray-400 uppercase tracking-wider text-[10px]'>
+									Volatility
+								</span>
+								<span class='font-bold text-gray-700'>{slot.volatility}</span>
+							</div>
+						</div>
+					</div>
+				</article>
+			))
+		}
+	</div>
+</BaseLayout>

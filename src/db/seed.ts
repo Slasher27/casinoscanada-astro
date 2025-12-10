@@ -97,3 +97,77 @@ linkSoftware.run('woo', 'evolution');
 linkSoftware.run('fastpay', 'pragmatic');
 
 console.log('✅ Database seeded with Images!');
+
+// ... existing casino inserts ...
+
+// 4. Insert Slots
+const insertSlot = db.prepare(`
+  INSERT INTO slots (slug, title, provider_id, rtp, volatility, max_win, paylines, release_date, description, image_url, featured)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`);
+
+// Gaming Corps provider needs to exist first!
+insertProvider.run('gaming-corps', 'Gaming Corps');
+insertProvider.run('reelplay', 'ReelPlay');
+insertProvider.run('relax-gaming', 'Relax Gaming');
+insertProvider.run('swintt', 'Swintt');
+
+console.log('🎰 Seeding Slots...');
+
+insertSlot.run(
+	'snoops-high-rollers',
+	'Snoops High Rollers',
+	'gaming-corps',
+	96.5,
+	'High',
+	'x10,000',
+	'25',
+	'2024-01-01',
+	'Join Snoop Dogg in this high-flying slot adventure featuring stacked wilds and a unique soundtrack.',
+	'/images/slots/thumbnails/snoops-high-rollers.jpg',
+	1 // Featured = true
+);
+
+insertSlot.run(
+	'quackin-reels',
+	"Quackin' Reels",
+	'reelplay',
+	96.1,
+	'Medium',
+	'x5,000',
+	'Cluster Pays',
+	'2023-05-15',
+	'A fun farmyard frenzy with cascading wins and multiplier eggs.',
+	'/images/slots/thumbnails/quackin-reels.jpg',
+	1
+);
+
+insertSlot.run(
+	'the-tumbles',
+	'The Tumbles',
+	'relax-gaming',
+	96.4,
+	'High',
+	'x20,000',
+	'Megaways',
+	'2024-02-10',
+	'Experience the tumbling reels mechanic in this icy adventure with progressive multipliers.',
+	'/images/slots/thumbnails/the-tumbles.jpg',
+	1
+);
+
+insertSlot.run(
+	'hidden-treasures-rome',
+	'Hidden Treasures of Rome',
+	'swintt',
+	95.8,
+	'Low',
+	'x2,000',
+	'10',
+	'2022-11-20',
+	'Explore the ancient ruins and find hidden gold in this classic style slot.',
+	'/images/slots/thumbnails/hidden-treasures-of-rome.jpg',
+	1
+);
+
+console.log('✅ Slots Seeded!');
