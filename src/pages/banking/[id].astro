@@ -1,0 +1,127 @@
+---
+// src/pages/banking/[id].astro
+import { getCollection } from 'astro:content';
+import { db } from '../../db/client';
+import ListingLayout from '../../layouts/ListingLayout.astro';
+
+// 1. Generate a page for every Payment Method (Interac, Visa, etc.)
+export async function getStaticPaths() {
+	const methods = db.prepare('SELECT id, name FROM payment_methods').all() as {
+		id: string;
+		name: string;
+	}[];
+
+	return methods.map((method) => ({
+		params: { id: method.id },
+		props: { method },
+	}));
+}
+
+const { method } = Astro.props;
+
+// 2. Fetch all casinos that accept this method
+const casinos = db
+	.prepare(
+		`
+    SELECT c.* FROM casinos c
+    JOIN casino_payment_methods cpm ON c.id = cpm.casino_id
+    WHERE cpm.method_id = ?
+`
+	)
+	.all(method.id) as any[];
+
+// 3. Fetch Reviews to get Ratings & Slugs
+// (We need this because Rating is in MDX, not SQLite)
+const allReviews = await getCollection('reviews');
+const reviewMap = new Map(
+	allReviews.map((r) => [
+		r.data.casinoId,
+		{
+			rating: r.data.rating,
+			slug: r.slug,
+		},
+	])
+);
+
+const breadcrumbs = [
+	{ text: 'Banking', href: '/guides/banking' },
+	{ text: `${method.name} Casinos`, href: Astro.url.pathname },
+];
+---
+
+<ListingLayout
+	title={`Best ${method.name} Casinos in Canada (2025)`}
+	description={`List of top rated online casinos in Canada that accept ${method.name}. Fast deposits and withdrawals.`}
+	heroTitle={`Best ${method.name} Casinos`}
+	heroDescription={`Browse the safest online casinos accepting ${method.name}. We tested the deposit limits and withdrawal speeds for you.`}
+	breadcrumbs={breadcrumbs}
+>
+	<div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
+		{
+			casinos.map((casino) => {
+				// Get Rating & Link from the MDX map
+				const reviewData = reviewMap.get(casino.id);
+				const rating = reviewData ? reviewData.rating : 'N/A';
+				const link = reviewData ? `/reviews/${reviewData.slug}` : '#';
+
+				return (
+					<a href={link} class='group no-underline'>
+						<article class='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-xl hover:border-blue-300 transition-all duration-300 h-full flex flex-col'>
+							<div class='p-6 border-b border-gray-100 bg-gray-50 group-hover:bg-blue-50 transition-colors'>
+								<div class='flex justify-between items-center'>
+									<h2 class='text-2xl font-bold text-gray-800 m-0 group-hover:text-blue-700'>
+										{casino.name}
+									</h2>
+									{/* Optional: You could show the payment logo here too */}
+								</div>
+								<p class='text-sm text-gray-500 mt-1'>{casino.owner}</p>
+							</div>
+
+							<div class='p-6 flex-grow'>
+								<div class='flex justify-between items-center mb-4'>
+									<div class='flex flex-col'>
+										<span class='text-[10px] uppercase text-gray-400 font-bold tracking-wider'>
+											Rating
+										</span>
+										<span class='text-xl font-bold text-yellow-600'>
+											★ {rating}/5
+										</span>
+									</div>
+									<div class='flex flex-col text-right'>
+										<span class='text-[10px] uppercase text-gray-400 font-bold tracking-wider'>
+											Speed
+										</span>
+										<span class='text-xl font-bold text-green-600'>
+											{casino.payout_speed_minutes} Mins
+										</span>
+									</div>
+								</div>
+
+								<div class='text-center bg-yellow-50 p-2 rounded border border-yellow-100 mb-4'>
+									<span class='text-sm font-bold text-gray-900'>
+										{casino.bonus_offer}
+									</span>
+								</div>
+							</div>
+
+							<div class='p-4 bg-gray-50 border-t border-gray-100 text-center text-blue-600 font-bold group-hover:bg-blue-600 group-hover:text-white transition-colors'>
+								Read Review &rarr;
+							</div>
+						</article>
+					</a>
+				);
+			})
+		}
+	</div>
+
+	{
+		casinos.length === 0 && (
+			<div class='text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300'>
+				<p class='text-gray-500 text-lg'>
+					No casinos currently listed for {method.name}. <br />
+					<span class='text-sm'>We are adding more soon!</span>
+				</p>
+			</div>
+		)
+	}
+</ListingLayout>

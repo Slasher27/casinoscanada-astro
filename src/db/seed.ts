@@ -77,7 +77,7 @@ insertCasino.run(
 	100
 );
 
-// 4. Insert Software Providers (UPDATED with logo_url)
+// 4. Insert Software Providers
 const insertProvider = db.prepare(
 	'INSERT OR IGNORE INTO software_providers (id, name, logo_url) VALUES (?, ?, ?)'
 );
@@ -111,7 +111,7 @@ linkSoftware.run('woo', 'netent');
 linkSoftware.run('woo', 'evolution');
 linkSoftware.run('fastpay', 'pragmatic');
 
-console.log('✅ Database seeded with Images!');
+console.log('✅ Software seeded!');
 
 // 5. Insert Slots
 const insertSlot = db.prepare(`
@@ -119,7 +119,7 @@ const insertSlot = db.prepare(`
   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `);
 
-// Insert Slot Providers (UPDATED with logo_url)
+// Insert Slot Providers
 insertProvider.run(
 	'gaming-corps',
 	'Gaming Corps',
@@ -146,7 +146,7 @@ insertSlot.run(
 	'2024-01-01',
 	'Join Snoop Dogg in this high-flying slot adventure featuring stacked wilds and a unique soundtrack.',
 	'/images/slots/thumbnails/snoops-high-rollers.jpg',
-	1 // Featured = true
+	1
 );
 
 insertSlot.run(
@@ -191,4 +191,53 @@ insertSlot.run(
 	1
 );
 
-console.log('✅ Slots Seeded!');
+// 6. Insert Payment Methods (NEW SECTION)
+console.log('💳 Seeding Payment Methods...');
+
+const insertPayment = db.prepare(
+	'INSERT OR IGNORE INTO payment_methods (id, name, logo_url) VALUES (?, ?, ?)'
+);
+
+// Use .png to match your other files
+insertPayment.run('interac', 'Interac', '/images/payments/interac.png');
+insertPayment.run('idebit', 'iDebit', '/images/payments/idebit.png');
+insertPayment.run(
+	'muchbetter',
+	'MuchBetter',
+	'/images/payments/muchbetter.png'
+);
+insertPayment.run('bitcoin', 'Bitcoin', '/images/payments/bitcoin.png');
+insertPayment.run('visa', 'Visa', '/images/payments/visa.png');
+insertPayment.run(
+	'mastercard',
+	'Mastercard',
+	'/images/payments/mastercard.png'
+);
+
+const linkPayment = db.prepare(
+	'INSERT OR IGNORE INTO casino_payment_methods (casino_id, method_id) VALUES (?, ?)'
+);
+
+// Link Bitstarz (Crypto Heavy)
+linkPayment.run('bitstarz', 'bitcoin');
+linkPayment.run('bitstarz', 'interac');
+linkPayment.run('bitstarz', 'visa');
+
+// Link Spin Casino (Fiat Heavy)
+linkPayment.run('spin', 'interac');
+linkPayment.run('spin', 'visa');
+linkPayment.run('spin', 'mastercard');
+linkPayment.run('spin', 'idebit');
+
+// Link Woo
+linkPayment.run('woo', 'bitcoin');
+linkPayment.run('woo', 'interac');
+linkPayment.run('woo', 'visa');
+
+// Link Fastpay
+linkPayment.run('fastpay', 'bitcoin');
+linkPayment.run('fastpay', 'interac');
+linkPayment.run('fastpay', 'muchbetter');
+
+console.log('✅ Payments Seeded!');
+console.log('🚀 Database Ready!');

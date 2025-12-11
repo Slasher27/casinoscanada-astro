@@ -1,4 +1,5 @@
 ---
+// src/components/reviews/CasinoSpecs.astro
 import { db } from '../../db/client';
 
 interface Props {
@@ -6,46 +7,98 @@ interface Props {
 }
 
 const { casinoId } = Astro.props;
+
+// 1. Get General Specs
 const casino = db
 	.prepare('SELECT * FROM casinos WHERE id = ?')
 	.get(casinoId) as any;
+
+// 2. Get Payment Methods for this specific casino
+const payments = db
+	.prepare(
+		`
+    SELECT pm.name, pm.logo_url 
+    FROM payment_methods pm
+    JOIN casino_payment_methods cpm ON pm.id = cpm.method_id
+    WHERE cpm.casino_id = ?
+`
+	)
+	.all(casinoId) as { name: string; logo_url: string }[];
 ---
 
 {
 	casino && (
-		<div class='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8'>
-			<div class='bg-gray-50 px-5 py-3 border-b border-gray-200'>
-				<h3 class='font-bold text-gray-900 text-sm uppercase tracking-wider'>
-					Casino Details
-				</h3>
+		<div class='space-y-8'>
+			<div class='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden'>
+				<div class='bg-gray-50 px-5 py-3 border-b border-gray-200'>
+					<h3 class='font-bold text-gray-900 text-sm uppercase tracking-wider'>
+						Casino Details
+					</h3>
+				</div>
+
+				<dl class='p-5 text-sm space-y-4'>
+					<div class='flex justify-between border-b border-gray-100 pb-2'>
+						<dt class='text-gray-500 font-medium'>Established</dt>
+						<dd class='font-bold text-gray-900'>{casino.established}</dd>
+					</div>
+					<div class='flex justify-between border-b border-gray-100 pb-2'>
+						<dt class='text-gray-500 font-medium'>Owner</dt>
+						<dd class='font-bold text-gray-900 text-right max-w-[60%]'>
+							{casino.owner}
+						</dd>
+					</div>
+					<div class='flex justify-between border-b border-gray-100 pb-2'>
+						<dt class='text-gray-500 font-medium'>License</dt>
+						<dd class='font-bold text-gray-900'>{casino.license}</dd>
+					</div>
+					<div class='flex justify-between border-b border-gray-100 pb-2'>
+						<dt class='text-gray-500 font-medium'>Payout Speed</dt>
+						<dd class='font-bold text-green-600'>
+							{casino.payout_speed_minutes} Minutes
+						</dd>
+					</div>
+					<div class='flex justify-between'>
+						<dt class='text-gray-500 font-medium'>Min Deposit</dt>
+						<dd class='font-bold text-gray-900'>$20</dd>
+					</div>
+				</dl>
 			</div>
 
-			<dl class='p-5 text-sm space-y-4'>
-				<div class='flex justify-between border-b border-gray-100 pb-2'>
-					<dt class='text-gray-500 font-medium'>Established</dt>
-					<dd class='font-bold text-gray-900'>{casino.established}</dd>
+			{payments.length > 0 && (
+				<div class='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden'>
+					<div class='bg-gray-50 px-5 py-3 border-b border-gray-200'>
+						<h3 class='font-bold text-gray-900 text-sm uppercase tracking-wider'>
+							Deposit Methods
+						</h3>
+					</div>
+
+					<div class='p-5'>
+						<div class='flex flex-wrap gap-2'>
+							{payments.map((method) => (
+								<div class='relative group' title={method.name}>
+									{/* 1. The Image: Tries to load the logo. 
+                                   On error, it hides itself and shows the text span below.
+                            */}
+									<img
+										src={method.logo_url}
+										alt={method.name}
+										class='h-8 w-12 object-contain border border-gray-100 rounded p-0.5 bg-white'
+										loading='lazy'
+										onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+									/>
+
+									{/* 2. The Fallback Text: Hidden by default. 
+                                   Becomes visible only if the image fails (via the onerror script above).
+                            */}
+									<span class='hidden h-8 px-3 items-center justify-center text-xs font-bold text-gray-600 bg-gray-100 border border-gray-200 rounded'>
+										{method.name}
+									</span>
+								</div>
+							))}
+						</div>
+					</div>
 				</div>
-				<div class='flex justify-between border-b border-gray-100 pb-2'>
-					<dt class='text-gray-500 font-medium'>Owner</dt>
-					<dd class='font-bold text-gray-900 text-right max-w-[60%]'>
-						{casino.owner}
-					</dd>
-				</div>
-				<div class='flex justify-between border-b border-gray-100 pb-2'>
-					<dt class='text-gray-500 font-medium'>License</dt>
-					<dd class='font-bold text-gray-900'>{casino.license}</dd>
-				</div>
-				<div class='flex justify-between border-b border-gray-100 pb-2'>
-					<dt class='text-gray-500 font-medium'>Payout Speed</dt>
-					<dd class='font-bold text-green-600'>
-						{casino.payout_speed_minutes} Minutes
-					</dd>
-				</div>
-				<div class='flex justify-between'>
-					<dt class='text-gray-500 font-medium'>Min Deposit</dt>
-					<dd class='font-bold text-gray-900'>$20</dd>
-				</div>
-			</dl>
+			)}
 		</div>
 	)
 }

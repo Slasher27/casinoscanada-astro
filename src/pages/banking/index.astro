@@ -1,0 +1,93 @@
+---
+import { getEntry } from 'astro:content';
+import { db } from '../../db/client';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import ProseTable from '../../components/mdx/ProseTable.astro';
+
+// 1. Fetch the "Banking" guide content (Text)
+const guideEntry = await getEntry('guides', 'banking');
+
+// FIX: Check if it exists. If not, stop everything and tell us.
+if (!guideEntry) {
+	throw new Error(
+		"Could not find 'src/content/guides/banking.mdx'. Please create this file or check the filename."
+	);
+}
+
+// Now TypeScript knows guideEntry is NOT undefined
+const { Content } = await guideEntry.render();
+
+// 2. Fetch Payment Methods (Data)
+const methods = db.prepare('SELECT * FROM payment_methods').all() as any[];
+
+const breadcrumbs = [{ text: 'Banking', href: '/banking' }];
+---
+
+<BaseLayout
+	title='Online Casino Banking Methods Canada (2025 Guide)'
+	description='The complete guide to casino deposits and withdrawals in Canada. Compare Interac, Bitcoin, and Credit Cards.'
+>
+	<div class='container mx-auto px-4 py-8'>
+		<div class='mb-8'>
+			<Breadcrumbs items={breadcrumbs} />
+		</div>
+
+		<div
+			class='bg-slate-900 text-white min-h-[300px] flex flex-col justify-center items-center px-6 py-12 text-center rounded-3xl shadow-lg mb-12'
+		>
+			<h1 class='text-4xl md:text-6xl font-black mb-6 tracking-tight'>
+				Casino <span class='text-red-500'>Banking</span> Options
+			</h1>
+			<p class='text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed'>
+				Secure deposits and fast withdrawals are our top priority. Choose a
+				payment method below to find the best casinos that accept it.
+			</p>
+		</div>
+
+		<h2
+			class='text-2xl font-bold text-slate-900 mb-6 border-b border-gray-200 pb-2'
+		>
+			Popular Payment Methods
+		</h2>
+
+		<div class='grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-16'>
+			{
+				methods.map((method) => (
+					<a
+						href={`/banking/${method.id}`}
+						class='group bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-400 transition-all text-center no-underline h-32'
+					>
+						<img
+							src={method.logo_url}
+							alt={method.name}
+							class='h-10 w-auto object-contain mb-3 group-hover:scale-110 transition-transform'
+							loading='lazy'
+							onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+						/>
+						<span class='hidden font-bold text-gray-400 text-xs uppercase'>
+							{method.name}
+						</span>
+
+						<span class='text-sm font-bold text-gray-700 group-hover:text-blue-600'>
+							{method.name}
+						</span>
+					</a>
+				))
+			}
+		</div>
+
+		<div class='max-w-4xl mx-auto'>
+			<article
+				class='prose prose-lg prose-slate max-w-none bg-gray-50 p-4 md:p-12 rounded-2xl border border-gray-100'
+			>
+				<h2
+					class='text-2xl md:text-3xl font-black text-slate-900 mb-6 md:mb-8 mt-0'
+				>
+					{guideEntry.data.title}
+				</h2>
+				<Content components={{ table: ProseTable }} />
+			</article>
+		</div>
+	</div>
+</BaseLayout>

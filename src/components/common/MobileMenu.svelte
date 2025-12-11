@@ -31,7 +31,7 @@
     
     <a href="/slots" class="text-lg font-bold text-slate-800 hover:text-red-600 block">Free Slots</a>
     <a href="/software" class="text-lg font-bold text-slate-800 hover:text-red-600 block">Software</a>
-    <a href="/guides/banking" class="text-lg font-bold text-slate-800 hover:text-red-600 block">Banking</a>
+    <a href="/banking" class="text-lg font-bold text-slate-800 hover:text-red-600 block">Banking</a>
     <hr class="border-gray-100" />
     <a href="/#top-list" class="bg-red-600 text-white text-center font-bold py-3 rounded-lg block">Top Casinos</a>
   </div>
