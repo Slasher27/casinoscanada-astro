@@ -1,61 +1,71 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+import Container from '../components/common/Container.astro';
+
+const breadcrumbs = [{ text: 'Terms of Service', href: '/terms' }];
 ---
 
 <BaseLayout
 	title='Terms of Service | Casinos Canada'
 	description='Terms and conditions for using CasinosCanada.online.'
 >
-	<div class='max-w-3xl mx-auto py-12 prose prose-slate'>
-		<h1>Terms of Service</h1>
-		<p class='text-sm text-gray-500'>
-			Last Updated: {new Date().toLocaleDateString('en-CA')}
-		</p>
+	<Container>
+		<div class='mb-8'>
+			<Breadcrumbs items={breadcrumbs} />
+		</div>
 
-		<h3>1. Acceptance of Terms</h3>
-		<p>
-			By accessing this website, we assume you accept these terms and
-			conditions. Do not continue to use CasinosCanada.online if you do not
-			agree to take all of the terms and conditions stated on this page.
-		</p>
+		<div class='max-w-3xl mx-auto prose prose-slate'>
+			<h1>Terms of Service</h1>
+			<p class='text-sm text-gray-500'>
+				Last Updated: {new Date().toLocaleDateString('en-CA')}
+			</p>
 
-		<h3>2. No Gambling Services</h3>
-		<p>
-			<strong>CasinosCanada.online is NOT a casino.</strong> We do not accept bets,
-			process payments, or facilitate gambling of any kind. We are purely an informational
-			portal reviewing third-party websites.
-		</p>
+			<h3>1. Acceptance of Terms</h3>
+			<p>
+				By accessing this website, we assume you accept these terms and
+				conditions. Do not continue to use CasinosCanada.online if you do not
+				agree to take all of the terms and conditions stated on this page.
+			</p>
 
-		<h3>3. Age Restriction</h3>
-		<p>
-			You must be at least 19 years of age (or the legal gambling age in your
-			jurisdiction) to access this website. By using this site, you warrant that
-			you are of legal age.
-		</p>
+			<h3>2. No Gambling Services</h3>
+			<p>
+				<strong>CasinosCanada.online is NOT a casino.</strong> We do not accept bets,
+				process payments, or facilitate gambling of any kind. We are purely an informational
+				portal reviewing third-party websites.
+			</p>
 
-		<h3>4. Limitation of Liability</h3>
-		<p>
-			We strive to keep our information accurate, but the online gambling
-			landscape changes frequently. We are not responsible for:
-		</p>
-		<ul>
-			<li>
-				Errors or omissions in our content (e.g., a bonus offer changing without
-				notice).
-			</li>
-			<li>
-				Financial losses incurred by playing at casinos linked from our site.
-			</li>
-			<li>Disputes between you and any third-party casino operator.</li>
-		</ul>
+			<h3>3. Age Restriction</h3>
+			<p>
+				You must be at least 19 years of age (or the legal gambling age in your
+				jurisdiction) to access this website. By using this site, you warrant
+				that you are of legal age.
+			</p>
 
-		<h3>5. Responsible Gambling</h3>
-		<p>
-			Gambling involves risk. Only gamble with money you can afford to lose. If
-			you feel you have a gambling problem, please visit <a
-				href='https://www.connexontario.ca/'
-				rel='nofollow'>ConnexOntario</a
-			> or your local support service immediately.
-		</p>
-	</div>
+			<h3>4. Limitation of Liability</h3>
+			<p>
+				We strive to keep our information accurate, but the online gambling
+				landscape changes frequently. We are not responsible for:
+			</p>
+			<ul>
+				<li>
+					Errors or omissions in our content (e.g., a bonus offer changing
+					without notice).
+				</li>
+				<li>
+					Financial losses incurred by playing at casinos linked from our site.
+				</li>
+				<li>Disputes between you and any third-party casino operator.</li>
+			</ul>
+
+			<h3>5. Responsible Gambling</h3>
+			<p>
+				Gambling involves risk. Only gamble with money you can afford to lose.
+				If you feel you have a gambling problem, please visit <a
+					href='https://www.connexontario.ca/'
+					rel='nofollow'>ConnexOntario</a
+				> or your local support service immediately.
+			</p>
+		</div>
+	</Container>
 </BaseLayout>

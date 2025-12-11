@@ -1,85 +1,102 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import { db } from '../../db/client';
+import Container from '../../components/common/Container.astro';
 
 // 1. Get all markdown reviews
 const reviews = await getCollection('reviews');
 
 // 2. Get all casino data from SQLite
-// Returns an array of objects: [{ id: 'bitstarz', owner: 'Dama N.V.', ... }]
 const allCasinos = db.prepare('SELECT * FROM casinos').all();
-
-// 3. Create a helper map for fast lookup
-// This lets us say casinoMap.get('bitstarz') to get that specific casino's data
 const casinoMap = new Map(allCasinos.map((c: any) => [c.id, c]));
+
+const breadcrumbs = [{ text: 'Casino Reviews', href: '/reviews' }];
 ---
 
 <BaseLayout
-	title='Best Online Casinos in Canada (2025 Reviews)'
+	title='All Casino Reviews | Casinos Canada'
 	description='Browse our honest reviews of the top online casinos in Canada. Filter by payout speed, bonus size, and more.'
 >
-	<div class='text-center mb-12'>
-		<h1 class='text-4xl font-extrabold mb-4'>Top Rated Casino Reviews</h1>
-		<p class='text-lg text-gray-600 max-w-2xl mx-auto'>
-			We have tested {reviews.length} casinos for licensing, payout speeds, and fairness.
-		</p>
-	</div>
+	<Container>
+		<div class='mb-6'>
+			<Breadcrumbs items={breadcrumbs} />
+		</div>
 
-	<div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
-		{
-			reviews.map((review) => {
-				// Look up the DB data for this specific review
-				const data = casinoMap.get(review.data.casinoId);
+		<div
+			class='bg-slate-900 text-white min-h-[300px] flex flex-col justify-center items-center px-6 py-12 text-center rounded-3xl shadow-lg mb-12'
+		>
+			<h1 class='text-4xl md:text-6xl font-black mb-6 tracking-tight'>
+				Honest <span class='text-red-500'>Casino Reviews</span> 🇨🇦
+			</h1>
+			<p class='text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed'>
+				We don't rely on guesswork. We have personally tested <strong
+					>{reviews.length} casinos</strong
+				> for licensing, payout speeds, and fairness to ensure you play safely.
+			</p>
+		</div>
 
-				// Fallbacks in case DB data is missing
-				const payout = data
-					? `${data.payout_speed_minutes} Mins`
-					: review.data.payoutTime;
-				const owner = data ? data.owner : 'Unknown Owner';
+		<div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
+			{
+				reviews.map((review) => {
+					// Data Lookup
+					const data = casinoMap.get(review.data.casinoId);
+					const payout = data
+						? `${data.payout_speed_minutes} Mins`
+						: review.data.payoutTime;
+					const owner = data ? data.owner : 'Unknown Owner';
 
-				return (
-					<a href={`/reviews/${review.slug}`} class='group no-underline'>
-						<article class='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-xl hover:border-blue-300 transition-all duration-300 h-full flex flex-col'>
-							<div class='p-6 border-b border-gray-100 bg-gray-50 group-hover:bg-blue-50 transition-colors'>
-								<h2 class='text-2xl font-bold text-gray-800 m-0 group-hover:text-blue-700'>
-									{review.data.title.split(':')[0]} {/* Cleans up title */}
-								</h2>
-								<p class='text-sm text-gray-500 mt-1'>{owner}</p>
-							</div>
-
-							<div class='p-6 flex-grow'>
-								<div class='flex justify-between items-center mb-4'>
-									<div class='flex flex-col'>
-										<span class='text-xs uppercase text-gray-400 font-bold tracking-wider'>
-											Rating
-										</span>
-										<span class='text-xl font-bold text-yellow-600'>
-											★ {review.data.rating}/5
-										</span>
-									</div>
-									<div class='flex flex-col text-right'>
-										<span class='text-xs uppercase text-gray-400 font-bold tracking-wider'>
-											Payout
-										</span>
-										<span class='text-xl font-bold text-green-600'>
-											{payout}
-										</span>
+					return (
+						<a href={`/reviews/${review.slug}`} class='group no-underline'>
+							<article class='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-xl hover:border-blue-300 transition-all duration-300 h-full flex flex-col'>
+								<div class='p-6 border-b border-gray-100 bg-gray-50 group-hover:bg-blue-50 transition-colors'>
+									<div class='flex justify-between items-start'>
+										<div>
+											<h2 class='text-2xl font-bold text-gray-800 m-0 group-hover:text-blue-700 leading-tight'>
+												{review.data.title.split(':')[0]}
+											</h2>
+											<p class='text-sm text-gray-500 mt-1 font-medium'>
+												{owner}
+											</p>
+										</div>
+										{/* Optional: Add Logo here if you want */}
 									</div>
 								</div>
 
-								<p class='text-gray-600 line-clamp-3 text-sm'>
-									{review.data.metaDescription}
-								</p>
-							</div>
+								<div class='p-6 flex-grow'>
+									<div class='flex justify-between items-center mb-4 bg-gray-50 p-3 rounded-lg'>
+										<div class='flex flex-col'>
+											<span class='text-[10px] uppercase text-gray-400 font-bold tracking-wider'>
+												Rating
+											</span>
+											<span class='text-lg font-black text-yellow-600'>
+												★ {review.data.rating}/5
+											</span>
+										</div>
+										<div class='flex flex-col text-right'>
+											<span class='text-[10px] uppercase text-gray-400 font-bold tracking-wider'>
+												Payout
+											</span>
+											<span class='text-lg font-black text-green-600'>
+												{payout}
+											</span>
+										</div>
+									</div>
 
-							<div class='p-4 bg-gray-50 border-t border-gray-100 text-center text-blue-600 font-bold group-hover:bg-blue-600 group-hover:text-white transition-colors'>
-								Read Full Review &rarr;
-							</div>
-						</article>
-					</a>
-				);
-			})
-		}
-	</div>
+									<p class='text-gray-600 line-clamp-3 text-sm leading-relaxed'>
+										{review.data.metaDescription}
+									</p>
+								</div>
+
+								<div class='p-4 bg-gray-50 border-t border-gray-100 text-center text-blue-600 font-bold group-hover:bg-blue-600 group-hover:text-white transition-colors text-sm uppercase tracking-wide'>
+									Read Full Review &rarr;
+								</div>
+							</article>
+						</a>
+					);
+				})
+			}
+		</div>
+	</Container>
 </BaseLayout>

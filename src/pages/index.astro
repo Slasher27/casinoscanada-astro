@@ -1,69 +1,83 @@
 ---
-// src/pages/index.astro
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CasinoTopList from '../components/ui/CasinoTopList.astro';
-import SlotsSection from '../components/ui/SlotsSection.astro'; // Import from UI
+import SlotsSection from '../components/ui/SlotsSection.astro';
+import { getCollection } from 'astro:content';
+
+// Fetch only the 3 latest reviews for a "Recent Updates" section
+const allReviews = await getCollection('reviews');
+const latestReviews = allReviews.slice(0, 3);
 ---
 
 <BaseLayout
-	title='Online Casinos Canada: Best Real Money Sites (2025)'
-	description='We tested 50+ Canadian casinos. Find the fastest payouts, biggest bonuses, and safe banking options.'
-	mainClass=''
+	title='Best Online Casinos in Canada (2025) | Honest Reviews'
+	description='Compare the top rated online casinos in Canada. We test payout speeds, bonuses, and licensing to ensure you play safely.'
 >
-	<div class='container mx-auto px-4 py-8'>
-		<section
-			class='text-center py-16 px-4 bg-gradient-to-b from-blue-50 to-white rounded-3xl mb-12 shadow-sm border border-blue-50'
-		>
-			<h1
-				class='text-5xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight'
-			>
-				Play Safe. <span class='text-red-600'>Win Big.</span>
+	<section
+		class='bg-slate-900 text-white py-16 md:py-24 relative overflow-hidden'
+	>
+		<div class='container mx-auto px-4 relative z-10 text-center'>
+			<h1 class='text-4xl md:text-6xl font-black mb-6 tracking-tight'>
+				Find the <span class='text-red-600'>Best</span> Online Casinos
 			</h1>
-			<p class='text-xl text-slate-600 max-w-2xl mx-auto mb-8'>
-				The #1 resource for Canadian players. We track live payout speeds and
-				verify licenses daily.
+			<p class='text-xl text-slate-300 max-w-2xl mx-auto mb-8'>
+				We personally test payout speeds, bonus terms, and game fairness so you
+				don't have to. Play with confidence at Canada's top rated sites.
 			</p>
-			<div class='flex flex-col sm:flex-row justify-center gap-4'>
-				<a
-					href='/reviews'
-					class='bg-slate-900 text-white px-8 py-3 rounded-lg font-bold hover:bg-slate-800 transition'
-					>See All Reviews</a
-				>
-				<a
-					href='#top-list'
-					class='bg-white text-slate-900 border border-slate-300 px-8 py-3 rounded-lg font-bold hover:bg-gray-50 transition'
-					>Top 10 List</a
-				>
-			</div>
-		</section>
+			<a
+				href='#top-list'
+				class='bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-10 rounded-full shadow-lg transition-transform hover:scale-105 inline-block'
+			>
+				See Top Picks
+			</a>
+		</div>
+	</section>
 
-		<section id='top-list' class='mb-20'>
-			<div class='flex items-center gap-2 mb-8'>
-				<span class='text-3xl'>🏆</span>
-				<h2 class='text-3xl font-bold text-slate-900'>
-					Top Rated Casinos for January 2025
-				</h2>
-			</div>
-
-			<CasinoTopList />
-		</section>
+	<div id='top-list' class='container mx-auto px-4 -mt-10 relative z-20 mb-20'>
+		<CasinoTopList />
 	</div>
 
 	<SlotsSection />
 
-	<div class='container mx-auto px-4 py-16'>
-		<section class='prose prose-lg max-w-none'>
-			<h3>Why Trust Casinos Canada?</h3>
-			<p>
-				Unlike other sites, we use a <strong>Data-First Approach</strong>. We
-				don't just guess payout times; we measure them. Our database tracks over
-				50 data points for every casino, including:
-			</p>
-			<ul>
-				<li>Real-world withdrawal speeds (via Crypto and Interac).</li>
-				<li>Licensing verification (Curacao, MGA, Kahnawake).</li>
-				<li>Hidden terms in bonus wagering requirements.</li>
-			</ul>
-		</section>
-	</div>
+	<section class='py-16 bg-gray-50 border-t border-gray-200'>
+		<div class='container mx-auto px-4'>
+			<div class='flex justify-between items-end mb-10'>
+				<div>
+					<h2 class='text-3xl font-bold text-gray-900'>Latest Reviews</h2>
+					<p class='text-gray-600 mt-2'>Freshly tested by our team.</p>
+				</div>
+				<a href='/reviews' class='text-blue-600 font-bold hover:underline'
+					>View All &rarr;</a
+				>
+			</div>
+
+			<div class='grid grid-cols-1 md:grid-cols-3 gap-8'>
+				{
+					latestReviews.map((review) => (
+						<a
+							href={`/reviews/${review.slug}`}
+							class='group bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all'
+						>
+							<div class='p-6'>
+								<div class='flex items-center gap-2 mb-3'>
+									<span class='text-xs font-bold uppercase tracking-wider text-gray-400'>
+										Review
+									</span>
+									<span class='text-xs font-bold text-yellow-600'>
+										★ {review.data.rating}/5
+									</span>
+								</div>
+								<h3 class='font-bold text-xl text-gray-900 group-hover:text-blue-600 transition-colors mb-2'>
+									{review.data.title.split(':')[0]}
+								</h3>
+								<p class='text-gray-600 text-sm line-clamp-2'>
+									{review.data.metaDescription}
+								</p>
+							</div>
+						</a>
+					))
+				}
+			</div>
+		</div>
+	</section>
 </BaseLayout>

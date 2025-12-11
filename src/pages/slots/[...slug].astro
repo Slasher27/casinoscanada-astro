@@ -2,6 +2,7 @@
 // src/pages/slots/[slug].astro
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { db } from '../../db/client';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 
 // 1. Define the Interface (Matches your DB columns + Provider Name alias)
 interface SlotSql {
@@ -46,12 +47,13 @@ const { slot } = Astro.props;
 	title={`${slot.title} Free Demo | Play Online in Canada`}
 	description={`Play ${slot.title} by ${slot.provider_name} for free. RTP: ${slot.rtp}%, Volatility: ${slot.volatility}. No download required.`}
 >
-	<div class='bg-gray-100 border-b border-gray-200'>
-		<div class='container mx-auto px-4 py-3 text-sm text-gray-500'>
-			<a href='/' class='hover:underline'>Home</a> &rsaquo;
-			<a href='/slots' class='hover:underline'>Free Slots</a> &rsaquo;
-			<span class='text-gray-900 font-semibold'>{slot.title}</span>
-		</div>
+	<div class='container mx-auto px-4 py-8'>
+		<Breadcrumbs
+			items={[
+				{ text: 'Free Slots', href: '/slots' },
+				{ text: slot.title, href: Astro.url.pathname },
+			]}
+		/>
 	</div>
 
 	<div class='container mx-auto px-4 py-8'>

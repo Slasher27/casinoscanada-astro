@@ -3,21 +3,18 @@ import '../styles/global.css';
 import Header from '../components/common/Header.astro';
 import Footer from '../components/common/Footer.astro';
 import SEOHead from '../components/common/SEOHead.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
 
 interface Props {
 	title: string;
 	description?: string;
 	image?: string;
-	// New optional prop to control the main container
-	mainClass?: string;
 }
 
 const {
 	title,
 	description = 'The #1 Guide to Online Casinos in Canada.',
 	image,
-	// Default to your original container classes if not provided
-	mainClass = 'container mx-auto px-4 py-8',
 } = Astro.props;
 ---
 
@@ -31,7 +28,7 @@ const {
 	<body class='flex flex-col min-h-screen bg-slate-50'>
 		<Header />
 
-		<main class={`flex-grow ${mainClass}`}>
+		<main class={`flex-grow`}>
 			<slot />
 		</main>
 

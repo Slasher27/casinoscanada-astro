@@ -1,77 +1,73 @@
 ---
+// src/components/ui/SidebarCasinos.astro
 import { db } from '../../db/client';
 
-// Fetch just the top 3 for the widget
-type Casino = {
-	id: string;
-	name: string;
-	website_url: string;
-	payout_speed_minutes: number;
-	payout_ratio: number;
-	logo_url?: string;
-};
-const top3 = db
-	.prepare('SELECT * FROM casinos ORDER BY payout_ratio DESC LIMIT 3')
-	.all() as Casino[];
+interface Props {
+	excludeId?: string; // e.g. 'bitstarz' (so we don't show it twice)
+}
+
+const { excludeId = '' } = Astro.props;
+
+// Query: Get 5 casinos, excluding the current one
+const topCasinos = db
+	.prepare(
+		`
+  SELECT id, name, logo_url, bonus_offer, payout_speed_minutes 
+  FROM casinos 
+  WHERE id != ?
+  LIMIT 5
+`
+	)
+	.all(excludeId) as any[];
+// Note: We use 'any[]' for brevity, but you can define an Interface like we did for slots
 ---
 
 <div
-	class='bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden not-prose'
+	class='bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden'
 >
-	<div class='bg-slate-900 p-3 text-center'>
-		<h3 class='text-white font-bold text-sm uppercase tracking-wider m-0'>
-			🏆 Top Picks
-		</h3>
+	<div class='bg-slate-900 px-5 py-4 border-b border-gray-100'>
+		<h3 class='font-bold text-white text-lg'>Top Recommended</h3>
 	</div>
 
 	<div class='divide-y divide-gray-100'>
 		{
-			top3.map((casino, index) => (
-				<div class='p-4 flex items-center gap-3 hover:bg-blue-50 transition-colors group'>
-					<div class='font-bold text-gray-300 text-lg group-hover:text-blue-500'>
-						#{index + 1}
+			topCasinos.map((casino) => (
+				<div class='p-4 flex items-center gap-4 hover:bg-gray-50 transition-colors'>
+					<div class='flex-shrink-0 w-12 h-12 bg-gray-100 rounded-full overflow-hidden border border-gray-200'>
+						<img
+							src={casino.logo_url}
+							alt={casino.name}
+							class='w-full h-full object-contain rounded-full'
+							loading='lazy'
+						/>
 					</div>
 
-					<div class='w-10 h-10 shrink-0'>
-						{casino.logo_url ? (
-							<img
-								src={casino.logo_url}
-								alt={casino.name}
-								class='w-full h-full object-contain rounded-full'
-							/>
-						) : (
-							<div class='w-full h-full bg-gray-200 rounded-full' />
-						)}
-					</div>
-
-					<div class='flex-grow'>
-						<a
-							href={`/reviews/${casino.id}-casino`}
-							class='font-bold text-slate-800 text-sm block hover:underline'
-						>
+					<div class='flex-1 min-w-0'>
+						<h4 class='font-bold text-gray-900 text-sm truncate'>
 							{casino.name}
-						</a>
-						<span class='text-xs text-green-600 font-bold'>
-							✓ {casino.payout_speed_minutes} Min Payout
-						</span>
+						</h4>
+						<p class='text-xs text-green-600 font-medium truncate'>
+							{casino.bonus_offer}
+						</p>
 					</div>
 
 					<a
-						href={casino.website_url}
-						class='bg-red-600 text-white text-xs font-bold py-2 px-3 rounded shadow hover:bg-red-700 transition'
+						href={`/reviews/${casino.id}-casino`}
+						class='flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-2 rounded-md transition-colors'
 					>
-						Play
+						Review
 					</a>
 				</div>
 			))
 		}
 	</div>
 
-	<div class='p-3 bg-gray-50 text-center border-t border-gray-100'>
+	<div class='bg-gray-50 p-3 text-center border-t border-gray-100'>
 		<a
-			href='/reviews'
-			class='text-xs font-bold text-blue-600 hover:text-blue-800'
-			>View All Reviews &rarr;</a
+			href='/#top-list'
+			class='text-xs font-bold text-gray-500 hover:text-gray-800'
 		>
+			View All 50+ Casinos
+		</a>
 	</div>
 </div>

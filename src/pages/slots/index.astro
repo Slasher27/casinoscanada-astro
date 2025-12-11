@@ -1,25 +1,19 @@
 ---
 // src/pages/slots/index.astro
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import ListingLayout from '../../layouts/ListingLayout.astro';
 import { db } from '../../db/client';
 
-// 1. Define the shape of your database row
+// 1. Define Interface
 interface SlotSql {
 	slug: string;
 	title: string;
-	provider_id: string;
-	provider_name: string; // We get this from the JOIN
-	rtp: number; // SQLite returns REAL as number
-	volatility: string;
-	max_win: string;
-	paylines: string;
-	release_date: string;
-	description: string;
+	provider_name: string; // From the JOIN
 	image_url: string;
-	featured: number; // SQLite booleans are 0 or 1
+	rtp: number;
+	volatility: string;
 }
 
-// 2. Query with explicit casting
+// 2. Query DB (Get SLOTS, not Providers)
 const allSlots = db
 	.prepare(
 		`
@@ -29,23 +23,16 @@ const allSlots = db
 `
 	)
 	.all() as SlotSql[];
-// ^^^ The 'as SlotSql[]' fixes the 'unknown' error
 ---
 
-<BaseLayout
-	title='Free Online Slots Canada | Play 100+ Demos (No Download)'
-	description='Play the best free online slots in Canada. No download or registration required.'
+<ListingLayout
+	title='Free Online Slots Canada | Play 100+ Demos'
+	description='Play the best free online slots in Canada. No download required.'
+	heroTitle='Free Online Slots'
+	heroDescription={`Try over ${allSlots.length} free demo slots before you play for real money.`}
+	breadcrumbs={[{ text: 'Slots', href: '/slots' }]}
 >
-	<section
-		class='bg-blue-900 text-white py-16 rounded-2xl mb-12 px-6 text-center'
-	>
-		<h1 class='text-4xl md:text-5xl font-bold mb-4'>Free Online Slots</h1>
-		<p class='text-xl text-blue-100 max-w-2xl mx-auto'>
-			Try over {allSlots.length} free demo slots before you play for real money.
-		</p>
-	</section>
-
-	<div class='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-16'>
+	<div class='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
 		{
 			allSlots.map((slot) => (
 				<article class='group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col'>
@@ -92,4 +79,4 @@ const allSlots = db
 			))
 		}
 	</div>
-</BaseLayout>
+</ListingLayout>

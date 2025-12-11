@@ -27,8 +27,11 @@
     class="md:hidden absolute top-full left-0 w-full bg-white border-b border-gray-200 shadow-xl z-50 flex flex-col p-4 space-y-4"
   >
     <a href="/reviews" class="text-lg font-bold text-slate-800 hover:text-red-600 block">All Reviews</a>
-    <a href="/guides/banking" class="text-lg font-bold text-slate-800 hover:text-red-600 block">Banking</a>
     <a href="/bonuses" class="text-lg font-bold text-slate-800 hover:text-red-600 block">Bonuses</a>
+    
+    <a href="/slots" class="text-lg font-bold text-slate-800 hover:text-red-600 block">Free Slots</a>
+    <a href="/software" class="text-lg font-bold text-slate-800 hover:text-red-600 block">Software</a>
+    <a href="/guides/banking" class="text-lg font-bold text-slate-800 hover:text-red-600 block">Banking</a>
     <hr class="border-gray-100" />
     <a href="/#top-list" class="bg-red-600 text-white text-center font-bold py-3 rounded-lg block">Top Casinos</a>
   </div>

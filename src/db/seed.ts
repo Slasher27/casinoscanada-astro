@@ -10,13 +10,13 @@ console.log('🌱 Seeding database...');
 // 1. Reset Tables
 db.exec(schema);
 
-// 2. Prepare Insert (Added logo_url at the end)
+// 2. Prepare Insert (Casinos)
 const insertCasino = db.prepare(`
   INSERT INTO casinos (id, name, website_url, established, license, owner, payout_speed_minutes, payout_ratio, theme_color, logo_url, bonus_offer, bonus_spins)
   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `);
 
-// 3. Insert Data with Logos
+// 3. Insert Casinos
 insertCasino.run(
 	'bitstarz',
 	'BitStarz',
@@ -77,15 +77,30 @@ insertCasino.run(
 	100
 );
 
-// ... (Keep your Software Provider inserts below - they remain unchanged) ...
+// 4. Insert Software Providers (UPDATED with logo_url)
 const insertProvider = db.prepare(
-	'INSERT OR IGNORE INTO software_providers (id, name) VALUES (?, ?)'
+	'INSERT OR IGNORE INTO software_providers (id, name, logo_url) VALUES (?, ?, ?)'
 );
-insertProvider.run('netent', 'NetEnt');
-insertProvider.run('evolution', 'Evolution Gaming');
-insertProvider.run('pragmatic', 'Pragmatic Play');
-insertProvider.run('microgaming', 'Microgaming');
 
+// Standard Providers
+insertProvider.run('netent', 'NetEnt', '/images/software/netent.png');
+insertProvider.run(
+	'evolution',
+	'Evolution Gaming',
+	'/images/software/evolution.png'
+);
+insertProvider.run(
+	'pragmatic',
+	'Pragmatic Play',
+	'/images/software/pragmatic.png'
+);
+insertProvider.run(
+	'microgaming',
+	'Microgaming',
+	'/images/software/microgaming.png'
+);
+
+// Link Casinos to Software
 const linkSoftware = db.prepare(
 	'INSERT INTO casino_software (casino_id, provider_id) VALUES (?, ?)'
 );
@@ -98,19 +113,25 @@ linkSoftware.run('fastpay', 'pragmatic');
 
 console.log('✅ Database seeded with Images!');
 
-// ... existing casino inserts ...
-
-// 4. Insert Slots
+// 5. Insert Slots
 const insertSlot = db.prepare(`
   INSERT INTO slots (slug, title, provider_id, rtp, volatility, max_win, paylines, release_date, description, image_url, featured)
   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `);
 
-// Gaming Corps provider needs to exist first!
-insertProvider.run('gaming-corps', 'Gaming Corps');
-insertProvider.run('reelplay', 'ReelPlay');
-insertProvider.run('relax-gaming', 'Relax Gaming');
-insertProvider.run('swintt', 'Swintt');
+// Insert Slot Providers (UPDATED with logo_url)
+insertProvider.run(
+	'gaming-corps',
+	'Gaming Corps',
+	'/images/software/gaming-corps.png'
+);
+insertProvider.run('reelplay', 'ReelPlay', '/images/software/reelplay.png');
+insertProvider.run(
+	'relax-gaming',
+	'Relax Gaming',
+	'/images/software/relax-gaming.png'
+);
+insertProvider.run('swintt', 'Swintt', '/images/software/swintt.png');
 
 console.log('🎰 Seeding Slots...');
 

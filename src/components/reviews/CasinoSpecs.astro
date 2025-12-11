@@ -1,0 +1,51 @@
+---
+import { db } from '../../db/client';
+
+interface Props {
+	casinoId: string;
+}
+
+const { casinoId } = Astro.props;
+const casino = db
+	.prepare('SELECT * FROM casinos WHERE id = ?')
+	.get(casinoId) as any;
+---
+
+{
+	casino && (
+		<div class='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8'>
+			<div class='bg-gray-50 px-5 py-3 border-b border-gray-200'>
+				<h3 class='font-bold text-gray-900 text-sm uppercase tracking-wider'>
+					Casino Details
+				</h3>
+			</div>
+
+			<dl class='p-5 text-sm space-y-4'>
+				<div class='flex justify-between border-b border-gray-100 pb-2'>
+					<dt class='text-gray-500 font-medium'>Established</dt>
+					<dd class='font-bold text-gray-900'>{casino.established}</dd>
+				</div>
+				<div class='flex justify-between border-b border-gray-100 pb-2'>
+					<dt class='text-gray-500 font-medium'>Owner</dt>
+					<dd class='font-bold text-gray-900 text-right max-w-[60%]'>
+						{casino.owner}
+					</dd>
+				</div>
+				<div class='flex justify-between border-b border-gray-100 pb-2'>
+					<dt class='text-gray-500 font-medium'>License</dt>
+					<dd class='font-bold text-gray-900'>{casino.license}</dd>
+				</div>
+				<div class='flex justify-between border-b border-gray-100 pb-2'>
+					<dt class='text-gray-500 font-medium'>Payout Speed</dt>
+					<dd class='font-bold text-green-600'>
+						{casino.payout_speed_minutes} Minutes
+					</dd>
+				</div>
+				<div class='flex justify-between'>
+					<dt class='text-gray-500 font-medium'>Min Deposit</dt>
+					<dd class='font-bold text-gray-900'>$20</dd>
+				</div>
+			</dl>
+		</div>
+	)
+}

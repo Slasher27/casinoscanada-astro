@@ -1,49 +1,84 @@
 ---
+// src/layouts/ReviewLayout.astro
 import BaseLayout from './BaseLayout.astro';
 import SidebarCasinos from '../components/ui/SidebarCasinos.astro';
+import CasinoHero from '../components/reviews/CasinoHero.astro';
+import CasinoSpecs from '../components/reviews/CasinoSpecs.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+
+// 1. Define the Heading Interface explicitly
+interface Heading {
+	depth: number;
+	slug: string;
+	text: string;
+}
 
 interface Props {
-	frontmatter: any; // The MDX data
-	headings?: { depth: number; slug: string; text: string }[]; // For TOC
+	frontmatter: any;
+	headings?: Heading[]; // Use the defined type here
 }
 
 const { frontmatter, headings } = Astro.props;
+const currentCasinoId = frontmatter.casinoId || frontmatter.id || '';
+const breadcrumbs = [
+	{ text: 'Reviews', href: '/reviews' },
+	{ text: frontmatter.title.split(':')[0], href: Astro.url.pathname },
+];
 ---
 
 <BaseLayout title={frontmatter.title} description={frontmatter.metaDescription}>
-	<div class='max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12'>
-		<main class='lg:col-span-8'>
-			<slot />
-		</main>
+	<div class='container mx-auto px-4 py-8'>
+		<div class='mb-6'>
+			<Breadcrumbs items={breadcrumbs} />
+		</div>
+		{
+			currentCasinoId && (
+				<CasinoHero casinoId={currentCasinoId} seoTitle={frontmatter.title} />
+			)
+		}
 
-		<aside class='lg:col-span-4 space-y-8'>
-			<div class='sticky top-8 space-y-8'>
-				<SidebarCasinos />
+		<div class='grid grid-cols-1 lg:grid-cols-12 gap-12 mt-8'>
+			<main
+				class='lg:col-span-8 prose prose-lg max-w-none prose-headings:font-bold prose-a:text-blue-600 prose-img:rounded-xl'
+			>
+				<slot />
+			</main>
 
-				{
-					headings && headings.length > 0 && (
-						<div class='bg-gray-50 rounded-xl p-6 border border-gray-200'>
-							<h4 class='font-bold text-gray-900 mb-4 text-sm uppercase'>
-								On This Page
-							</h4>
-							<ul class='space-y-2 text-sm'>
-								{headings
-									.filter((h) => h.depth <= 2)
-									.map((h) => (
-										<li>
+			<aside class='lg:col-span-4 space-y-8'>
+				<div class='sticky top-8 space-y-8'>
+					{/* Casino Specs Widget */}
+					{currentCasinoId && <CasinoSpecs casinoId={currentCasinoId} />}
+
+					{/* Table of Contents */}
+					{
+						headings && headings.length > 0 && (
+							<div class='bg-gray-50 rounded-xl p-6 border border-gray-200'>
+								<h3 class='font-bold text-gray-900 mb-4 text-sm uppercase tracking-wider'>
+									On this page
+								</h3>
+								<ul class='space-y-3'>
+									{/* FIX: Explicitly typed (heading: Heading) here */}
+									{headings.map((heading: Heading) => (
+										<li
+											class={`text-sm leading-snug ${heading.depth === 2 ? 'font-bold text-gray-800' : 'pl-4 text-gray-500'}`}
+										>
 											<a
-												href={`#${h.slug}`}
-												class='text-gray-600 hover:text-blue-600 transition-colors'
+												href={`#${heading.slug}`}
+												class='hover:text-red-600 transition-colors block'
 											>
-												{h.text}
+												{heading.text}
 											</a>
 										</li>
 									))}
-							</ul>
-						</div>
-					)
-				}
-			</div>
-		</aside>
+								</ul>
+							</div>
+						)
+					}
+
+					{/* Similar Casinos Widget */}
+					<SidebarCasinos excludeId={currentCasinoId} />
+				</div>
+			</aside>
+		</div>
 	</div>
 </BaseLayout>

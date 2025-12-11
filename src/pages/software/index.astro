@@ -1,0 +1,56 @@
+---
+// src/pages/software/index.astro
+import ListingLayout from '../../layouts/ListingLayout.astro';
+import { db } from '../../db/client';
+
+const providers = db
+	.prepare(
+		`
+    SELECT sp.id, sp.name, sp.logo_url, COUNT(s.slug) as game_count 
+    FROM software_providers sp
+    LEFT JOIN slots s ON sp.id = s.provider_id
+    GROUP BY sp.id
+`
+	)
+	.all() as any[];
+---
+
+<ListingLayout
+	title='Casino Software Providers | Top Game Studios'
+	description='Browse the best online casino software providers. Find top rated casinos for NetEnt, Pragmatic Play, and more.'
+	heroTitle='Game Providers'
+	heroDescription="The world's best casino game studios. We review the software to ensure fairness and high RTP."
+	breadcrumbs={[{ text: 'Software', href: '/software' }]}
+>
+	<div class='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
+		{
+			providers.map((provider) => (
+				<a
+					href={`/software/${provider.id}`}
+					class='group bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 flex flex-col items-center text-center'
+				>
+					<div class='w-24 h-24 mb-4 flex items-center justify-center grayscale group-hover:grayscale-0 transition-all duration-300'>
+						<img
+							src={provider.logo_url}
+							alt={provider.name}
+							class='max-w-full max-h-full object-contain rounded-full'
+							loading='lazy'
+							onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+						/>
+						<div class='hidden w-16 h-16 bg-gray-100 rounded-full items-center justify-center text-xl font-bold text-gray-400'>
+							{provider.name.charAt(0)}
+						</div>
+					</div>
+
+					<h2 class='font-bold text-gray-900 text-lg group-hover:text-blue-600 transition-colors'>
+						{provider.name}
+					</h2>
+
+					<span class='text-sm text-gray-500 mt-1'>
+						{provider.game_count} Games Listed
+					</span>
+				</a>
+			))
+		}
+	</div>
+</ListingLayout>

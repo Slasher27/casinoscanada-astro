@@ -1,0 +1,73 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import Container from '../../components/common/Container.astro';
+
+// 1. Fetch all guides and sort by newest first
+const guides = (await getCollection('guides')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const breadcrumbs = [{ text: 'Guides', href: '/guides' }];
+---
+
+<BaseLayout
+	title='Casino Guides & Strategies | Casinos Canada'
+	description='Learn how to play smarter with our expert casino guides. Banking tips, game strategies, and bonus explanations.'
+>
+	<Container>
+		<div class='mb-8'>
+			<Breadcrumbs items={breadcrumbs} />
+		</div>
+
+		<div class='text-center mb-16'>
+			<h1
+				class='text-4xl md:text-5xl font-black mb-6 tracking-tight text-slate-900'
+			>
+				Casino <span class='text-red-600'>Guides</span> & Strategies
+			</h1>
+			<p class='text-xl text-gray-600 max-w-2xl mx-auto'>
+				Master the games before you play. Our expert guides cover everything
+				from fast payouts to wagering requirements.
+			</p>
+		</div>
+
+		<div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
+			{
+				guides.map((guide) => (
+					<a
+						href={`/guides/${guide.slug}`}
+						class='group no-underline flex h-full'
+					>
+						<article class='flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:border-red-200 transition-all duration-300 w-full'>
+							<div class='h-48 bg-slate-100 flex items-center justify-center group-hover:bg-red-50 transition-colors'>
+								<span class='text-6xl'>📚</span>
+							</div>
+
+							<div class='p-8 flex-grow flex flex-col'>
+								<div class='mb-4 flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-wider'>
+									<span>{guide.data.author}</span>
+									<span>•</span>
+									<span>{guide.data.pubDate.toLocaleDateString('en-CA')}</span>
+								</div>
+
+								<h2 class='text-2xl font-bold text-gray-900 mb-3 group-hover:text-red-600 transition-colors leading-tight'>
+									{guide.data.title}
+								</h2>
+
+								<p class='text-gray-600 line-clamp-3 mb-6 flex-grow'>
+									{guide.data.metaDescription}
+								</p>
+
+								<span class='text-red-600 font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all'>
+									Read Guide <span class='text-lg'>→</span>
+								</span>
+							</div>
+						</article>
+					</a>
+				))
+			}
+		</div>
+	</Container>
+</BaseLayout>
