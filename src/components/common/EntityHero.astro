@@ -24,26 +24,35 @@ const {
 	stats = [],
 	variant = 'standard',
 } = Astro.props;
+
+// Generate unique ID for accessibility
+const heroId = `hero-${title.toLowerCase().replace(/\s+/g, '-')}`;
 ---
 
 <header
 	class={`relative bg-slate-900 rounded-3xl p-6 md:p-8 mb-10 text-white shadow-xl overflow-hidden min-h-[340px] flex ${variant === 'game' ? 'items-end' : 'items-center'}`}
+	role="banner"
+	aria-labelledby={heroId}
 >
 	<!-- 1. Background Layer -->
 	{
 		variant === 'standard' ? (
 			<>
 				{/* Abstract Blurs for Standard Variant */}
-				<div class='absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 pointer-events-none' />
-				<div class='absolute bottom-0 left-0 w-48 h-48 bg-blue-500 opacity-10 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2 pointer-events-none' />
+				<div class='absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 pointer-events-none' aria-hidden="true" />
+				<div class='absolute bottom-0 left-0 w-48 h-48 bg-blue-500 opacity-10 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2 pointer-events-none' aria-hidden="true" />
 			</>
 		) : (
-			<div class='absolute inset-0 z-0'>
+			<div class='absolute inset-0 z-0' aria-hidden="true">
 				{/* Game Variant Background */}
 				{imageUrl && (
 					<img
 						src={imageUrl}
 						alt=''
+						width="1200"
+						height="675"
+						loading="eager"
+						decoding="async"
 						class='w-full h-full object-cover opacity-30 blur-sm scale-105'
 					/>
 				)}
@@ -62,12 +71,17 @@ const {
 				<div
 					class={`flex-shrink-0 bg-white shadow-2xl flex items-center justify-center overflow-hidden
             ${variant === 'standard' ? 'w-28 h-28 md:w-32 md:h-32 rounded-2xl p-1' : 'w-32 h-32 rounded-2xl border-4 border-slate-800'}`}
+					role="img"
+					aria-label={`${title} logo`}
 				>
 					<img
 						src={logoUrl || imageUrl}
 						alt={`${title} logo`}
+						width="128"
+						height="128"
+						loading="eager"
+						decoding="async"
 						class='max-w-full max-h-full object-contain rounded-xl'
-						onerror="this.style.display='none'"
 					/>
 				</div>
 			)
@@ -79,6 +93,7 @@ const {
 		>
 			<div>
 				<h1
+					id={heroId}
 					class='text-2xl md:text-4xl font-black tracking-tight mb-2 leading-tight drop-shadow-lg'
 				>
 					{title}
@@ -92,27 +107,42 @@ const {
 				}
 			</div>
 
-			<!-- Stats Grid -->
+			<!-- Stats Grid (Semantic Data List) -->
 			{
 				stats.length > 0 && (
-					<div class='flex flex-wrap justify-center md:justify-start gap-3 text-xs md:text-sm font-bold'>
+					<dl class='flex flex-wrap justify-center md:justify-start gap-3 text-xs md:text-sm font-bold' role="list" aria-label="Key statistics">
 						{stats.map((stat) => (
-							<div class='bg-slate-800/90 border border-slate-700/50 px-3 py-1.5 rounded-lg flex items-center gap-2 backdrop-blur-sm'>
-								{stat.icon && <span>{stat.icon}</span>}
-								<span class='text-slate-300 uppercase text-[10px] md:text-xs tracking-wide mr-1'>
+							<div class='bg-slate-800/90 border border-slate-700/50 px-3 py-1.5 rounded-lg flex items-center gap-2 backdrop-blur-sm' role="listitem">
+								{stat.icon && <span aria-hidden="true">{stat.icon}</span>}
+								<dt class='text-slate-300 uppercase text-[10px] md:text-xs tracking-wide mr-1'>
 									{stat.label}:
-								</span>
-								<span class={stat.color || 'text-white'}>{stat.value ?? 'N/A'}</span>
+								</dt>
+								<dd class={stat.color || 'text-white'}>{stat.value ?? 'N/A'}</dd>
 							</div>
 						))}
-					</div>
+					</dl>
 				)
 			}
 		</div>
 
 		<!-- C. Action Slot (CTA Box) -->
-		<div class='flex-shrink-0 w-full md:w-auto mt-4 md:mt-0'>
+		<div class='flex-shrink-0 w-full md:w-auto mt-4 md:mt-0' role="complementary" aria-label="Call to action">
 			<slot name='action' />
 		</div>
 	</div>
 </header>
+
+<style>
+	/* Gracefully hide broken images */
+	img[alt] {
+		position: relative;
+	}
+
+	img[alt]:after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+		border-radius: inherit;
+	}
+</style>
