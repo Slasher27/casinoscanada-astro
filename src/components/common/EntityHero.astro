@@ -10,8 +10,8 @@ interface Statistic {
 interface Props {
 	title: string;
 	subtitle?: string;
-	logoUrl?: string; // For Casinos/Software
-	imageUrl?: string; // For Slots (background usage)
+	logoUrl?: string | null; // For Casinos/Software
+	imageUrl?: string | null; // For Slots (background usage)
 	stats?: Statistic[];
 	variant?: 'standard' | 'game'; // 'game' uses imageUrl as background
 }
@@ -61,12 +61,12 @@ const {
 			(logoUrl || imageUrl) && (
 				<div
 					class={`flex-shrink-0 bg-white shadow-2xl flex items-center justify-center overflow-hidden
-            ${variant === 'standard' ? 'w-28 h-28 md:w-32 md:h-32 rounded-2xl p-4' : 'w-32 h-32 rounded-2xl border-4 border-slate-800'}`}
+            ${variant === 'standard' ? 'w-28 h-28 md:w-32 md:h-32 rounded-2xl p-1' : 'w-32 h-32 rounded-2xl border-4 border-slate-800'}`}
 				>
 					<img
 						src={logoUrl || imageUrl}
 						alt={`${title} logo`}
-						class='max-w-full max-h-full object-contain'
+						class='max-w-full max-h-full object-contain rounded-xl'
 						onerror="this.style.display='none'"
 					/>
 				</div>
