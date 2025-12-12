@@ -174,7 +174,7 @@
                         <a href={casino.website_url} class="block w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-md transform hover:-translate-y-0.5 transition-all text-sm uppercase tracking-wide">
                             Play Now
                         </a>
-                        <a href={`/reviews/${casino.id}-casino`} class="inline-block mt-3 text-xs font-bold text-gray-500 hover:text-slate-900 hover:underline">Read Review</a>
+                        <a href={`/reviews/${casino.id}-casino/`} class="inline-block mt-3 text-xs font-bold text-gray-500 hover:text-slate-900 hover:underline">Read Review</a>
                     </div>
                 </div>
             {/if}

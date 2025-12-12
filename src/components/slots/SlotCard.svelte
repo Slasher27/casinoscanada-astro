@@ -33,7 +33,7 @@
 
         <!-- Play Overlay (Optional, enhances "Game" feel) -->
         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-            <a href={`/slots/${slot.slug}`} class="bg-white text-slate-900 rounded-full px-4 py-2 shadow-lg transform scale-90 group-hover:scale-100 transition-transform flex items-center gap-2 font-bold text-xs uppercase tracking-wide pointer-events-auto hover:bg-red-50 hover:text-red-700">
+            <a href={`/slots/${slot.slug}/`} class="bg-white text-slate-900 rounded-full px-4 py-2 shadow-lg transform scale-90 group-hover:scale-100 transition-transform flex items-center gap-2 font-bold text-xs uppercase tracking-wide pointer-events-auto hover:bg-red-50 hover:text-red-700">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
                 </svg>
@@ -45,7 +45,7 @@
     <!-- Body -->
     <div class='p-4 flex-col flex flex-grow'>
       <h3 class='font-bold text-slate-900 leading-tight mb-2 group-hover:text-red-600 transition-colors'>
-        <a href={`/slots/${slot.slug}`} class="no-underline">
+        <a href={`/slots/${slot.slug}/`} class="no-underline">
           {slot.title}
         </a>
       </h3>
@@ -63,7 +63,7 @@
     </div>
   
     <!-- Footer Link -->
-    <a href={`/slots/${slot.slug}`} class="block bg-gray-50 hover:bg-red-600 hover:text-white text-center py-2 text-xs font-bold uppercase tracking-wide text-gray-500 transition-colors border-t border-gray-100">
+    <a href={`/slots/${slot.slug}/`} class="block bg-gray-50 hover:bg-red-600 hover:text-white text-center py-2 text-xs font-bold uppercase tracking-wide text-gray-500 transition-colors border-t border-gray-100">
         Play Demo
     </a>
   

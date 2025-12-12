@@ -107,7 +107,7 @@
                                 RTP {casino.payout_ratio}%
                             </span>
                         </div>
-                        <a href={`/reviews/${casino.id}-casino`} class="text-sm text-blue-600 font-bold hover:underline">
+                        <a href={`/reviews/${casino.id}-casino/`} class="text-sm text-blue-600 font-bold hover:underline">
                             Read Review &rarr;
                         </a>
                     </div>
@@ -164,7 +164,7 @@
                         />
                     </div>
                     <div>
-                        <a href={`/reviews/${casino.id}-casino`} class="font-bold text-xl text-slate-900 hover:text-blue-600 transition-colors">
+                        <a href={`/reviews/${casino.id}-casino/`} class="font-bold text-xl text-slate-900 hover:text-blue-600 transition-colors">
                             {casino.name}
                         </a>
                         <div class="flex items-center gap-2 mt-1">
@@ -219,7 +219,7 @@
                     >
                         Play Now
                     </a>
-                    <a href={`/reviews/${casino.id}-casino`} class="text-xs font-bold text-gray-500 hover:text-gray-800 hover:underline">
+                    <a href={`/reviews/${casino.id}-casino/`} class="text-xs font-bold text-gray-500 hover:text-gray-800 hover:underline">
                         View Review
                     </a>
                 </div>
