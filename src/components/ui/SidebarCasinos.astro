@@ -6,20 +6,27 @@ interface Props {
 	excludeId?: string; // e.g. 'bitstarz' (so we don't show it twice)
 }
 
+interface SidebarCasino {
+	id: string;
+	name: string;
+	logo_url: string | null;
+	bonus_offer: string | null;
+	payout_speed_minutes: number | null;
+}
+
 const { excludeId = '' } = Astro.props;
 
 // Query: Get 5 casinos, excluding the current one
 const topCasinos = db
 	.prepare(
 		`
-  SELECT id, name, logo_url, bonus_offer, payout_speed_minutes 
-  FROM casinos 
+  SELECT id, name, logo_url, bonus_offer, payout_speed_minutes
+  FROM casinos
   WHERE id != ?
   LIMIT 5
 `
 	)
-	.all(excludeId) as any[];
-// Note: We use 'any[]' for brevity, but you can define an Interface like we did for slots
+	.all(excludeId) as SidebarCasino[];
 ---
 
 <div

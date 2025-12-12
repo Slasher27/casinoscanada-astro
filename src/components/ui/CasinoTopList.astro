@@ -39,7 +39,7 @@ if (casinoIds.length > 0) {
         FROM casino_payment_methods cpm
         JOIN payment_methods pm ON cpm.method_id = pm.id
         WHERE cpm.casino_id IN (${placeholders})
-    `).all(...casinoIds) as any[];
+    `).all(...casinoIds) as (Entity & { casino_id: string, min_deposit: number | null })[];
 
     // Fetch Top Software Providers
     allSoftware = db.prepare(`
@@ -47,7 +47,7 @@ if (casinoIds.length > 0) {
         FROM casino_software cs
         JOIN software_providers sp ON cs.provider_id = sp.id
         WHERE cs.casino_id IN (${placeholders})
-    `).all(...casinoIds) as any[];
+    `).all(...casinoIds) as (Entity & { casino_id: string })[];
 }
 
 // 4. Transform & Organize

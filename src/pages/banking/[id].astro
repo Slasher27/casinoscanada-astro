@@ -1,39 +1,61 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { db } from '../../db/client';
+import { getAllPaymentMethods, getCasinosByPaymentMethod } from '../../db/queries';
+import type { PaymentMethod } from '../../types/database';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 
 // 1. Generate Static Paths for all methods
 export async function getStaticPaths() {
-	const methods = db.prepare('SELECT * FROM payment_methods').all();
-	return methods.map((m: any) => ({
+	const methods = getAllPaymentMethods();
+	return methods.map((m) => ({
 		params: { id: m.id },
 		props: { method: m },
 	}));
 }
 
+interface Props {
+	method: PaymentMethod;
+}
+
 const { method } = Astro.props;
 
 // 2. Fetch Casinos that accept this method
-const acceptingCasinos = db
-	.prepare(
-		`
-    SELECT c.id, c.name, c.logo_url, c.bonus_offer, c.payout_speed_minutes
-    FROM casinos c
-    JOIN casino_payment_methods cpm ON c.id = cpm.casino_id
-    WHERE cpm.method_id = ?
-`
-	)
-	.all(method.id) as any[];
+const acceptingCasinos = getCasinosByPaymentMethod(method.id, 10);
 
 const pros = JSON.parse(method.pros || '[]');
 const cons = JSON.parse(method.cons || '[]');
+
+// 3. Schema.org - Product schema for payment method
+import { SITE_URL } from '../../config/constants';
+
+const schema = {
+	'@context': 'https://schema.org',
+	'@type': 'Service',
+	name: method.name,
+	description: method.description || `${method.name} payment method for online casinos in Canada`,
+	provider: {
+		'@type': 'Organization',
+		name: 'Casinos Canada',
+	},
+	areaServed: 'CA',
+	offers: {
+		'@type': 'Offer',
+		price: method.min_deposit || 0,
+		priceCurrency: 'CAD',
+	},
+};
 ---
 
 <BaseLayout
 	title={`Best ${method.name} Casinos Canada | Fast Payouts (2024)`}
 	description={`Find the best online casinos in Canada that accept ${method.name}. Fast withdrawals, low fees, and secure transactions.`}
 >
+	<!-- Schema.org JSON-LD -->
+	<script
+		type='application/ld+json'
+		slot='head'
+		set:html={JSON.stringify(schema)}
+	/>
     <div class="container mx-auto px-4 pt-6 pb-12">
         <Breadcrumbs
             items={[

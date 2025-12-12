@@ -3,7 +3,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { db } from '../../db/client';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
-import SlotHero from '../../components/slots/SlotHero.astro';
+import EntityHero from '../../components/common/EntityHero.astro'; // Direct Import
 import SlotSpecs from '../../components/slots/SlotSpecs.astro';
 import SidebarCasinos from '../../components/ui/SidebarCasinos.astro';
 
@@ -110,11 +110,25 @@ const schema = {
 		/>
 
 		<div class='mt-6'>
-			<SlotHero
+			<EntityHero
 				title={slot.title}
-				provider={slot.provider_name}
+				subtitle={`Video Slot by ${slot.provider_name}`}
 				imageUrl={slot.image_url}
-				rtp={slot.rtp}
+				variant='game'
+				stats={[
+					{
+						label: 'RTP',
+						value: `${slot.rtp}%`,
+						icon: '📈',
+						color: 'text-green-400',
+					},
+					{
+						label: 'Mode',
+						value: 'Free Demo',
+						icon: '⭐',
+						color: 'text-amber-400',
+					},
+				]}
 			/>
 		</div>
 

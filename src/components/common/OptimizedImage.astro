@@ -1,0 +1,83 @@
+---
+/**
+ * OptimizedImage Component
+ *
+ * Smart image component that:
+ * - Uses Astro's Image component for local images (automatic optimization)
+ * - Falls back to <img> for external URLs (with best practices)
+ * - Provides consistent loading, error handling, and alt text patterns
+ *
+ * Usage:
+ * <OptimizedImage src="/images/logo.png" alt="Logo" width={200} height={100} />
+ * <OptimizedImage src={casino.logo_url} alt={casino.name} external />
+ */
+
+import { Image } from 'astro:assets';
+
+interface Props {
+	src: string | null | undefined;
+	alt: string;
+	width?: number;
+	height?: number;
+	class?: string;
+	loading?: 'lazy' | 'eager';
+	external?: boolean; // Set true for external URLs (skips Astro optimization)
+	fallback?: string; // Fallback image if src fails
+	objectFit?: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
+}
+
+const {
+	src,
+	alt,
+	width,
+	height,
+	class: className = '',
+	loading = 'lazy',
+	external = false,
+	fallback,
+	objectFit = 'contain',
+} = Astro.props;
+
+// Determine if the image is external (starts with http:// or https://)
+const isExternalUrl = src && (src.startsWith('http://') || src.startsWith('https://'));
+const shouldUseNativeImg = external || isExternalUrl;
+
+// Build error handler for fallback
+const errorHandler = fallback
+	? `this.onerror=null; this.src='${fallback}';`
+	: "this.style.display='none';";
+
+// Build style for object-fit
+const objectFitClass = {
+	contain: 'object-contain',
+	cover: 'object-cover',
+	fill: 'object-fill',
+	none: 'object-none',
+	'scale-down': 'object-scale-down',
+}[objectFit];
+---
+
+{
+	!src || shouldUseNativeImg ? (
+		<img
+			src={src || fallback || ''}
+			alt={alt}
+			width={width}
+			height={height}
+			class:list={[className, objectFitClass]}
+			loading={loading}
+			onerror={errorHandler}
+		/>
+	) : (
+		<Image
+			src={src}
+			alt={alt}
+			width={width || 800}
+			height={height || 600}
+			class:list={[className, objectFitClass]}
+			loading={loading}
+			format="webp"
+			quality={85}
+		/>
+	)
+}

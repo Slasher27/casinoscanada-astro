@@ -1,19 +1,9 @@
 import type { APIRoute } from 'astro';
-import { db } from '../../db/client';
+import { getSearchIndex } from '../../db/queries';
 
 export const GET: APIRoute = async () => {
-	// 1. Fetch Casinos
-	const casinos = db.prepare('SELECT name, id FROM casinos').all() as any[];
-
-	// 2. Fetch Slots
-	const slots = db
-		.prepare('SELECT title, slug, provider_id FROM slots')
-		.all() as any[];
-
-	// 3. Fetch Payments
-	const payments = db
-		.prepare('SELECT name, id FROM payment_methods')
-		.all() as any[];
+	// Fetch search index data
+	const { casinos, slots, payments } = getSearchIndex();
 
 	// 4. Transform into a unified index
 	const searchIndex = [

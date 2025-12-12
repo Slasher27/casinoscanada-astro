@@ -3,72 +3,68 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import BonusFilter from '../../components/interactive/BonusFilter.svelte';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import Container from '../../components/common/Container.astro';
-import { db } from '../../db/client';
+import {
+	getTopCasinos,
+	getPaymentMethodsForCasinos,
+	getSoftwareProvidersForCasinos,
+	calculateMinDeposit,
+	groupByCasinoId,
+} from '../../db/queries';
+import { SITE_URL } from '../../config/constants';
 
 const breadcrumbs = [{ text: 'Bonuses', href: '/bonuses' }];
 
-// 1. Fetch Casinos
-const casinos = db
-	.prepare('SELECT * FROM casinos ORDER BY payout_ratio DESC')
-	.all() as any[];
+// Fetch casinos ordered by payout ratio (best first)
+const casinos = getTopCasinos(100); // Get top 100 casinos
 const casinoIds = casinos.map((c) => c.id);
 
-// 2. Fetch Relations
-let allPayments: any[] = [];
-let allSoftware: any[] = [];
+// Fetch all relations in bulk
+const allPayments = getPaymentMethodsForCasinos(casinoIds);
+const allSoftware = getSoftwareProvidersForCasinos(casinoIds);
 
-if (casinoIds.length > 0) {
-	const placeholders = casinoIds.map(() => '?').join(',');
-
-	// Fetch Payments (Include min_deposit for calculation)
-	allPayments = db
-		.prepare(
-			`
-        SELECT cpm.casino_id, pm.id, pm.name, pm.logo_url, pm.min_deposit
-        FROM casino_payment_methods cpm
-        JOIN payment_methods pm ON cpm.method_id = pm.id
-        WHERE cpm.casino_id IN (${placeholders})
-    `
-		)
-		.all(...casinoIds) as any[];
-
-	// Fetch Software
-	allSoftware = db
-		.prepare(
-			`
-        SELECT cs.casino_id, sp.id, sp.name, sp.logo_url
-        FROM casino_software cs
-        JOIN software_providers sp ON cs.provider_id = sp.id
-        WHERE cs.casino_id IN (${placeholders})
-    `
-		)
-		.all(...casinoIds) as any[];
-}
-
-// 3. Enrich Data
+// Enrich casinos with relationships and calculated values
 const enrichedCasinos = casinos.map((casino) => {
-	const methods = allPayments.filter((p) => p.casino_id === casino.id);
-	const providers = allSoftware.filter((s) => s.casino_id === casino.id);
-
-	// Calculate lowest deposit
-	const minDeposit =
-		methods.length > 0
-			? Math.min(...methods.map((m) => m.min_deposit || 20))
-			: 20;
+	const methods = groupByCasinoId(allPayments, casino.id);
+	const providers = groupByCasinoId(allSoftware, casino.id);
 
 	return {
 		...casino,
-		payments: methods, // Pass all methods in case we want to show more
+		payments: methods,
 		software: providers,
-		min_deposit: minDeposit,
+		min_deposit: calculateMinDeposit(methods, 20),
 	};
 });
+
+// Schema.org - CollectionPage for Bonuses
+const schema = {
+	'@context': 'https://schema.org',
+	'@type': 'CollectionPage',
+	name: 'Best Casino Bonuses Canada',
+	description: 'Compare the biggest casino bonuses in Canada. We track wagering requirements, free spins, and deposit match offers.',
+	url: `${SITE_URL}/bonuses/`,
+	mainEntity: {
+		'@type': 'ItemList',
+		numberOfItems: enrichedCasinos.length,
+		itemListElement: enrichedCasinos.slice(0, 10).map((casino, index) => ({
+			'@type': 'ListItem',
+			position: index + 1,
+			name: casino.name,
+			url: `${SITE_URL}/reviews/${casino.id}-casino/`,
+		})),
+	},
+};
 ---
 
 <BaseLayout
 	title='Best Casino Bonuses Canada (2025) - Free Spins & Matches'
 	description='Compare the biggest casino bonuses in Canada. We track wagering requirements, free spins, and deposit match offers.'
 >
+	<!-- Schema.org JSON-LD -->
+	<script
+		type='application/ld+json'
+		slot='head'
+		set:html={JSON.stringify(schema)}
+	/>
 	<Container>
 		<div class='mb-6'>
 			<Breadcrumbs items={breadcrumbs} />

@@ -1,0 +1,118 @@
+---
+// src/components/common/EntityHero.astro
+interface Statistic {
+	label: string;
+	value: string | number;
+	icon?: string;
+	color?: string; // e.g. 'text-green-400', 'text-yellow-400'
+}
+
+interface Props {
+	title: string;
+	subtitle?: string;
+	logoUrl?: string; // For Casinos/Software
+	imageUrl?: string; // For Slots (background usage)
+	stats?: Statistic[];
+	variant?: 'standard' | 'game'; // 'game' uses imageUrl as background
+}
+
+const {
+	title,
+	subtitle,
+	logoUrl,
+	imageUrl,
+	stats = [],
+	variant = 'standard',
+} = Astro.props;
+---
+
+<header
+	class={`relative bg-slate-900 rounded-3xl p-6 md:p-8 mb-10 text-white shadow-xl overflow-hidden min-h-[340px] flex ${variant === 'game' ? 'items-end' : 'items-center'}`}
+>
+	<!-- 1. Background Layer -->
+	{
+		variant === 'standard' ? (
+			<>
+				{/* Abstract Blurs for Standard Variant */}
+				<div class='absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 pointer-events-none' />
+				<div class='absolute bottom-0 left-0 w-48 h-48 bg-blue-500 opacity-10 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2 pointer-events-none' />
+			</>
+		) : (
+			<div class='absolute inset-0 z-0'>
+				{/* Game Variant Background */}
+				{imageUrl && (
+					<img
+						src={imageUrl}
+						alt=''
+						class='w-full h-full object-cover opacity-30 blur-sm scale-105'
+					/>
+				)}
+				<div class='absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/90 to-transparent' />
+			</div>
+		)
+	}
+
+	<!-- 2. Content Container -->
+	<div
+		class='relative z-10 w-full flex flex-col md:flex-row items-center md:items-center gap-6 md:gap-8'
+	>
+		<!-- A. Logo / Thumbnail -->
+		{
+			(logoUrl || imageUrl) && (
+				<div
+					class={`flex-shrink-0 bg-white shadow-2xl flex items-center justify-center overflow-hidden
+            ${variant === 'standard' ? 'w-28 h-28 md:w-32 md:h-32 rounded-2xl p-4' : 'w-32 h-32 rounded-2xl border-4 border-slate-800'}`}
+				>
+					<img
+						src={logoUrl || imageUrl}
+						alt={`${title} logo`}
+						class='max-w-full max-h-full object-contain'
+						onerror="this.style.display='none'"
+					/>
+				</div>
+			)
+		}
+
+		<!-- B. Title & Stats -->
+		<div
+			class={`flex-grow text-center md:text-left space-y-3 ${variant === 'game' ? 'pb-2' : ''}`}
+		>
+			<div>
+				<h1
+					class='text-2xl md:text-4xl font-black tracking-tight mb-2 leading-tight drop-shadow-lg'
+				>
+					{title}
+				</h1>
+				{
+					subtitle && (
+						<p class='text-slate-400 text-sm font-medium uppercase tracking-wider'>
+							{subtitle}
+						</p>
+					)
+				}
+			</div>
+
+			<!-- Stats Grid -->
+			{
+				stats.length > 0 && (
+					<div class='flex flex-wrap justify-center md:justify-start gap-3 text-xs md:text-sm font-bold'>
+						{stats.map((stat) => (
+							<div class='bg-slate-800/90 border border-slate-700/50 px-3 py-1.5 rounded-lg flex items-center gap-2 backdrop-blur-sm'>
+								{stat.icon && <span>{stat.icon}</span>}
+								<span class='text-slate-300 uppercase text-[10px] md:text-xs tracking-wide mr-1'>
+									{stat.label}:
+								</span>
+								<span class={stat.color || 'text-white'}>{stat.value}</span>
+							</div>
+						))}
+					</div>
+				)
+			}
+		</div>
+
+		<!-- C. Action Slot (CTA Box) -->
+		<div class='flex-shrink-0 w-full md:w-auto mt-4 md:mt-0'>
+			<slot name='action' />
+		</div>
+	</div>
+</header>

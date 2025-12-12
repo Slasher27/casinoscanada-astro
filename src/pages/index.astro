@@ -8,12 +8,64 @@ import { getCollection } from 'astro:content';
 // Fetch only the 3 latest reviews for a "Recent Updates" section
 const allReviews = await getCollection('reviews');
 const latestReviews = allReviews.slice(0, 3);
+
+// Schema.org structured data for homepage
+const organizationSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'Organization',
+	name: 'Casinos Canada',
+	url: 'https://casinoscanada.online',
+	logo: 'https://casinoscanada.online/favicon.svg',
+	description: 'Independent reviews of online casinos for Canadian players. We test payout speeds, bonuses, and game fairness.',
+	sameAs: [
+		// Add social media profiles here when available
+		// 'https://twitter.com/casinoscanada',
+		// 'https://facebook.com/casinoscanada',
+	],
+	contactPoint: {
+		'@type': 'ContactPoint',
+		contactType: 'Customer Service',
+		areaServed: 'CA',
+		availableLanguage: ['English'],
+	},
+};
+
+const websiteSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'WebSite',
+	name: 'Casinos Canada',
+	url: 'https://casinoscanada.online',
+	description: 'Top-rated online casinos for Canadian players with honest reviews and fast payout testing.',
+	publisher: {
+		'@type': 'Organization',
+		name: 'Casinos Canada',
+	},
+	potentialAction: {
+		'@type': 'SearchAction',
+		target: {
+			'@type': 'EntryPoint',
+			urlTemplate: 'https://casinoscanada.online/?q={search_term_string}',
+		},
+		'query-input': 'required name=search_term_string',
+	},
+};
 ---
 
 <BaseLayout
 	title='Best Online Casinos in Canada (2025) | Honest Reviews'
 	description='Compare the top rated online casinos in Canada. We test payout speeds, bonuses, and licensing to ensure you play safely.'
 >
+	<!-- Schema.org JSON-LD -->
+	<script
+		type='application/ld+json'
+		slot='head'
+		set:html={JSON.stringify(organizationSchema)}
+	/>
+	<script
+		type='application/ld+json'
+		slot='head'
+		set:html={JSON.stringify(websiteSchema)}
+	/>
 	<section
 		class='bg-slate-900 text-white py-16 md:py-24 relative overflow-hidden'
 	>

@@ -1,6 +1,6 @@
 ---
 // src/components/reviews/CasinoSpecs.astro
-import { db } from '../../db/client';
+import { getCasinoById, getCasinoPaymentMethods, getLowestDepositMethod } from '../../db/queries';
 
 interface Props {
 	casinoId: string;
@@ -8,37 +8,10 @@ interface Props {
 
 const { casinoId } = Astro.props;
 
-// 1. Get General Specs
-const casino = db
-	.prepare('SELECT * FROM casinos WHERE id = ?')
-	.get(casinoId) as any;
-
-// 2. Get All Payment Methods (For List)
-const payments = db
-	.prepare(
-		`
-    SELECT pm.name, pm.logo_url 
-    FROM payment_methods pm
-    JOIN casino_payment_methods cpm ON pm.id = cpm.method_id
-    WHERE cpm.casino_id = ?
-`
-	)
-	.all(casinoId) as { name: string; logo_url: string }[];
-
-// 3. Find Lowest Min Deposit (Smart Calculation)
-const paymentStats = db
-	.prepare(
-		`
-	SELECT pm.name, pm.min_deposit
-	FROM payment_methods pm
-	JOIN casino_payment_methods cpm ON pm.id = cpm.method_id
-	WHERE cpm.casino_id = ?
-	AND pm.min_deposit IS NOT NULL
-	ORDER BY pm.min_deposit ASC
-	LIMIT 1
-`
-	)
-	.get(casinoId) as { name: string; min_deposit: number };
+// Fetch casino data and payment methods
+const casino = getCasinoById(casinoId);
+const payments = getCasinoPaymentMethods(casinoId);
+const paymentStats = getLowestDepositMethod(casinoId);
 
 const bestDeposit = paymentStats || { min_deposit: 20, name: 'Standard' };
 ---

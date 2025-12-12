@@ -1,4 +1,7 @@
 ---
+// src/components/slots/SlotHero.astro
+import EntityHero from '../common/EntityHero.astro';
+
 interface Props {
 	title: string;
 	provider: string;
@@ -9,69 +12,23 @@ interface Props {
 const { title, provider, imageUrl, rtp } = Astro.props;
 ---
 
-<header
-	class='relative bg-slate-900 rounded-3xl overflow-hidden mb-10 shadow-2xl min-h-[300px] flex items-end'
->
-	<!-- Background Image (Blurred) -->
-	<div class='absolute inset-0'>
-		<img
-			src={imageUrl}
-			alt=''
-			class='w-full h-full object-cover opacity-30 blur-sm scale-105'
-		/>
-		<div
-			class='absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-transparent'
-		>
-		</div>
-	</div>
-
-	<!-- Content -->
-	<div
-		class='relative z-10 p-8 w-full flex flex-col md:flex-row gap-6 items-end'
-	>
-		<!-- Thumbnail -->
-		<div
-			class='w-32 h-32 rounded-2xl overflow-hidden border-4 border-slate-800 shadow-xl flex-shrink-0 bg-slate-800'
-		>
-			<img src={imageUrl} alt={title} class='w-full h-full object-cover' />
-		</div>
-
-		<!-- Text Info -->
-		<div class='flex-grow pb-2'>
-			<div class='flex items-center gap-2 mb-2'>
-				<span
-					class='px-2 py-1 bg-blue-600 text-white text-xs font-bold rounded uppercase tracking-wide'
-				>
-					Video Slot
-				</span>
-				<span class='text-slate-400 text-sm font-medium'>by {provider}</span>
-			</div>
-
-			<h1
-				class='text-3xl md:text-5xl font-black text-white mb-4 leading-tight shadow-black drop-shadow-lg'
-			>
-				{title}
-			</h1>
-
-			<div class='flex gap-4 text-sm font-bold'>
-				<div
-					class='flex items-center gap-1.5 text-green-400 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700 backdrop-blur-sm'
-				>
-					<span>📈</span>
-					<span>{rtp}% RTP</span>
-				</div>
-				<div
-					class='flex items-center gap-1.5 text-amber-400 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700 backdrop-blur-sm'
-				>
-					<span>⭐</span>
-					<span>Free Demo</span>
-				</div>
-			</div>
-		</div>
-
-		<!-- Action (Mobile mainly, desktop has sidebar) -->
-		<div class='hidden md:block pb-2'>
-			<!-- Space for extra actions if needed -->
-		</div>
-	</div>
-</header>
+<EntityHero
+	title={title}
+	subtitle={`Video Slot by ${provider}`}
+	imageUrl={imageUrl}
+	variant='game'
+	stats={[
+		{
+			label: 'RTP',
+			value: `${rtp}%`,
+			icon: '📈',
+			color: 'text-green-400',
+		},
+		{
+			label: 'Mode',
+			value: 'Free Demo',
+			icon: '⭐',
+			color: 'text-amber-400',
+		},
+	]}
+/>

@@ -1,51 +1,47 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ComparisonEngine from '../components/interactive/ComparisonEngine.svelte';
-import { db } from '../db/client';
+import { getAllCasinos, getCasinosWithRelations } from '../db/queries';
+import { SITE_URL } from '../config/constants';
 
-// 1. Fetch All Data
-const casinos = db
-	.prepare('SELECT * FROM casinos ORDER BY name ASC')
-	.all() as any[];
-
-// 2. Fetch Relations
+// Fetch all casinos with their relationships (payments + software)
+const casinos = getAllCasinos();
 const casinoIds = casinos.map((c) => c.id);
-const placeholders = casinoIds.map(() => '?').join(',');
+const enrichedCasinos = getCasinosWithRelations(casinoIds);
 
-const allPayments = db
-	.prepare(
-		`
-    SELECT cpm.casino_id, pm.id, pm.name, pm.logo_url
-    FROM casino_payment_methods cpm
-    JOIN payment_methods pm ON cpm.method_id = pm.id
-    WHERE cpm.casino_id IN (${placeholders})
-`
-	)
-	.all(...casinoIds) as any[];
-
-const allSoftware = db
-	.prepare(
-		`
-    SELECT cs.casino_id, sp.id, sp.name, sp.logo_url
-    FROM casino_software cs
-    JOIN software_providers sp ON cs.provider_id = sp.id
-    WHERE cs.casino_id IN (${placeholders})
-`
-	)
-	.all(...casinoIds) as any[];
-
-// 3. Enrich Data structure for Client
-const enrichedCasinos = casinos.map((c) => ({
-	...c,
-	payments: allPayments.filter((p) => p.casino_id === c.id),
-	software: allSoftware.filter((s) => s.casino_id === c.id),
-}));
+// Schema.org - WebApplication for comparison tool
+const schema = {
+	'@context': 'https://schema.org',
+	'@type': 'WebApplication',
+	name: 'Casino Comparison Tool',
+	description: 'Compare the best online casinos in Canada side-by-side. Analyze bonuses, payout speeds, and game libraries to find your perfect match.',
+	url: `${SITE_URL}/compare/`,
+	applicationCategory: 'UtilityApplication',
+	operatingSystem: 'Web Browser',
+	offers: {
+		'@type': 'Offer',
+		price: '0',
+		priceCurrency: 'CAD',
+	},
+	featureList: [
+		'Side-by-side casino comparison',
+		'Compare bonuses and payout speeds',
+		'Filter by payment methods',
+		'Compare game libraries',
+	],
+};
 ---
 
 <BaseLayout
 	title='Casino Comparison Tool | Compare Bonuses & Speed'
 	description='Compare the best online casinos in Canada side-by-side. Analyze bonuses, payout speeds, and game libraries to find your perfect match.'
 >
+	<!-- Schema.org JSON-LD -->
+	<script
+		type='application/ld+json'
+		slot='head'
+		set:html={JSON.stringify(schema)}
+	/>
 	<!-- Hero / Header -->
 	<div class='container mx-auto px-4 pt-8 pb-12'>
 		<div

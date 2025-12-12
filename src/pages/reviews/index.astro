@@ -3,59 +3,18 @@ import { getCollection } from 'astro:content';
 import ListingLayout from '../../layouts/ListingLayout.astro';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import CasinoGridCard from '../../components/ui/CasinoGridCard.astro';
-import { db } from '../../db/client';
+import { getAllCasinos, getCasinosWithRelations } from '../../db/queries';
 
 // 1. Get all markdown reviews
 const reviews = await getCollection('reviews');
 
-// 2. Get all casino data (Enriched with Relations)
-const topCasinosRaw = db.prepare('SELECT * FROM casinos').all() as any[];
+// 2. Get all casino data with relationships
+const topCasinosRaw = getAllCasinos();
 const casinoIds = topCasinosRaw.map((c) => c.id);
-
-let allPayments: any[] = [];
-let allSoftware: any[] = [];
-
-if (casinoIds.length > 0) {
-	const placeholders = casinoIds.map(() => '?').join(',');
-
-	// Fetch Payments
-	allPayments = db
-		.prepare(
-			`
-        SELECT cpm.casino_id, pm.id, pm.name, pm.logo_url
-        FROM casino_payment_methods cpm
-        JOIN payment_methods pm ON cpm.method_id = pm.id
-        WHERE cpm.casino_id IN (${placeholders})
-    `
-		)
-		.all(...casinoIds) as any[];
-
-	// Fetch Software
-	allSoftware = db
-		.prepare(
-			`
-        SELECT cs.casino_id, sp.id, sp.name, sp.logo_url
-        FROM casino_software cs
-        JOIN software_providers sp ON cs.provider_id = sp.id
-        WHERE cs.casino_id IN (${placeholders})
-    `
-		)
-		.all(...casinoIds) as any[];
-}
+const enrichedCasinos = getCasinosWithRelations(casinoIds);
 
 // Map enriched data by ID for easy lookup
-const casinoMap = new Map(
-	topCasinosRaw.map((c) => {
-		return [
-			c.id,
-			{
-				...c,
-				payments: allPayments.filter((p) => p.casino_id === c.id),
-				software: allSoftware.filter((s) => s.casino_id === c.id),
-			},
-		];
-	})
-);
+const casinoMap = new Map(enrichedCasinos.map((c) => [c.id, c]));
 
 const breadcrumbs = [{ text: 'Casino Reviews', href: '/reviews/' }];
 

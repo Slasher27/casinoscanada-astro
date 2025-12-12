@@ -1,12 +1,30 @@
 ---
 import ListingLayout from '../../layouts/ListingLayout.astro';
-import { db } from '../../db/client';
+import { getAllPaymentMethods } from '../../db/queries';
+import { SITE_URL } from '../../config/constants';
 import PaymentMethodCard from '../../components/banking/PaymentMethodCard.astro';
 
-// 1. Fetch Methods
-const methods = db
-	.prepare('SELECT * FROM payment_methods ORDER BY name ASC')
-	.all();
+// Fetch all payment methods
+const methods = getAllPaymentMethods();
+
+// Schema.org - CollectionPage for Payment Methods
+const schema = {
+	'@context': 'https://schema.org',
+	'@type': 'CollectionPage',
+	name: 'Best Casino Payment Methods Canada',
+	description: 'Find the fastest and safest online casino payment methods in Canada. Compare fees, limits, and withdrawal times.',
+	url: `${SITE_URL}/banking/`,
+	mainEntity: {
+		'@type': 'ItemList',
+		numberOfItems: methods.length,
+		itemListElement: methods.map((method, index) => ({
+			'@type': 'ListItem',
+			position: index + 1,
+			name: method.name,
+			url: `${SITE_URL}/banking/${method.id}/`,
+		})),
+	},
+};
 ---
 
 <ListingLayout
@@ -16,6 +34,12 @@ const methods = db
 	heroDescription='Everything you need to know about banking at Canadian online casinos. Fast, secure, and fee-free options.'
 	breadcrumbs={[{ text: 'Banking', href: '/banking/' }]}
 >
+	<!-- Schema.org JSON-LD -->
+	<script
+		type='application/ld+json'
+		slot='head'
+		set:html={JSON.stringify(schema)}
+	/>
 	<!-- Method List -->
 	<div
 		class='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'

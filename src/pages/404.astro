@@ -1,0 +1,123 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/common/Container.astro';
+import { db } from '../db/client';
+import type { Casino } from '../types/database';
+
+// Fetch top 3 casinos to show as suggestions
+const topCasinos = db
+	.prepare('SELECT id, name, logo_url, bonus_offer FROM casinos ORDER BY payout_ratio DESC LIMIT 3')
+	.all() as Pick<Casino, 'id' | 'name' | 'logo_url' | 'bonus_offer'>[];
+---
+
+<BaseLayout
+	title="Page Not Found (404) | Casinos Canada"
+	description="The page you're looking for doesn't exist. Browse our top-rated Canadian casinos instead."
+>
+	<Container>
+		<div class="min-h-[70vh] flex items-center justify-center py-16">
+			<div class="max-w-2xl mx-auto text-center">
+				<!-- Error Icon -->
+				<div class="mb-8">
+					<div class="inline-flex items-center justify-center w-32 h-32 bg-red-100 rounded-full">
+						<svg class="w-16 h-16 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+						</svg>
+					</div>
+				</div>
+
+				<!-- Error Message -->
+				<h1 class="text-6xl md:text-8xl font-black text-slate-900 mb-4">
+					404
+				</h1>
+				<h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-4">
+					Page Not Found
+				</h2>
+				<p class="text-lg text-slate-600 mb-8 max-w-md mx-auto">
+					Looks like this page doesn't exist. Perhaps you're looking for one of our top-rated casinos instead?
+				</p>
+
+				<!-- Action Buttons -->
+				<div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+					<a
+						href="/"
+						class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-all hover:scale-105"
+					>
+						<svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+						</svg>
+						Back to Homepage
+					</a>
+					<button
+						onclick="window.history.back()"
+						class="inline-flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold py-3 px-8 rounded-lg border border-slate-300 transition-colors"
+					>
+						<svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+						</svg>
+						Go Back
+					</button>
+				</div>
+
+				<!-- Top Casinos Suggestions -->
+				<div class="bg-slate-50 border border-slate-200 rounded-2xl p-8">
+					<h3 class="text-xl font-bold text-slate-900 mb-6">
+						Or Check Out Our Top Casinos
+					</h3>
+					<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+						{topCasinos.map((casino) => (
+							<a
+								href={`/reviews/${casino.id}-casino/`}
+								class="group bg-white rounded-xl p-6 border border-slate-200 hover:border-red-400 hover:shadow-lg transition-all"
+							>
+								<div class="flex flex-col items-center text-center">
+									<div class="w-20 h-20 mb-4 flex items-center justify-center bg-slate-50 rounded-xl overflow-hidden">
+										<img
+											src={casino.logo_url || ''}
+											alt={`${casino.name} logo`}
+											class="w-full h-full object-contain"
+											loading="lazy"
+											onerror="this.style.display='none'"
+										/>
+									</div>
+									<h4 class="font-bold text-slate-900 mb-2 group-hover:text-red-600 transition-colors">
+										{casino.name}
+									</h4>
+									<p class="text-sm text-green-600 font-semibold">
+										{casino.bonus_offer}
+									</p>
+								</div>
+							</a>
+						))}
+					</div>
+				</div>
+
+				<!-- Quick Links -->
+				<div class="mt-8 pt-8 border-t border-slate-200">
+					<p class="text-sm text-slate-500 mb-4">Quick Links:</p>
+					<div class="flex flex-wrap justify-center gap-4">
+						<a href="/reviews/" class="text-sm font-semibold text-blue-600 hover:underline">
+							Casino Reviews
+						</a>
+						<span class="text-slate-300">•</span>
+						<a href="/slots/" class="text-sm font-semibold text-blue-600 hover:underline">
+							Free Slots
+						</a>
+						<span class="text-slate-300">•</span>
+						<a href="/banking/" class="text-sm font-semibold text-blue-600 hover:underline">
+							Banking Methods
+						</a>
+						<span class="text-slate-300">•</span>
+						<a href="/bonuses/" class="text-sm font-semibold text-blue-600 hover:underline">
+							Bonuses
+						</a>
+						<span class="text-slate-300">•</span>
+						<a href="/compare/" class="text-sm font-semibold text-blue-600 hover:underline">
+							Compare Casinos
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</Container>
+</BaseLayout>

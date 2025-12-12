@@ -2,6 +2,7 @@
 // src/pages/slots/index.astro
 import ListingLayout from '../../layouts/ListingLayout.astro';
 import { db } from '../../db/client';
+import { SITE_URL } from '../../config/constants';
 import SlotFilter from '../../components/slots/SlotFilter.svelte';
 
 // 1. Define Interface
@@ -18,12 +19,31 @@ interface SlotSql {
 const allSlots = db
 	.prepare(
 		`
-    SELECT slots.*, software_providers.name as provider_name 
-    FROM slots 
+    SELECT slots.*, software_providers.name as provider_name
+    FROM slots
     JOIN software_providers ON slots.provider_id = software_providers.id
 `
 	)
 	.all() as SlotSql[];
+
+// 3. Schema.org - CollectionPage for Slots
+const schema = {
+	'@context': 'https://schema.org',
+	'@type': 'CollectionPage',
+	name: 'Free Online Slots Canada',
+	description: 'Play the best free online slots in Canada. No download required. Try demos before playing for real money.',
+	url: `${SITE_URL}/slots/`,
+	mainEntity: {
+		'@type': 'ItemList',
+		numberOfItems: allSlots.length,
+		itemListElement: allSlots.slice(0, 10).map((slot, index) => ({
+			'@type': 'ListItem',
+			position: index + 1,
+			name: slot.title,
+			url: `${SITE_URL}/slots/${slot.slug}/`,
+		})),
+	},
+};
 ---
 
 <ListingLayout
@@ -33,6 +53,12 @@ const allSlots = db
 	heroDescription={`Try over ${allSlots.length} free demo slots before you play for real money.`}
 	breadcrumbs={[{ text: 'Slots', href: '/slots/' }]}
 >
+	<!-- Schema.org JSON-LD -->
+	<script
+		type='application/ld+json'
+		slot='head'
+		set:html={JSON.stringify(schema)}
+	/>
 	<!-- Svelte Filter App -->
 	<div class='min-h-[500px]'>
 		<SlotFilter client:load allSlots={allSlots} />

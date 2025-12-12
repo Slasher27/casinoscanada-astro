@@ -1,56 +1,132 @@
 ---
 // src/pages/software/index.astro
 import ListingLayout from '../../layouts/ListingLayout.astro';
-import { db } from '../../db/client';
+import { getSoftwareProvidersWithCounts } from '../../db/queries';
 
-const providers = db
-	.prepare(
-		`
-    SELECT sp.id, sp.name, sp.logo_url, COUNT(s.slug) as game_count 
-    FROM software_providers sp
-    LEFT JOIN slots s ON sp.id = s.provider_id
-    GROUP BY sp.id
-`
-	)
-	.all() as any[];
+// Fetch all software providers with their game counts
+const providers = getSoftwareProvidersWithCounts();
+
+// 2. SEO Schema (CollectionPage)
+const schema = {
+	'@context': 'https://schema.org',
+	'@type': 'CollectionPage',
+	name: 'Best Online Casino Software Providers in Canada',
+	description:
+		'Browse the top-rated casino software providers available in Canada. We review safe studios like NetEnt, Pragmatic Play, and Evolution Gaming.',
+	url: 'https://casinoscanada.online/software',
+	mainEntity: {
+		'@type': 'ItemList',
+		itemListElement: providers.map((provider, index) => ({
+			'@type': 'ListItem',
+			position: index + 1,
+			name: provider.name,
+			url: `https://casinoscanada.online/software/${provider.id}`,
+		})),
+	},
+};
+
+const breadcrumbs = [{ text: 'Software', href: '/software/' }];
 ---
 
 <ListingLayout
-	title='Casino Software Providers | Top Game Studios'
-	description='Browse the best online casino software providers. Find top rated casinos for NetEnt, Pragmatic Play, and more.'
-	heroTitle='Game Providers'
-	heroDescription="The world's best casino game studios. We review the software to ensure fairness and high RTP."
-	breadcrumbs={[{ text: 'Software', href: '/software' }]}
+	title='Best Casino Software Providers Canada (2025) | Top Studios'
+	description='Discover the best online casino software providers in Canada. Play free slots from top studios like NetEnt, Microgaming, and Pragmatic Play.'
+	breadcrumbs={breadcrumbs}
 >
+	<!-- Schema Injection -->
+	<script
+		type='application/ld+json'
+		set:html={JSON.stringify(schema)}
+		slot='head'
+	/>
+
+	<!-- Rich Hero Section (Matching Reviews Silo) -->
+	<div slot='hero' class='relative z-10 max-w-4xl mx-auto'>
+		<!-- GEO Context: Background Element -->
+		<div
+			class='absolute top-0 right-0 opacity-5 pointer-events-none transform translate-x-1/2 -translate-y-1/2'
+		>
+			<svg viewBox='0 0 512 512' class='w-96 h-96 fill-current text-white'>
+				<path
+					d='M495.9 191.7L416.7 192l5.4-85-115.4 78.6L256 0 205.3 185.6 90 107l5.4 85L16.1 191.7C-5.6 193.3-5.2 225 16.5 225h155.6l-26.6 287h221l-26.6-287h155.6c21.7 0 22.1-31.7 .4-33.3z'
+				></path>
+			</svg>
+		</div>
+
+		<h1
+			class='text-4xl md:text-6xl font-black mb-6 tracking-tight relative z-10'
+		>
+			Top <span class='text-red-500'>Software Providers</span> 🇨🇦
+		</h1>
+		<p class='text-xl text-slate-300 mx-auto leading-relaxed relative z-10'>
+			<span
+				class='inline-flex items-center gap-2 bg-slate-800 px-3 py-1 rounded-full text-sm font-bold text-white mb-4 border border-slate-700'
+			>
+				<span class='text-red-500'>✔</span> Fairness Tested
+			</span>
+			<br />
+			The quality of your gaming experience depends on the software. We monitor <strong
+				class='text-white'>{providers.length} game studios</strong
+			> to ensure they offer fair RTP, high-quality graphics, and mobile compatibility.
+		</p>
+	</div>
+
+	<!-- Main Grid -->
 	<div class='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
 		{
 			providers.map((provider) => (
 				<a
-					href={`/software/${provider.id}`}
-					class='group bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 flex flex-col items-center text-center'
+					href={`/software/${provider.id}/`}
+					class='group bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 flex flex-col items-center text-center h-full'
 				>
-					<div class='w-24 h-24 mb-4 flex items-center justify-center grayscale group-hover:grayscale-0 transition-all duration-300'>
+					<div class='w-24 h-24 mb-4 flex items-center justify-center grayscale group-hover:grayscale-0 transition-all duration-300 relative'>
 						<img
 							src={provider.logo_url}
 							alt={provider.name}
-							class='max-w-full max-h-full object-contain rounded-full'
+							class='max-w-full max-h-full object-contain rounded-xl'
 							loading='lazy'
 							onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
 						/>
-						<div class='hidden w-16 h-16 bg-gray-100 rounded-full items-center justify-center text-xl font-bold text-gray-400'>
+						<div class='hidden w-20 h-20 bg-gray-50 rounded-full items-center justify-center text-2xl font-bold text-gray-300 border border-gray-200'>
 							{provider.name.charAt(0)}
 						</div>
 					</div>
 
-					<h2 class='font-bold text-gray-900 text-lg group-hover:text-blue-600 transition-colors'>
+					<h2 class='font-bold text-slate-900 text-lg group-hover:text-red-600 transition-colors mt-auto'>
 						{provider.name}
 					</h2>
 
-					<span class='text-sm text-gray-500 mt-1'>
-						{provider.game_count} Games Listed
+					<span class='text-sm text-gray-500 mt-2 font-medium bg-gray-50 px-3 py-1 rounded-full'>
+						{provider.game_count} Games
 					</span>
 				</a>
 			))
 		}
+	</div>
+
+	<!-- GEO/AIO Content Block -->
+	<div
+		class='mt-16 prose prose-slate max-w-none bg-slate-50 p-8 rounded-2xl border border-slate-100'
+	>
+		<h2>How We Rate Casino Software</h2>
+		<p>
+			For Canadian players, not all software providers are created equal. When
+			we review a game studio, we look for:
+		</p>
+		<ul>
+			<li>
+				<strong>Fairness & Licensing:</strong> Does the provider hold licenses from
+				reputable bodies like the MGA or UKGC? Are their RNGs (Random Number Generators)
+				audited by eCOGRA?
+			</li>
+			<li>
+				<strong>Mobile Performance:</strong> Do the games load instantly on mobile
+				networks in Canada (Rogers, Bell, Telus)?
+			</li>
+			<li>
+				<strong>RTP Consistency:</strong> Does the provider publish actual Return
+				to Player (RTP) percentages, or do they allow casinos to lower them?
+			</li>
+		</ul>
 	</div>
 </ListingLayout>

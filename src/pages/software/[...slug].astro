@@ -1,104 +1,306 @@
 ---
 // src/pages/software/[...slug].astro
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { db } from '../../db/client';
+import {
+	getAllSoftwareProviders,
+	getSlotsByProvider,
+	getCasinosBySoftwareProvider,
+} from '../../db/queries';
+import type { SoftwareProvider } from '../../types/database';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import CasinoGridCard from '../../components/ui/CasinoGridCard.astro';
+import EntityHero from '../../components/common/EntityHero.astro';
+import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
-	const providers = db.prepare('SELECT * FROM software_providers').all();
-	return providers.map((provider: any) => ({
+	const providers = getAllSoftwareProviders();
+	return providers.map((provider) => ({
 		params: { slug: provider.id },
 		props: { provider },
 	}));
 }
 
+interface Props {
+	provider: SoftwareProvider;
+}
+
 const { provider } = Astro.props;
 
-// Get slots for this provider
-const slots = db
-	.prepare(`SELECT * FROM slots WHERE provider_id = ?`)
-	.all(provider.id) as any[];
+// 1. Fetch Slots & Calculate Stats
+const slots = getSlotsByProvider(provider.id);
+
+const gameCount = slots.length;
+const avgRtp =
+	gameCount > 0
+		? (slots.reduce((acc, slot) => acc + (slot.rtp || 0), 0) / gameCount).toFixed(2)
+		: 'N/A';
+const maxWin =
+	gameCount > 0
+		? slots.reduce((max, slot) => {
+				// Parse "5,000x" -> 5000
+				const val = parseInt(slot.max_win?.replace(/[^0-9]/g, '') || '0');
+				return val > max ? val : max;
+			}, 0)
+		: 0;
+
+// 2. Fetch Top Casinos for this Provider
+const linkedCasinos = getCasinosBySoftwareProvider(provider.id, 4);
+
+// 3. Match with Reviews (for the Card UI)
+const allReviews = await getCollection('reviews');
+const topCasinos = linkedCasinos
+	.map((casino) => {
+		const review = allReviews.find((r) => r.data.casinoId === casino.id);
+		return review ? { casino, review } : null;
+	})
+	.filter((item) => item !== null) as { casino: any; review: any }[];
+
+// 4. Schema.org
+const faqSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'FAQPage',
+	mainEntity: [
+		{
+			'@type': 'Question',
+			name: `Is ${provider.name} safe for Canadian players?`,
+			acceptedAnswer: {
+				'@type': 'Answer',
+				text: `Yes, ${provider.name} is a licensed software provider monitored for fairness. Their games use RNG (Random Number Generators) to ensure random outcomes.`,
+			},
+		},
+		{
+			'@type': 'Question',
+			name: `What is the best ${provider.name} casino?`,
+			acceptedAnswer: {
+				'@type': 'Answer',
+				text:
+					topCasinos.length > 0
+						? `We recommend ${topCasinos[0].casino.name} as a top choice for playing ${provider.name} games.`
+						: `Check our list of top rated casinos to find sites offering ${provider.name} games.`,
+			},
+		},
+	],
+};
+
+const orgSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'Organization',
+	name: provider.name,
+	logo: provider.logo_url,
+	description: `A leading online casino software provider known for high RTP slots.`,
+};
 ---
 
 <BaseLayout
-	title={`${provider.name} Slots | Best ${provider.name} Casinos in Canada`}
-	description={`Play the best free slots by ${provider.name}. List of top RTP games and casinos offering ${provider.name} titles.`}
+	title={`${provider.name} Casinos & Slots | Best Sites Canada 2025`}
+	description={`Play the best ${provider.name} slots for free. We list the top Canadian casinos offering ${provider.name} games with high payouts.`}
 >
-	<div class='container mx-auto px-4 pt-8'>
-		<Breadcrumbs
-			items={[
-				{ text: 'Software', href: '/software' },
-				{ text: provider.name, href: Astro.url.pathname },
+	<!-- Schema -->
+	<script
+		slot='head'
+		type='application/ld+json'
+		set:html={JSON.stringify([faqSchema, orgSchema])}
+	/>
+
+	<div class='container mx-auto px-4 py-8'>
+		<!-- Breadcrumbs -->
+		<div class='mb-6'>
+			<Breadcrumbs
+				items={[
+					{ text: 'Software', href: '/software' },
+					{ text: provider.name, href: Astro.url.pathname },
+				]}
+			/>
+		</div>
+
+		<!-- Unified EntityHero -->
+		<EntityHero
+			title={`${provider.name} Slots & Casinos`}
+			subtitle='Top Rated Software Provider 2025'
+			logoUrl={provider.logo_url}
+			stats={[
+				{
+					label: 'Avg RTP',
+					value: `${avgRtp}%`,
+					icon: '⚡',
+					color: 'text-green-400',
+				},
+				{
+					label: 'Games',
+					value: gameCount,
+					icon: '🎰',
+				},
+				{
+					label: 'Max Win',
+					value: maxWin > 0 ? `${maxWin}x` : 'Various',
+					icon: '🏆',
+					color: 'text-yellow-400',
+				},
 			]}
-		/>
-	</div>
-	<div class='bg-white border-b border-gray-200 py-12 mb-12'>
-		<div
-			class='container mx-auto px-4 flex flex-col md:flex-row items-center gap-8'
 		>
 			<div
-				class='w-32 h-32 bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex items-center justify-center flex-shrink-0'
+				slot='action'
+				class='bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50 text-center w-full md:w-auto'
 			>
-				<img
-					src={`/images/software/${provider.id}.png`}
-					alt={provider.name}
-					class='max-w-full max-h-full object-contain rounded-lg'
-					onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-				/>
-
-				<div class='hidden text-4xl font-bold text-gray-300'>
-					{provider.name.charAt(0)}
+				<div class='text-sm text-slate-400 font-bold mb-1'>Rated & Tested</div>
+				<div
+					class='text-2xl font-black text-white mb-2 leading-tight max-w-[200px] mx-auto'
+				>
+					Safe & Fair
+				</div>
+				<div class='flex justify-center gap-1'>
+					{
+						'★★★★★'
+							.split('')
+							.map((c) => <span class='text-yellow-400 text-sm'>{c}</span>)
+					}
 				</div>
 			</div>
+		</EntityHero>
 
-			<div class='text-center md:text-left'>
-				<h1 class='text-4xl font-bold text-gray-900 mb-2'>
-					{provider.name} Slots
-				</h1>
-				<p class='text-xl text-gray-600'>
-					We found <strong>{slots.length}</strong> free demos available in our database.
-				</p>
+		<div class='container mx-auto px-4 pb-16'>
+			<!-- Top Casinos Section -->
+			{
+				topCasinos.length > 0 && (
+					<div class='mb-16'>
+						<div class='flex items-center gap-2 mb-6'>
+							<span class='bg-red-500 w-1.5 h-8 rounded-full' />
+							<h2 class='text-2xl font-bold text-slate-900'>
+								Where to play {provider.name} Games
+							</h2>
+						</div>
+
+						<div class='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
+							{topCasinos.map(({ casino, review }, index) => (
+								<CasinoGridCard casino={casino} review={review} index={index} />
+							))}
+						</div>
+					</div>
+				)
+			}
+
+			<!-- Slots Section -->
+			<div class='mb-16'>
+				<div class='flex items-center gap-2 mb-6'>
+					<span class='bg-blue-500 w-1.5 h-8 rounded-full'></span>
+					<h2 class='text-2xl font-bold text-slate-900'>
+						Free {provider.name} Slots ({gameCount})
+					</h2>
+				</div>
+
+				{
+					slots.length === 0 ? (
+						<div class='text-center py-20 bg-gray-50 rounded-xl border border-dashed border-gray-300'>
+							<p class='text-gray-500'>
+								No slots found for {provider.name} yet.
+							</p>
+						</div>
+					) : (
+						<div class='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
+							{slots.map((slot) => (
+								<article class='group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col'>
+									<a
+										href={`/slots/${slot.slug}/`}
+										class='relative aspect-video bg-gray-100 block overflow-hidden'
+									>
+										<img
+											src={slot.image_url}
+											alt={`${slot.title} demo`}
+											class='w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500'
+											loading='lazy'
+											onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+										/>
+										<div class='hidden absolute inset-0 items-center justify-center bg-gray-100 text-gray-400 text-xs font-mono'>
+											No Image
+										</div>
+
+										<div class='absolute top-2 right-2 bg-black/70 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-sm'>
+											RTP {slot.rtp}%
+										</div>
+									</a>
+									<div class='p-4'>
+										<h3 class='font-bold text-slate-900 text-base leading-tight group-hover:text-blue-600 mb-1'>
+											<a href={`/slots/${slot.slug}/`}>{slot.title}</a>
+										</h3>
+										<div class='text-xs text-slate-500'>
+											{slot.paylines} Paylines • {slot.volatility}
+										</div>
+									</div>
+								</article>
+							))}
+						</div>
+					)
+				}
 			</div>
+
+			<!-- Generic FAQ (AIO) -->
+			<section
+				class='max-w-3xl mx-auto bg-slate-50 rounded-2xl p-8 border border-slate-100'
+			>
+				<h2 class='text-2xl font-bold text-slate-900 mb-6 text-center'>
+					FAQs about {provider.name}
+				</h2>
+
+				<div class='space-y-4'>
+					<details
+						class='group bg-white rounded-lg border border-gray-200 open:shadow-md transition-shadow'
+					>
+						<summary
+							class='flex justify-between items-center font-bold text-slate-800 cursor-pointer p-4 list-none'
+						>
+							<span>Is {provider.name} legal in Canada?</span>
+							<span class='transition group-open:rotate-180'>
+								<svg
+									fill='none'
+									height='24'
+									shape-rendering='geometricPrecision'
+									stroke='currentColor'
+									stroke-linecap='round'
+									stroke-linejoin='round'
+									stroke-width='1.5'
+									viewBox='0 0 24 24'
+									width='24'><path d='M6 9l6 6 6-6'></path></svg
+								>
+							</span>
+						</summary>
+						<div class='text-gray-600 px-4 pb-4'>
+							<p>
+								Yes, {provider.name} works with licensed operators in Canada. You
+								should always ensure you are playing at a regulated casino.
+							</p>
+						</div>
+					</details>
+
+					<details
+						class='group bg-white rounded-lg border border-gray-200 open:shadow-md transition-shadow'
+					>
+						<summary
+							class='flex justify-between items-center font-bold text-slate-800 cursor-pointer p-4 list-none'
+						>
+							<span>Can I play {provider.name} slots for free?</span>
+							<span class='transition group-open:rotate-180'>
+								<svg
+									fill='none'
+									height='24'
+									shape-rendering='geometricPrecision'
+									stroke='currentColor'
+									stroke-linecap='round'
+									stroke-linejoin='round'
+									stroke-width='1.5'
+									viewBox='0 0 24 24'
+									width='24'><path d='M6 9l6 6 6-6'></path></svg
+								>
+							</span>
+						</summary>
+						<div class='text-gray-600 px-4 pb-4'>
+							<p>
+								Absolutely. We offer {slots.length} free demos right here on this
+								page. You can try them out without downloading any software.
+							</p>
+						</div>
+					</details>
+				</div>
+			</section>
 		</div>
-	</div>
-
-	<div class='container mx-auto px-4 pb-16'>
-		{
-			slots.length === 0 ? (
-				<div class='text-center py-20 bg-gray-50 rounded-xl border border-dashed border-gray-300'>
-					<p class='text-gray-500'>No slots found for {provider.name} yet.</p>
-				</div>
-			) : (
-				<div class='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-					{slots.map((slot) => (
-						<article class='group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col'>
-							<a
-								href={`/slots/${slot.slug}`}
-								class='relative aspect-[4/3] bg-gray-200 block overflow-hidden'
-							>
-								<img
-									src={slot.image_url}
-									alt={`${slot.title} demo`}
-									class='w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500'
-									loading='lazy'
-									onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-								/>
-								<div class='hidden absolute inset-0 items-center justify-center bg-gray-100 text-gray-400 text-xs font-mono'>
-									No Image
-								</div>
-							</a>
-							<div class='p-4'>
-								<h3 class='font-bold text-gray-900 text-lg leading-tight group-hover:text-blue-600'>
-									<a href={`/slots/${slot.slug}`}>{slot.title}</a>
-								</h3>
-								<div class='mt-2 text-sm text-gray-500'>
-									RTP: <span class='text-green-600 font-bold'>{slot.rtp}%</span>
-								</div>
-							</div>
-						</article>
-					))}
-				</div>
-			)
-		}
 	</div>
 </BaseLayout>
