@@ -7,8 +7,8 @@ import Container from '../components/common/Container.astro';
 interface Props {
 	title: string;
 	description: string;
-	heroTitle: string;
-	heroDescription: string;
+	heroTitle?: string;
+	heroDescription?: string;
 	breadcrumbs?: { text: string; href: string }[];
 }
 
@@ -26,18 +26,22 @@ const { title, description, heroTitle, heroDescription, breadcrumbs } =
 			)
 		}
 		<div
-			class='bg-slate-900 text-white min-h-[300px] flex flex-col justify-center items-center px-6 text-center rounded-3xl shadow-lg'
+			class='bg-slate-900 text-white min-h-[300px] flex flex-col justify-center items-center px-6 py-12 text-center rounded-3xl shadow-lg relative overflow-hidden'
 		>
-			<h1 class='text-4xl md:text-5xl font-black mb-4 tracking-tight'>
-				{heroTitle}
-			</h1>
-			<p class='text-xl text-slate-300 max-w-2xl mx-auto'>
-				{heroDescription}
-			</p>
+			<slot name='hero'>
+				<div class='relative z-10 max-w-4xl mx-auto'>
+					<h1 class='text-4xl md:text-5xl font-black mb-4 tracking-tight'>
+						{heroTitle}
+					</h1>
+					<p class='text-xl text-slate-300 leading-relaxed'>
+						{heroDescription}
+					</p>
+				</div>
+			</slot>
 		</div>
 	</Container>
 
-	<div class='container mx-auto px-4 pb-20'>
+	<div class='container mx-auto px-4 pb-12 mt-6'>
 		<slot />
 	</div>
 </BaseLayout>

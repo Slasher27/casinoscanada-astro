@@ -1,106 +1,59 @@
 ---
-import { getEntry } from 'astro:content';
+import ListingLayout from '../../layouts/ListingLayout.astro';
 import { db } from '../../db/client';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
-import ProseTable from '../../components/mdx/ProseTable.astro';
+import PaymentMethodCard from '../../components/banking/PaymentMethodCard.astro';
 
-// 1. Fetch the "Banking" guide content (Text)
-const guideEntry = await getEntry('guides', 'banking');
-
-// FIX: Check if it exists. If not, stop everything and tell us.
-if (!guideEntry) {
-	throw new Error(
-		"Could not find 'src/content/guides/banking.mdx'. Please create this file or check the filename."
-	);
-}
-
-// Now TypeScript knows guideEntry is NOT undefined
-const { Content } = await guideEntry.render();
-
-// 2. Fetch Payment Methods (Data)
-const methods = db.prepare('SELECT * FROM payment_methods').all() as any[];
-
-const breadcrumbs = [{ text: 'Banking', href: '/banking' }];
+// 1. Fetch Methods
+const methods = db
+	.prepare('SELECT * FROM payment_methods ORDER BY name ASC')
+	.all();
 ---
 
-<BaseLayout
-	title='Online Casino Banking Methods Canada (2025 Guide)'
-	description='The complete guide to casino deposits and withdrawals in Canada. Compare Interac, Bitcoin, and Credit Cards.'
+<ListingLayout
+	title='Best Casino Payment Methods Canada | Fast Payouts (2024)'
+	description='Find the fastest and safest online casino payment methods in Canada. Compare fees, limits, and withdrawal times.'
+	heroTitle='Details on Deposits & Withdrawals'
+	heroDescription='Everything you need to know about banking at Canadian online casinos. Fast, secure, and fee-free options.'
+	breadcrumbs={[{ text: 'Banking', href: '/banking/' }]}
 >
-	<div class='container mx-auto px-4 py-8'>
-		<div class='mb-8'>
-			<Breadcrumbs items={breadcrumbs} />
-		</div>
+	<!-- Method List -->
+	<div
+		class='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
+	>
+		{methods.map((method: any) => <PaymentMethodCard method={method} />)}
+	</div>
 
-		<div
-			class='bg-slate-900 text-white min-h-[300px] flex flex-col justify-center items-center px-6 py-12 text-center rounded-3xl shadow-lg mb-12'
-		>
-			<h1 class='text-4xl md:text-6xl font-black mb-6 tracking-tight'>
-				Casino <span class='text-red-500'>Banking</span> Options
-			</h1>
-			<p class='text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed'>
-				Secure deposits and fast withdrawals are our top priority. Choose a
-				payment method below to find the best casinos that accept it.
-			</p>
-		</div>
-
-		<h2
-			class='text-2xl font-bold text-slate-900 mb-6 border-b border-gray-200 pb-2'
-		>
-			Popular Payment Methods
-		</h2>
-
-		{
-			['Bank Transfer', 'Card', 'e-Wallet', 'Crypto'].map((type) => {
-				const typeMethods = methods.filter(
-					(m) =>
-						m.type === type || (type === 'e-Wallet' && m.type === 'E-Wallet')
-				);
-				if (typeMethods.length === 0) return null;
-
-				return (
-					<div class='mb-12'>
-						<h3 class='text-xl font-bold text-gray-800 mb-4 flex items-center gap-2'>
-							{type} Options
-						</h3>
-						<div class='grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4'>
-							{typeMethods.map((method) => (
-								<a
-									href={`/banking/${method.id}`}
-									class='group bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-400 transition-all text-center no-underline h-40'
-								>
-									<img
-										src={method.logo_url}
-										alt={method.name}
-										class='h-12 w-auto object-contain mb-3 group-hover:scale-110 transition-transform'
-										loading='lazy'
-									/>
-									<span class='text-sm font-bold text-gray-900 group-hover:text-blue-600 block'>
-										{method.name}
-									</span>
-									<span class='text-xs text-gray-500 mt-1'>
-										{method.avg_speed}
-									</span>
-								</a>
-							))}
-						</div>
-					</div>
-				);
-			})
-		}
-
-		<div class='max-w-4xl mx-auto'>
-			<article
-				class='prose prose-lg prose-slate max-w-none bg-gray-50 p-4 md:p-12 rounded-2xl border border-gray-100'
-			>
-				<h2
-					class='text-2xl md:text-3xl font-black text-slate-900 mb-6 md:mb-8 mt-0'
-				>
-					{guideEntry.data.title}
-				</h2>
-				<Content components={{ table: ProseTable }} />
-			</article>
+	<!-- SEO Content -->
+	<div class='mt-16 prose prose-lg text-gray-600 max-w-none'>
+		<h2>How to Choose a Payment Method</h2>
+		<p>
+			When selecting a banking option for online gambling in Canada, consider
+			the "Trifecta":
+			<strong>Speed, Fees, and Convenience</strong>. Only Interac scores
+			perfectly on all three for Canadians.
+		</p>
+		<div class='not-prose grid md:grid-cols-3 gap-6 my-8'>
+			<div class='bg-blue-50 p-6 rounded-xl border border-blue-100'>
+				<h3 class='font-bold text-blue-900 mb-2'>⚡ Speed</h3>
+				<p class='text-sm text-blue-800'>
+					E-wallets and Crypto are fastest (Instant). Bank transfers can take
+					1-3 days.
+				</p>
+			</div>
+			<div class='bg-green-50 p-6 rounded-xl border border-green-100'>
+				<h3 class='font-bold text-green-900 mb-2'>💸 Fees</h3>
+				<p class='text-sm text-green-800'>
+					Most casinos absorb fees, but watch out for Credit Card "Cash Advance"
+					charges.
+				</p>
+			</div>
+			<div class='bg-purple-50 p-6 rounded-xl border border-purple-100'>
+				<h3 class='font-bold text-purple-900 mb-2'>🔒 Safety</h3>
+				<p class='text-sm text-purple-800'>
+					Interac & iDebit never share your banking details directly with the
+					casino.
+				</p>
+			</div>
 		</div>
 	</div>
-</BaseLayout>
+</ListingLayout>

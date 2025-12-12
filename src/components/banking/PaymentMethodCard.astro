@@ -1,0 +1,82 @@
+---
+interface Props {
+	method: {
+		id: string;
+		name: string;
+		logo_url: string;
+		type: string;
+		avg_speed: string;
+		fees: string;
+	};
+}
+
+const { method } = Astro.props;
+
+// Color coding based on type
+const typeColor =
+	method.type === 'Crypto'
+		? 'from-orange-400 to-orange-600'
+		: method.type === 'E-Wallet'
+			? 'from-purple-500 to-indigo-600'
+			: method.type === 'Card'
+				? 'from-blue-500 to-blue-700'
+				: 'from-emerald-500 to-teal-700'; // Bank Transfer / Default
+---
+
+<a
+	href={`/banking/${method.id}`}
+	class='group relative aspect-[1.586/1] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden text-white flex flex-col justify-between'
+>
+	<!-- Dynamic Background -->
+	<div
+		class={`absolute inset-0 bg-gradient-to-br ${typeColor} opacity-90 transition-opacity`}
+	>
+	</div>
+	<div
+		class="absolute inset-0 bg-[url('/images/pattern-grid.svg')] opacity-10 mix-blend-overlay"
+	>
+	</div>
+
+	<!-- Shininess/Gloss Effect -->
+	<div
+		class='absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none transform -translate-x-full group-hover:translate-x-full'
+	>
+	</div>
+
+	<!-- Header: Logo & Type -->
+	<div class='relative z-10 flex justify-between items-start'>
+		<div class='bg-white/90 p-2 rounded-lg shadow-sm backdrop-blur-sm'>
+			<img
+				src={method.logo_url}
+				alt={method.name}
+				class='h-8 w-auto object-contain'
+			/>
+		</div>
+		<span
+			class='text-xs font-bold uppercase tracking-wider opacity-80 border border-white/30 px-2 py-1 rounded-full'
+		>
+			{method.type}
+		</span>
+	</div>
+
+	<!-- Middle: Name -->
+	<div class='relative z-10 mt-auto mb-4'>
+		<h3 class='text-xl font-bold tracking-tight shadow-black drop-shadow-md'>
+			{method.name}
+		</h3>
+	</div>
+
+	<!-- Footer: Specs -->
+	<div
+		class='relative z-10 grid grid-cols-2 gap-4 text-xs border-t border-white/20 pt-3'
+	>
+		<div>
+			<span class='block opacity-70 uppercase text-[10px] mb-0.5'>Speed</span>
+			<span class='font-bold'>{method.avg_speed}</span>
+		</div>
+		<div class='text-right'>
+			<span class='block opacity-70 uppercase text-[10px] mb-0.5'>Fees</span>
+			<span class='font-bold'>{method.fees}</span>
+		</div>
+	</div>
+</a>

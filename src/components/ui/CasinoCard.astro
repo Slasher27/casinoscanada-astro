@@ -32,7 +32,7 @@ const FALLBACK_ICON =
 			<div class='flex-grow pt-1'>
 				<h3 class='text-xl font-black text-slate-900 leading-none mb-1'>
 					<a
-						href={`/reviews/${review.slug}`}
+						href={`/reviews/${review.slug}/`}
 						class='hover:text-red-600 transition-colors no-underline'
 					>
 						{casino.name}
@@ -77,7 +77,7 @@ const FALLBACK_ICON =
 				>
 			</div>
 			<a
-				href={`/reviews/${review.slug}`}
+				href={`/reviews/${review.slug}/`}
 				class='flex-grow sm:flex-grow-0 bg-white border-2 border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white font-bold py-2 px-6 rounded-lg text-center shadow-sm active:scale-95 transition-all text-sm uppercase tracking-wide'
 			>
 				Read Review
@@ -116,7 +116,7 @@ const FALLBACK_ICON =
 			</div>
 			<div>
 				<a
-					href={`/reviews/${review.slug}`}
+					href={`/reviews/${review.slug}/`}
 					class='font-bold text-xl text-slate-900 hover:text-red-600 transition-colors no-underline block'
 				>
 					{casino.name}
@@ -150,7 +150,7 @@ const FALLBACK_ICON =
 				{
 					casino.software
 						?.slice(0, 4)
-						.map((s) => (
+						.map((s: any) => (
 							<img
 								src={s.logo_url}
 								title={s.name}
@@ -168,7 +168,7 @@ const FALLBACK_ICON =
 				{
 					casino.payments
 						?.slice(0, 5)
-						.map((p) => (
+						.map((p: any) => (
 							<img
 								src={p.logo_url}
 								title={p.name}
@@ -203,7 +203,7 @@ const FALLBACK_ICON =
 				Play Now
 			</a>
 			<a
-				href={`/reviews/${review.slug}`}
+				href={`/reviews/${review.slug}/`}
 				class='bg-white border-2 border-gray-200 hover:border-slate-900 text-slate-600 hover:text-slate-900 font-bold py-2.5 px-4 rounded-lg text-sm uppercase tracking-wide transition-colors'
 			>
 				Read Review

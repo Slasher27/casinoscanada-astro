@@ -1,221 +1,144 @@
 ---
-import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
 import { db } from '../../db/client';
-import ListingLayout from '../../layouts/ListingLayout.astro';
-import BankingStats from '../../components/ui/BankingStats.astro';
-import BankingFAQ from '../../components/ui/BankingFAQ.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 
-// 1. Generate Pages
+// 1. Generate Static Paths for all methods
 export async function getStaticPaths() {
-	const methods = db.prepare('SELECT * FROM payment_methods').all() as any[];
-
-	return methods.map((method) => ({
-		params: { id: method.id },
-		props: { method },
+	const methods = db.prepare('SELECT * FROM payment_methods').all();
+	return methods.map((m: any) => ({
+		params: { id: m.id },
+		props: { method: m },
 	}));
 }
 
 const { method } = Astro.props;
 
-// 2. Fetch Casinos
-const casinos = db
+// 2. Fetch Casinos that accept this method
+const acceptingCasinos = db
 	.prepare(
 		`
-    SELECT c.* FROM casinos c
+    SELECT c.id, c.name, c.logo_url, c.bonus_offer, c.payout_speed_minutes
+    FROM casinos c
     JOIN casino_payment_methods cpm ON c.id = cpm.casino_id
     WHERE cpm.method_id = ?
 `
 	)
 	.all(method.id) as any[];
 
-// 3. Fetch Editorial Content (MDX)
-const bankingContent = await getCollection('banking');
-const currentGuide = bankingContent.find((g) => g.data.paymentId === method.id);
-let Content;
-if (currentGuide) {
-	const rendered = await render(currentGuide);
-	Content = rendered.Content;
-}
-
-// 4. Fetch Reviews (for Ratings)
-const allReviews = await getCollection('reviews');
-const reviewMap = new Map(
-	allReviews.map((r) => [
-		r.data.casinoId,
-		{ rating: r.data.rating, slug: r.slug },
-	])
-);
-
-// 5. Parse JSON Data
-const pros = method.pros ? JSON.parse(method.pros) : [];
-const cons = method.cons ? JSON.parse(method.cons) : [];
-
-// 6. Generate FAQ Data (If missing, use defaults for schema)
-const faqs = [
-	{
-		question: `Is ${method.name} safe for online casinos?`,
-		answer: `Yes, ${method.name} is a trusted payment method offering high security encryption and widely accepted in Canada.`,
-	},
-	{
-		question: `Are there any fees for using ${method.name}?`,
-		answer: `${method.fees}. Most casinos cover the deposit fees, but always check with your bank.`,
-	},
-	{
-		question: `How fast are ${method.name} withdrawals?`,
-		answer: `Withdrawals typically take ${method.avg_speed}. It is one of the faster options available.`,
-	},
-];
-
-// 7. Schema.org (FinancialProduct)
-const schema = {
-	'@context': 'https://schema.org',
-	'@type': 'FinancialProduct',
-	name: `${method.name} Casino Payments`,
-	description: method.description,
-	feesAndCommissionsSpecification: method.fees,
-	areaServed: 'CA',
-};
+const pros = JSON.parse(method.pros || '[]');
+const cons = JSON.parse(method.cons || '[]');
 ---
 
-<ListingLayout
-	title={`Best ${method.name} Casinos Canada (2025) | Fast Payouts`}
-	description={`Top rated ${method.name} online casinos. Speed: ${method.avg_speed}, Fees: ${method.fees}. Read our full guide.`}
-	heroTitle={`Best ${method.name} Casinos`}
-	heroDescription={method.description}
-	breadcrumbs={[
-		{ text: 'Banking', href: '/banking' },
-		{ text: method.name, href: Astro.url.pathname },
-	]}
+<BaseLayout
+	title={`Best ${method.name} Casinos Canada | Fast Payouts (2024)`}
+	description={`Find the best online casinos in Canada that accept ${method.name}. Fast withdrawals, low fees, and secure transactions.`}
 >
-	<!-- 1. Rich Stats Card -->
-	<BankingStats
-		avg_speed={method.avg_speed}
-		fees={method.fees}
-		min_deposit={method.min_deposit}
-		max_withdrawal={method.max_withdrawal}
-	/>
+    <div class="container mx-auto px-4 pt-6 pb-12">
+        <Breadcrumbs
+            items={[
+                { text: 'Banking', href: '/banking' },
+                { text: method.name, href: Astro.url.pathname },
+            ]}
+        />
 
-	<!-- 2. Pros & Cons -->
-	<div class='grid md:grid-cols-2 gap-6 mb-12'>
-		<div class='bg-green-50 p-6 rounded-xl border border-green-100'>
-			<h3 class='font-bold text-green-800 mb-4 flex items-center gap-2'>
-				<svg
-					class='w-5 h-5'
-					fill='none'
-					stroke='currentColor'
-					viewBox='0 0 24 24'
-					><path
-						stroke-linecap='round'
-						stroke-linejoin='round'
-						stroke-width='2'
-						d='M5 13l4 4L19 7'></path></svg
-				>
-				Pros
-			</h3>
-			<ul class='space-y-2'>
-				{
-					pros.map((pro: string) => (
-						<li class='flex items-start gap-2 text-green-700 text-sm'>
-							<span>•</span> {pro}
-						</li>
-					))
-				}
-			</ul>
-		</div>
-		<div class='bg-red-50 p-6 rounded-xl border border-red-100'>
-			<h3 class='font-bold text-red-800 mb-4 flex items-center gap-2'>
-				<svg
-					class='w-5 h-5'
-					fill='none'
-					stroke='currentColor'
-					viewBox='0 0 24 24'
-					><path
-						stroke-linecap='round'
-						stroke-linejoin='round'
-						stroke-width='2'
-						d='M6 18L18 6M6 6l12 12'></path></svg
-				>
-				Cons
-			</h3>
-			<ul class='space-y-2'>
-				{
-					cons.map((con: string) => (
-						<li class='flex items-start gap-2 text-red-700 text-sm'>
-							<span>•</span> {con}
-						</li>
-					))
-				}
-			</ul>
-		</div>
+        <div class="bg-slate-900 text-white p-8 md:p-12 rounded-3xl shadow-lg mt-6 relative overflow-hidden">
+            <div class='flex flex-col md:flex-row items-center gap-8 relative z-10'>
+                <!-- Logo Card -->
+                <div class='bg-white p-6 rounded-2xl shadow-xl w-32 h-32 flex items-center justify-center flex-shrink-0'>
+                    <img src={method.logo_url} alt={method.name} class='max-w-full max-h-full object-contain' />
+                </div>
+
+                <!-- Hero Text -->
+                <div class='text-center md:text-left'>
+                    <h1 class='text-3xl md:text-5xl font-black mb-4'>
+                        Best <span class='text-blue-400'>{method.name}</span> Casinos
+                    </h1>
+                    <p class='text-slate-300 text-lg max-w-2xl'>
+                        {method.description}
+                    </p>
+                </div>
+
+                <!-- Key Stats -->
+                <div class="flex gap-4 mt-6 md:mt-0 md:ml-auto">
+                    <div class="text-center bg-white/10 p-4 rounded-xl border border-white/10 backdrop-blur-sm min-w-[100px]">
+                        <span class="block text-slate-400 text-xs font-bold uppercase mb-1">Speed</span>
+                        <span class="text-lg font-bold">{method.avg_speed}</span>
+                    </div>
+                    <div class="text-center bg-white/10 p-4 rounded-xl border border-white/10 backdrop-blur-sm min-w-[100px]">
+                        <span class="block text-slate-400 text-xs font-bold uppercase mb-1">Fees</span>
+                        <span class="text-lg font-bold">{method.fees}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 	</div>
 
-	<!-- 3. Casino List -->
-	<h2 class='text-2xl font-bold text-gray-900 mb-6'>
-		Top Casinos accepting {method.name}
-	</h2>
-	<div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16'>
-		{
-			casinos.map((casino) => {
-				const reviewData = reviewMap.get(casino.id);
-				const rating = reviewData ? reviewData.rating : 'N/A';
-				const link = reviewData ? `/reviews/${reviewData.slug}` : '#';
-				return (
-					<a href={link} class='group no-underline'>
-						<article class='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 h-full flex flex-col'>
-							<div class='p-6 border-b border-gray-100 bg-gray-50 group-hover:bg-blue-50 transition-colors'>
-								<h2 class='text-xl font-bold text-gray-800 group-hover:text-blue-700'>
-									{casino.name}
-								</h2>
-								<p class='text-sm text-gray-500 mt-1'>{casino.owner}</p>
-							</div>
-							<div class='p-6 flex-grow'>
-								<div class='flex justify-between items-center mb-4'>
-									<div class='flex flex-col'>
-										<span class='text-[10px] uppercase text-gray-400 font-bold'>
-											Rating
-										</span>
-										<span class='text-lg font-bold text-yellow-600'>
-											★ {rating}/5
-										</span>
-									</div>
-									<div class='flex flex-col text-right'>
-										<span class='text-[10px] uppercase text-gray-400 font-bold'>
-											Speed
-										</span>
-										<span class='text-lg font-bold text-green-600'>
-											{casino.payout_speed_minutes}m
-										</span>
-									</div>
-								</div>
-							</div>
-						</article>
-					</a>
-				);
-			})
-		}
+	<div class='container mx-auto px-4 -mt-10 relative z-10 space-y-12 mb-12'>
+		<!-- Pros & Cons -->
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-green-500">
+                <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+                    <span class="text-green-500">👍</span> Pros
+                </h3>
+                <ul class="space-y-2">
+                    {pros.map((p: string) => (
+                        <li class="flex items-start gap-2 text-gray-600 text-sm">
+                            <span class="text-green-500 font-bold">✓</span> {p}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-red-500">
+                <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+                    <span class="text-red-500">👎</span> Cons
+                </h3>
+                <ul class="space-y-2">
+                    {cons.map((c: string) => (
+                        <li class="flex items-start gap-2 text-gray-600 text-sm">
+                            <span class="text-red-500 font-bold">×</span> {c}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+
+		<!-- The LIST -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                 <h2 class="font-bold text-xl text-gray-900">Casinos accepting {method.name}</h2>
+                 <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">{acceptingCasinos.length} Found</span>
+            </div>
+            
+            <div class="divide-y divide-gray-100">
+                {acceptingCasinos.map((casino: any) => (
+                    <div class="p-4 md:p-6 flex flex-col md:flex-row items-center gap-6 hover:bg-blue-50/50 transition-colors">
+                        <!-- Casino Identity -->
+                        <div class="flex items-center gap-4 flex-1 w-full md:w-auto">
+                            <img src={casino.logo_url} alt={casino.name} class="w-16 h-16 rounded-xl object-contain bg-white border border-gray-100 shadow-sm" />
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-900">{casino.name}</h3>
+                                <div class="flex items-center gap-2 text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded w-fit mt-1">
+                                    <span>⏱ Payout: {casino.payout_speed_minutes}m</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bonus -->
+                        <div class="text-center md:text-left flex-1">
+                            <span class="block text-xs uppercase text-gray-400 font-bold">Welcome Bonus</span>
+                            <span class="font-bold text-gray-900">{casino.bonus_offer}</span>
+                        </div>
+
+                        <!-- CTA -->
+                        <div class="w-full md:w-auto">
+                            <a href={`/reviews/${casino.id}`} class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all">
+                                Review & Play
+                            </a>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
 	</div>
-
-	<!-- 4. Editorial Content (MDX) -->
-	{
-		Content ? (
-			<div class='prose prose-lg max-w-none mb-12'>
-				<Content />
-			</div>
-		) : (
-			<div class='bg-blue-50 p-8 rounded-xl text-center mb-12'>
-				<h3 class='text-xl font-bold text-blue-900 mb-2'>
-					Detailed Guide Coming Soon
-				</h3>
-				<p class='text-blue-700'>
-					We are currently writing the in-depth review for {method.name}.
-				</p>
-			</div>
-		)
-	}
-
-	<!-- 5. FAQ Section -->
-	<BankingFAQ faqs={faqs} />
-
-	<!-- 6. JSON-LD -->
-	<script type='application/ld+json' set:html={JSON.stringify(schema)} />
-</ListingLayout>
+</BaseLayout>

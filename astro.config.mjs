@@ -8,6 +8,10 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
 	site: 'https://casinoscanada.online',
+	trailingSlash: 'always',
+	build: {
+		format: 'directory',
+	},
 	integrations: [
 		// This looks for tailwind.config.mjs automatically
 		tailwind(),
