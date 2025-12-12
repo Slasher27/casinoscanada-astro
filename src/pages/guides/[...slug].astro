@@ -17,7 +17,7 @@ const { Content } = await entry.render();
 
 // Create dynamic breadcrumbs for guides
 const breadcrumbs = [
-	{ text: 'Guides', href: '/guides' }, // You could link to /guides if you have an index page
+	{ text: 'Guides', href: '/guides/' },
 	{ text: entry.data.title, href: Astro.url.pathname },
 ];
 ---

@@ -9,7 +9,7 @@ const guides = (await getCollection('guides')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 
-const breadcrumbs = [{ text: 'Guides', href: '/guides' }];
+const breadcrumbs = [{ text: 'Guides', href: '/guides/' }];
 ---
 
 <BaseLayout
