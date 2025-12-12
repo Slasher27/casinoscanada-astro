@@ -56,7 +56,7 @@
 						We use cookies to analyze site traffic and improve your experience. By
 						clicking "Accept", you consent to our use of cookies. Your data is
 						anonymized and we don't sell it to third parties.
-						<a href="/privacy" class="text-red-500 hover:text-red-400 underline"
+						<a href="/privacy/" class="text-red-500 hover:text-red-400 underline"
 							>Privacy Policy</a
 						>
 					</p>
