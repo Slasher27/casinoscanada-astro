@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CasinoTopList from '../components/ui/CasinoTopList.astro';
 import SlotsSection from '../components/ui/SlotsSection.astro';
+import BankingGrid from '../components/ui/BankingGrid.astro';
 import { getCollection } from 'astro:content';
 
 // Fetch only the 3 latest reviews for a "Recent Updates" section
@@ -38,6 +39,8 @@ const latestReviews = allReviews.slice(0, 3);
 	</div>
 
 	<SlotsSection />
+
+	<BankingGrid />
 
 	<section class='py-16 bg-gray-50 border-t border-gray-200'>
 		<div class='container mx-auto px-4'>

@@ -20,9 +20,19 @@ interface Props {
 
 const { frontmatter, headings } = Astro.props;
 const currentCasinoId = frontmatter.casinoId || frontmatter.id || '';
+
+// Generate Title Case from Slug (e.g. "bitstarz-casino" -> "Bitstarz Casino")
+const rawSlug = Astro.url.pathname.split('/').filter(Boolean).pop() || '';
+const formatSlug = (slug: string) => {
+	return slug
+		.split('-')
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(' ');
+};
+
 const breadcrumbs = [
 	{ text: 'Reviews', href: '/reviews' },
-	{ text: frontmatter.title.split(':')[0], href: Astro.url.pathname },
+	{ text: formatSlug(rawSlug), href: Astro.url.pathname },
 ];
 ---
 
@@ -52,19 +62,22 @@ const breadcrumbs = [
 					{/* Table of Contents */}
 					{
 						headings && headings.length > 0 && (
-							<div class='bg-gray-50 rounded-xl p-6 border border-gray-200'>
+							<div
+								id='toc-container'
+								class='bg-gray-50 rounded-xl p-6 border border-gray-200'
+							>
 								<h3 class='font-bold text-gray-900 mb-4 text-sm uppercase tracking-wider'>
 									On this page
 								</h3>
 								<ul class='space-y-3'>
-									{/* FIX: Explicitly typed (heading: Heading) here */}
 									{headings.map((heading: Heading) => (
 										<li
-											class={`text-sm leading-snug ${heading.depth === 2 ? 'font-bold text-gray-800' : 'pl-4 text-gray-500'}`}
+											class={`text-sm leading-snug transition-all duration-300 border-l-2 border-transparent pl-3`}
 										>
 											<a
 												href={`#${heading.slug}`}
-												class='hover:text-red-600 transition-colors block'
+												class='text-gray-600 hover:text-red-700 block toc-link transition-colors duration-200'
+												data-target={heading.slug}
 											>
 												{heading.text}
 											</a>
@@ -82,3 +95,96 @@ const breadcrumbs = [
 		</div>
 	</div>
 </BaseLayout>
+
+<style>
+	/* Dedicated active state class to avoid Tailwind conflicts */
+	.toc-active {
+		color: #b91c1c !important; /* red-700 */
+		font-weight: 900 !important; /* font-black */
+	}
+	.toc-item-active {
+		border-left-color: #dc2626 !important; /* red-600 */
+		background-color: rgba(254, 242, 242, 0.5) !important; /* red-50/50 */
+	}
+	.header-active {
+		color: #b91c1c !important;
+		transform: translateX(0.5rem);
+		transition: all 0.3s ease;
+	}
+</style>
+
+<script>
+	function initScrollSpy() {
+		const headings = Array.from(
+			document.querySelectorAll('main h2, main h3, main h4')
+		);
+		const tocLinks = document.querySelectorAll('.toc-link');
+
+		if (headings.length === 0) return;
+
+		const onScroll = () => {
+			let currentId = '';
+			// Trigger point: 30% down the screen
+			const threshold = window.innerHeight * 0.3;
+
+			// 1. Find the heading we are currently "in"
+			// We iterate through all headings.
+			// The correct "active" heading is the last one that is ABOVE our threshold line.
+			for (let i = 0; i < headings.length; i++) {
+				const heading = headings[i];
+				if (heading instanceof HTMLElement) {
+					const rect = heading.getBoundingClientRect();
+					if (rect.top < threshold) {
+						// Only update if it HAS an ID.
+						const id = heading.getAttribute('id');
+						if (id) {
+							currentId = id;
+						}
+					}
+				}
+			}
+
+			// 2. If we are at the very top of the page, activate the first link naturally
+			if (window.scrollY < 50 && headings.length > 0) {
+				const firstHead = headings[0];
+				if (firstHead instanceof HTMLElement)
+					currentId = firstHead.getAttribute('id') || '';
+			}
+
+			// 3. Apply Classes
+			tocLinks.forEach((link) => {
+				const linkTarget = link.getAttribute('href')?.substring(1);
+				const li = link.closest('li');
+
+				if (linkTarget === currentId && currentId !== '') {
+					link.classList.add('toc-active');
+					li?.classList.add('toc-item-active');
+				} else {
+					link.classList.remove('toc-active');
+					li?.classList.remove('toc-item-active');
+				}
+			});
+
+			headings.forEach((heading) => {
+				if (heading instanceof HTMLElement) {
+					if (heading.id === currentId && currentId !== '') {
+						heading.classList.add('header-active');
+					} else {
+						heading.classList.remove('header-active');
+					}
+				}
+			});
+		};
+
+		window.addEventListener('scroll', onScroll, { passive: true });
+		window.addEventListener('resize', onScroll);
+
+		// Initial check
+		setTimeout(onScroll, 100);
+	}
+
+	// Robust Initialization
+	document.addEventListener('DOMContentLoaded', initScrollSpy);
+	document.addEventListener('astro:page-load', initScrollSpy);
+	if (document.readyState === 'complete') initScrollSpy();
+</script>

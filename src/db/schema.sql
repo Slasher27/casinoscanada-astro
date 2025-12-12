@@ -20,6 +20,7 @@ CREATE TABLE casinos (
   payout_ratio REAL,
   theme_color TEXT,
   logo_url TEXT,
+  thumbnail_url TEXT,
   bonus_offer TEXT,
   bonus_spins INTEGER
 );
@@ -53,6 +54,11 @@ CREATE TABLE slots (
   description TEXT,
   image_url TEXT,
   featured INTEGER DEFAULT 0, -- 0 = false, 1 = true
+  -- NEW RICH DATA
+  min_bet REAL,
+  max_bet REAL,
+  layout TEXT, -- e.g. "5x3"
+  features TEXT, -- JSON array e.g. ["Free Spins", "Wilds"]
   FOREIGN KEY(provider_id) REFERENCES software_providers(id)
 );
 
@@ -60,7 +66,15 @@ CREATE TABLE slots (
 CREATE TABLE payment_methods (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
-  logo_url TEXT
+  logo_url TEXT,
+  description TEXT,
+  type TEXT,
+  avg_speed TEXT,
+  fees TEXT,
+  min_deposit INTEGER,
+  max_withdrawal INTEGER,
+  pros TEXT,
+  cons TEXT
 );
 
 -- 7. Connector: Casino <-> Payment (NEW)

@@ -1,0 +1,52 @@
+---
+interface Props {
+	avg_speed: string;
+	fees: string;
+	min_deposit: number;
+	max_withdrawal: number;
+}
+
+const { avg_speed, fees, min_deposit, max_withdrawal } = Astro.props;
+---
+
+<div class='bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8'>
+	<h3
+		class='text-lg font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2'
+	>
+		Quick Facts
+	</h3>
+	<div class='grid grid-cols-2 gap-4'>
+		<div class='bg-gray-50 p-3 rounded-lg'>
+			<div
+				class='text-xs text-uppercase text-gray-500 font-semibold tracking-wider mb-1'
+			>
+				Speed
+			</div>
+			<div class='font-bold text-gray-900'>{avg_speed}</div>
+		</div>
+		<div class='bg-gray-50 p-3 rounded-lg'>
+			<div
+				class='text-xs text-uppercase text-gray-500 font-semibold tracking-wider mb-1'
+			>
+				Fees
+			</div>
+			<div class='font-bold text-gray-900'>{fees}</div>
+		</div>
+		<div class='bg-gray-50 p-3 rounded-lg'>
+			<div
+				class='text-xs text-uppercase text-gray-500 font-semibold tracking-wider mb-1'
+			>
+				Min Deposit
+			</div>
+			<div class='font-bold text-gray-900'>${min_deposit}</div>
+		</div>
+		<div class='bg-gray-50 p-3 rounded-lg'>
+			<div
+				class='text-xs text-uppercase text-gray-500 font-semibold tracking-wider mb-1'
+			>
+				Max Withdrawal
+			</div>
+			<div class='font-bold text-gray-900'>${max_withdrawal}</div>
+		</div>
+	</div>
+</div>

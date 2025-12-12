@@ -8,6 +8,15 @@ minDeposit: 20
 wageringReq: 40
 payoutTime: '8 Minutes'
 casinoId: 'bitstarz'
+pros:
+  - 'Instant withdrawals (Avg 8 mins)'
+  - 'Huge 5 BTC Welcome Package'
+  - "Verified 'Provably Fair' games"
+  - 'Over 4,000 slots available'
+cons:
+  - 'No telephone support (Chat only)'
+  - '40x Wagering is slightly high'
+  - 'No sports betting section'
 ---
 
 import BonusCard from '../../components/ui/BonusCard.astro';
@@ -27,19 +36,7 @@ Bitstarz is widely considered the "Gold Standard" for crypto casinos in Canada. 
 
 ### Pros and Cons
 
-<ProsCons
-	pros={[
-		'Instant withdrawals (Avg 8 mins)',
-		'Huge 5 BTC Welcome Package',
-		"Verified 'Provably Fair' games",
-		'Over 4,000 slots available',
-	]}
-	cons={[
-		'No telephone support (Chat only)',
-		'40x Wagering is slightly high',
-		'No sports betting section',
-	]}
-/>
+<ProsCons pros={frontmatter.pros} cons={frontmatter.cons} />
 
 ## The Welcome Bonus
 

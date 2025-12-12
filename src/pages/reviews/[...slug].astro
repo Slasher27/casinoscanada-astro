@@ -26,15 +26,49 @@ const { Content, headings } = await entry.render();
 			itemReviewed: {
 				'@type': 'Casino',
 				name: entry.data.title,
+				description: entry.data.metaDescription,
 			},
 			reviewRating: {
 				'@type': 'Rating',
 				ratingValue: entry.data.rating,
+				bestRating: 5,
+				worstRating: 1,
 			},
 			author: {
 				'@type': 'Organization',
 				name: entry.data.author,
+				url: 'https://casinoscanada.online',
 			},
+			publisher: {
+				'@type': 'Organization',
+				name: 'CasinosCanada',
+				logo: {
+					'@type': 'ImageObject',
+					url: 'https://casinoscanada.online/logo.png',
+				},
+			},
+			datePublished: entry.data.pubDate,
+			// New: Pros & Cons in Schema
+			positiveNotes: entry.data.pros
+				? {
+						'@type': 'ItemList',
+						itemListElement: entry.data.pros.map((pro, i) => ({
+							'@type': 'ListItem',
+							position: i + 1,
+							name: pro,
+						})),
+					}
+				: undefined,
+			negativeNotes: entry.data.cons
+				? {
+						'@type': 'ItemList',
+						itemListElement: entry.data.cons.map((con, i) => ({
+							'@type': 'ListItem',
+							position: i + 1,
+							name: con,
+						})),
+					}
+				: undefined,
 		})}
 	/>
 

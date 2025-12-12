@@ -4,37 +4,67 @@ interface Props {
 }
 
 const { items } = Astro.props;
+
+// Prepare Schema.org JSON-LD
+const schema = {
+	'@context': 'https://schema.org',
+	'@type': 'BreadcrumbList',
+	itemListElement: [
+		{
+			'@type': 'ListItem',
+			position: 1,
+			name: 'Home',
+			item: 'https://casinoscanada.online',
+		},
+		...items.map((item, index) => ({
+			'@type': 'ListItem',
+			position: index + 2,
+			name: item.text,
+			item: `https://casinoscanada.online${item.href}`,
+		})),
+	],
+};
 ---
 
 <nav aria-label='Breadcrumb' class='mb-6'>
+	<script type='application/ld+json' set:html={JSON.stringify(schema)} />
 	<ol class='flex items-center space-x-2 text-sm text-gray-500'>
 		<li>
 			<a href='/' class='hover:text-red-600 transition-colors'>Home</a>
 		</li>
 		{
-			items.map((item) => (
-				<li class='flex items-center space-x-2'>
-					<svg
-						class='w-4 h-4 text-gray-400'
-						fill='none'
-						stroke='currentColor'
-						viewBox='0 0 24 24'
-					>
-						<path
-							stroke-linecap='round'
-							stroke-linejoin='round'
-							stroke-width='2'
-							d='M9 5l7 7-7 7'
-						/>
-					</svg>
-					<a
-						href={item.href}
-						class='hover:text-red-600 transition-colors font-medium'
-					>
-						{item.text}
-					</a>
-				</li>
-			))
+			items.map((item, index) => {
+				const isLast = index === items.length - 1;
+				return (
+					<li class='flex items-center space-x-2'>
+						<svg
+							class='w-4 h-4 text-gray-400'
+							fill='none'
+							stroke='currentColor'
+							viewBox='0 0 24 24'
+						>
+							<path
+								stroke-linecap='round'
+								stroke-linejoin='round'
+								stroke-width='2'
+								d='M9 5l7 7-7 7'
+							/>
+						</svg>
+						{isLast ? (
+							<span class='text-slate-900 font-bold' aria-current='page'>
+								{item.text}
+							</span>
+						) : (
+							<a
+								href={item.href}
+								class='hover:text-red-600 transition-colors font-medium text-gray-500 hover:underline'
+							>
+								{item.text}
+							</a>
+						)}
+					</li>
+				);
+			})
 		}
 	</ol>
 </nav>

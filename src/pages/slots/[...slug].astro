@@ -3,26 +3,32 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { db } from '../../db/client';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import SlotHero from '../../components/slots/SlotHero.astro';
+import SlotSpecs from '../../components/slots/SlotSpecs.astro';
+import SidebarCasinos from '../../components/ui/SidebarCasinos.astro';
 
-// 1. Define the Interface (Matches your DB columns + Provider Name alias)
+// 1. Define the Interface
 interface SlotSql {
 	slug: string;
 	title: string;
 	provider_id: string;
-	provider_name: string; // From the JOIN
+	provider_name: string;
 	rtp: number;
 	volatility: string;
 	max_win: string;
 	paylines: string;
 	release_date: string;
 	description: string;
-	image_url: string; // Note: DB uses image_url, not image
+	image_url: string;
 	featured: number;
+	min_bet: number;
+	max_bet: number;
+	layout: string;
+	features: string; // JSON string
 }
 
-// 2. Generate Pages at Build Time using Database
+// 2. Generate Pages
 export async function getStaticPaths() {
-	// Query all slots and join with provider name to get "NetEnt" instead of "netent"
 	const slots = db
 		.prepare(
 			`
@@ -39,14 +45,62 @@ export async function getStaticPaths() {
 	}));
 }
 
-// 3. Get the data for the current page
 const { slot } = Astro.props;
+
+// 3. Smart Recommender: Find a casino that actually has this provider
+const recommendedCasino = db
+	.prepare(
+		`
+    SELECT c.name, c.bonus_offer, c.id 
+    FROM casinos c
+    JOIN casino_software cs ON c.id = cs.casino_id
+    WHERE cs.provider_id = ?
+    LIMIT 1
+`
+	)
+	.get(slot.provider_id) as
+	| { name: string; bonus_offer: string; id: string }
+	| undefined;
+
+// Fallback if no specific match found (use Bitstarz as default high quality option)
+const ctaCasino = recommendedCasino || {
+	name: 'Bitstarz',
+	bonus_offer: '5 BTC Welcome Package',
+	id: 'bitstarz',
+};
+
+// Schema.org Data
+const schema = {
+	'@context': 'https://schema.org',
+	'@type': 'SoftwareApplication',
+	name: slot.title,
+	applicationCategory: 'Game',
+	operatingSystem: 'Any',
+	offers: {
+		'@type': 'Offer',
+		price: '0',
+		priceCurrency: 'CAD',
+		availability: 'https://schema.org/InStock',
+	},
+	author: {
+		'@type': 'Organization',
+		name: slot.provider_name,
+	},
+	description: slot.description,
+};
 ---
 
 <BaseLayout
 	title={`${slot.title} Free Demo | Play Online in Canada`}
 	description={`Play ${slot.title} by ${slot.provider_name} for free. RTP: ${slot.rtp}%, Volatility: ${slot.volatility}. No download required.`}
 >
+	<!-- Add JsonLD -->
+	<script
+		type='application/ld+json'
+		slot='head'
+		set:html={JSON.stringify(schema)}
+	/>
+
 	<div class='container mx-auto px-4 py-8'>
 		<Breadcrumbs
 			items={[
@@ -54,52 +108,35 @@ const { slot } = Astro.props;
 				{ text: slot.title, href: Astro.url.pathname },
 			]}
 		/>
-	</div>
 
-	<div class='container mx-auto px-4 py-8'>
-		<div class='grid grid-cols-1 lg:grid-cols-3 gap-8'>
-			<div class='lg:col-span-2 space-y-8'>
-				<div>
-					<h1 class='text-3xl md:text-4xl font-bold text-gray-900 mb-2'>
-						{slot.title}
-					</h1>
-					<div class='flex items-center gap-4 text-sm text-gray-600'>
-						<span class='flex items-center gap-1'>
-							<svg
-								class='w-4 h-4'
-								fill='none'
-								stroke='currentColor'
-								viewBox='0 0 24 24'
-							>
-								<path
-									stroke-linecap='round'
-									stroke-linejoin='round'
-									stroke-width='2'
-									d='M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10'
-								></path>
-							</svg>
-							{slot.provider_name}
-						</span>
-						<span class='w-1 h-1 bg-gray-400 rounded-full'></span>
-						<span>{slot.release_date}</span>
-					</div>
-				</div>
+		<div class='mt-6'>
+			<SlotHero
+				title={slot.title}
+				provider={slot.provider_name}
+				imageUrl={slot.image_url}
+				rtp={slot.rtp}
+			/>
+		</div>
 
+		<div class='grid grid-cols-1 lg:grid-cols-12 gap-12'>
+			<!-- Main Content -->
+			<main class='lg:col-span-8 space-y-8'>
+				<!-- Demo Game Window -->
 				<div
-					class='aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative group'
+					class='aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative group border-4 border-slate-800'
 				>
 					<img
 						src={slot.image_url}
 						alt={slot.title}
 						class='w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity'
 						loading='lazy'
-						onerror="this.style.display='none'"
 					/>
 
 					<div
 						class='absolute inset-0 flex flex-col items-center justify-center'
 					>
 						<button
+							onclick="alert('Demo loader would trigger here. Implemented in Phase 3.')"
 							class='bg-red-600 hover:bg-red-700 text-white text-lg font-bold py-4 px-10 rounded-full shadow-lg transform hover:scale-105 transition-all flex items-center gap-2'
 						>
 							<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'>
@@ -109,47 +146,96 @@ const { slot } = Astro.props;
 							</svg>
 							PLAY DEMO
 						</button>
-						<p class='text-white mt-4 text-sm font-medium opacity-90'>
-							Click to load game (Age 19+)
+						<p
+							class='text-white mt-4 text-sm font-medium opacity-90 drop-shadow-md'
+						>
+							Confirm your age (19+) to play
 						</p>
 					</div>
 				</div>
 
+				<!-- CTA Box -->
 				<div
-					class='bg-blue-50 border border-blue-100 p-6 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4'
+					class='bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 p-6 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm'
 				>
 					<div>
 						<h3 class='font-bold text-blue-900 text-lg'>
-							Ready to play for real?
+							Play {slot.title} for Real Money?
 						</h3>
 						<p class='text-blue-700 text-sm'>
-							Get 100% Match Bonus up to $500 at our top rated casino.
+							We recommend <strong class='text-blue-900'
+								>{ctaCasino.name}</strong
+							> for {slot.provider_name} games.
+							<br />
+							<span class='text-xs opacity-75'
+								>Bonus: {ctaCasino.bonus_offer}</span
+							>
 						</p>
 					</div>
 					<a
-						href='/reviews/bitstarz'
-						class='bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg whitespace-nowrap transition-colors'
+						href={`/reviews/${ctaCasino.id}`}
+						class='bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg whitespace-nowrap transition-colors shadow-md transform hover:-translate-y-0.5'
 					>
-						Play for Real Money
+						Play at {ctaCasino.name}
 					</a>
 				</div>
 
-				<article class='prose max-w-none'>
-					<h2>About {slot.title}</h2>
+				<!-- Editorial Content -->
+				<article
+					class='prose prose-lg max-w-none prose-headings:font-bold prose-blue'
+				>
+					<h2>About the Game</h2>
 					<p>{slot.description}</p>
 					<p>
-						<strong>{slot.title}</strong> is a premium video slot from {
-							slot.provider_name
-						}. It features a Return to Player (RTP) of {slot.rtp}% and is
-						classified as a {slot.volatility} volatility game.
+						<strong>{slot.title}</strong> is a high-quality video slot developed by
+						the renowned {slot.provider_name}. It hit the markets on {
+							slot.release_date
+						} and has since become a favorite for its {slot.rtp}% RTP and {
+							slot.volatility
+						} volatility profile.
 					</p>
-					<h3>Game Features</h3>
-					<ul>
-						<li><strong>Max Win:</strong> {slot.max_win} your stake.</li>
-						<li><strong>Paylines:</strong> {slot.paylines}</li>
-					</ul>
+
+					<h3>Theme and Design</h3>
+					<p>
+						The game features a {slot.layout || 'standard'} grid layout with {
+							slot.paylines
+						} paylines. Players can chase the maximum win of {slot.max_win}.
+					</p>
+
+					<h3>Key Features</h3>
+					{
+						slot.features ? (
+							<ul>
+								{JSON.parse(slot.features).map((feat: string) => (
+									<li>
+										<strong>{feat}</strong>
+									</li>
+								))}
+							</ul>
+						) : (
+							<p>Standard slot features included.</p>
+						)
+					}
 				</article>
-			</div>
+			</main>
+
+			<!-- Sidebar -->
+			<aside class='lg:col-span-4 space-y-8'>
+				<div class='sticky top-8 space-y-8'>
+					<SlotSpecs
+						rtp={slot.rtp}
+						volatility={slot.volatility}
+						maxWin={slot.max_win}
+						paylines={slot.paylines}
+						layout={slot.layout}
+						minBet={slot.min_bet}
+						maxBet={slot.max_bet}
+						releaseDate={slot.release_date}
+					/>
+
+					<SidebarCasinos />
+				</div>
+			</aside>
 		</div>
 	</div>
 </BaseLayout>

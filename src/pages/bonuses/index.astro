@@ -1,10 +1,68 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import CasinoTopList from '../../components/ui/CasinoTopList.astro';
+import BonusFilter from '../../components/interactive/BonusFilter.svelte';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import Container from '../../components/common/Container.astro';
+import { db } from '../../db/client';
 
 const breadcrumbs = [{ text: 'Bonuses', href: '/bonuses' }];
+
+// 1. Fetch Casinos
+const casinos = db
+	.prepare('SELECT * FROM casinos ORDER BY payout_ratio DESC')
+	.all() as any[];
+const casinoIds = casinos.map((c) => c.id);
+
+// 2. Fetch Relations
+let allPayments: any[] = [];
+let allSoftware: any[] = [];
+
+if (casinoIds.length > 0) {
+	const placeholders = casinoIds.map(() => '?').join(',');
+
+	// Fetch Payments (Include min_deposit for calculation)
+	allPayments = db
+		.prepare(
+			`
+        SELECT cpm.casino_id, pm.id, pm.name, pm.logo_url, pm.min_deposit
+        FROM casino_payment_methods cpm
+        JOIN payment_methods pm ON cpm.method_id = pm.id
+        WHERE cpm.casino_id IN (${placeholders})
+    `
+		)
+		.all(...casinoIds) as any[];
+
+	// Fetch Software
+	allSoftware = db
+		.prepare(
+			`
+        SELECT cs.casino_id, sp.id, sp.name, sp.logo_url
+        FROM casino_software cs
+        JOIN software_providers sp ON cs.provider_id = sp.id
+        WHERE cs.casino_id IN (${placeholders})
+    `
+		)
+		.all(...casinoIds) as any[];
+}
+
+// 3. Enrich Data
+const enrichedCasinos = casinos.map((casino) => {
+	const methods = allPayments.filter((p) => p.casino_id === casino.id);
+	const providers = allSoftware.filter((s) => s.casino_id === casino.id);
+
+	// Calculate lowest deposit
+	const minDeposit =
+		methods.length > 0
+			? Math.min(...methods.map((m) => m.min_deposit || 20))
+			: 20;
+
+	return {
+		...casino,
+		payments: methods, // Pass all methods in case we want to show more
+		software: providers,
+		min_deposit: minDeposit,
+	};
+});
 ---
 
 <BaseLayout
@@ -17,24 +75,31 @@ const breadcrumbs = [{ text: 'Bonuses', href: '/bonuses' }];
 		</div>
 
 		<div
-			class='bg-slate-900 text-white min-h-[300px] flex flex-col justify-center items-center px-6 py-12 text-center rounded-3xl shadow-lg mb-12'
+			class='bg-slate-900 text-white min-h-[250px] flex flex-col justify-center items-center px-6 py-12 text-center rounded-3xl shadow-lg mb-12 relative overflow-hidden'
 		>
-			<h1 class='text-4xl md:text-6xl font-black mb-6 tracking-tight'>
+			<!-- Background Decoration -->
+			<div
+				class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"
+			>
+			</div>
+
+			<h1
+				class='text-4xl md:text-6xl font-black mb-4 tracking-tight relative z-10'
+			>
 				Top Casino <span class='text-red-500'>Bonuses</span> 🎁
 			</h1>
-			<p class='text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed'>
+			<p
+				class='text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed relative z-10'
+			>
 				Don't just look at the big numbers. We analyze the <strong
 					>Terms & Conditions</strong
 				> to find the offers with fair wagering requirements and real value.
 			</p>
 		</div>
 
-		<section class='max-w-5xl mx-auto mb-20'>
-			<div
-				class='bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden'
-			>
-				<CasinoTopList />
-			</div>
+		<!-- Filterable Bonus List -->
+		<section class='max-w-6xl mx-auto mb-20'>
+			<BonusFilter client:load casinos={enrichedCasinos} />
 		</section>
 
 		<article class='prose prose-lg mx-auto'>

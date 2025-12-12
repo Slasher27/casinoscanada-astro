@@ -51,31 +51,44 @@ const breadcrumbs = [{ text: 'Banking', href: '/banking' }];
 			Popular Payment Methods
 		</h2>
 
-		<div class='grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-16'>
-			{
-				methods.map((method) => (
-					<a
-						href={`/banking/${method.id}`}
-						class='group bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-400 transition-all text-center no-underline h-32'
-					>
-						<img
-							src={method.logo_url}
-							alt={method.name}
-							class='h-10 w-auto object-contain mb-3 group-hover:scale-110 transition-transform'
-							loading='lazy'
-							onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
-						/>
-						<span class='hidden font-bold text-gray-400 text-xs uppercase'>
-							{method.name}
-						</span>
+		{
+			['Bank Transfer', 'Card', 'e-Wallet', 'Crypto'].map((type) => {
+				const typeMethods = methods.filter(
+					(m) =>
+						m.type === type || (type === 'e-Wallet' && m.type === 'E-Wallet')
+				);
+				if (typeMethods.length === 0) return null;
 
-						<span class='text-sm font-bold text-gray-700 group-hover:text-blue-600'>
-							{method.name}
-						</span>
-					</a>
-				))
-			}
-		</div>
+				return (
+					<div class='mb-12'>
+						<h3 class='text-xl font-bold text-gray-800 mb-4 flex items-center gap-2'>
+							{type} Options
+						</h3>
+						<div class='grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4'>
+							{typeMethods.map((method) => (
+								<a
+									href={`/banking/${method.id}`}
+									class='group bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center hover:shadow-lg hover:border-blue-400 transition-all text-center no-underline h-40'
+								>
+									<img
+										src={method.logo_url}
+										alt={method.name}
+										class='h-12 w-auto object-contain mb-3 group-hover:scale-110 transition-transform'
+										loading='lazy'
+									/>
+									<span class='text-sm font-bold text-gray-900 group-hover:text-blue-600 block'>
+										{method.name}
+									</span>
+									<span class='text-xs text-gray-500 mt-1'>
+										{method.avg_speed}
+									</span>
+								</a>
+							))}
+						</div>
+					</div>
+				);
+			})
+		}
 
 		<div class='max-w-4xl mx-auto'>
 			<article

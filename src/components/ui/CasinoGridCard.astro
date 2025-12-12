@@ -1,0 +1,114 @@
+---
+const { casino, review, index } = Astro.props;
+
+const FALLBACK_ICON =
+	'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzlDQTNBRiI+PHBhdGggZD0iTTEyIDFMMyA1djZjMCA1LjU1IDMuODQgMTAuNzQgOSAxMiA1LjE2LTEuMjYgOS02LjQ1IDktMTJWNWwtOS00em0wIDEwLjk5aDdjLS41MyA0LjEyLTMuMjggNy43OS03IDguOTRWMTJINVY2LjNsNy0zLjExdjguOHoiLz48L3N2Zz4=';
+---
+
+<article
+	class='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full group'
+>
+	<!-- Hero / Mock Browser Header -->
+	<div
+		class='relative bg-slate-900 border-b border-gray-200 pt-8 pb-4 px-4 flex items-center justify-center overflow-hidden group-hover:bg-slate-800 transition-colors'
+	>
+		<!-- Background Thumbnail (Blurred Logo) -->
+		<!-- Increased opacity and relaxed blur to make it visible -->
+		<div
+			class='absolute inset-0 opacity-100 bg-center bg-cover bg-no-repeat transition-transform group-hover:scale-110 duration-700'
+			style={`background-image: url(${casino.thumbnail_url || casino.logo_url});`}
+		>
+		</div>
+
+		<!-- Gradient Overlay (Lighter) -->
+		<div
+			class='absolute inset-0 bg-gradient-to-t from-slate-900/80 to-slate-900/20'
+		>
+		</div>
+
+		<!-- Browser Dots -->
+		<div class='absolute top-3 left-4 flex gap-1.5 opacity-70 z-10'>
+			<div class='w-2.5 h-2.5 rounded-full bg-red-400'></div>
+			<div class='w-2.5 h-2.5 rounded-full bg-yellow-400'></div>
+			<div class='w-2.5 h-2.5 rounded-full bg-green-400'></div>
+		</div>
+
+		<!-- Logo as "Thumbnail" Content -->
+		<div
+			class='relative z-10 w-24 h-24 bg-white rounded-xl shadow-2xl border border-gray-100 flex items-center justify-center p-0 overflow-hidden transform group-hover:scale-105 transition-transform'
+		>
+			<img
+				src={casino.logo_url || FALLBACK_ICON}
+				alt={`${casino.name} Logo`}
+				class='w-full h-full object-contain rounded-xl'
+				onerror={`this.onerror=null; this.src='${FALLBACK_ICON}';`}
+			/>
+		</div>
+	</div>
+
+	<!-- Body -->
+	<div class='p-5 flex-col flex flex-grow'>
+		<!-- Title & Rating -->
+		<div class='flex justify-between items-start mb-3'>
+			<h2
+				class='text-lg font-black text-slate-900 leading-tight group-hover:text-red-600 transition-colors'
+			>
+				<a href={`/reviews/${review.slug}`} class='no-underline'>
+					{casino.name}
+				</a>
+			</h2>
+			<span
+				class='text-xs font-bold bg-yellow-50 text-yellow-700 px-2 py-0.5 rounded border border-yellow-100 whitespace-nowrap'
+			>
+				★ {review.data.rating}/5
+			</span>
+		</div>
+
+		<!-- Bonus -->
+		<div class='mb-4'>
+			<span
+				class='block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1'
+				>Welcome Bonus</span
+			>
+			<p class='font-bold text-sm text-slate-800 leading-snug'>
+				{casino.bonus_offer}
+			</p>
+		</div>
+
+		<!-- Description -->
+		<p class='text-xs text-gray-500 line-clamp-3 leading-relaxed mb-4'>
+			{review.data.metaDescription}
+		</p>
+
+		<!-- Specs Grid -->
+		<div
+			class='grid grid-cols-2 gap-2 mt-auto text-[10px] font-bold text-gray-500 border-t border-gray-100 pt-3'
+		>
+			<div class='flex flex-col'>
+				<span class='uppercase text-gray-300'>Payout</span>
+				<span class='text-slate-700'>⚡ {casino.payout_speed_minutes} mins</span
+				>
+			</div>
+			<div class='flex flex-col text-right'>
+				<span class='uppercase text-gray-300'>RTP</span>
+				<span class='text-green-600'>{casino.payout_ratio}%</span>
+			</div>
+		</div>
+	</div>
+
+	<!-- Footer Actions -->
+	<div class='p-4 bg-gray-50 border-t border-gray-100 flex gap-2'>
+		<a
+			href={`/reviews/${review.slug}`}
+			class='flex-1 bg-white border border-gray-200 hover:border-slate-300 text-slate-600 hover:text-slate-900 font-bold py-2 rounded-lg text-center text-xs uppercase tracking-wide transition-colors'
+		>
+			Read Review
+		</a>
+		<a
+			href={casino.website_url}
+			class='flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-center shadow-sm hover:shadow-md transition-all text-xs uppercase tracking-wide'
+		>
+			Visit
+		</a>
+	</div>
+</article>

@@ -108,5 +108,12 @@
 * **Architecture Update:** Modified `src/layouts/BaseLayout.astro` to accept a `mainClass` prop (allows full-width sections).
 * **New Component:** Created `src/components/ui/SlotsSection.astro` (Static UI for homepage).
 * **New Page:** Created `src/pages/slots/index.astro` (The Slots Silo homepage).
-* **New Template:** Created `src/pages/slots/[slug].astro` (Dynamic single slot pages).
+* **New Template:** Created `src/pages/slots/[...slug].astro` (Dynamic single slot pages).
 * **Next Steps:** Need to add real slot images to `public/images/slots/` and connect the "Review" pages.
+
+## Change Log - Dec 12, 2025
+
+* **Reviews Silo:** Enhanced `src/pages/reviews/[...slug].astro` with rich `Review` Schema (pros/cons).
+* **Smart UI:** Created `CasinoSpecs.astro` that auto-calculates min deposits from connected payment methods.
+* **UX Upgrade:** Implemented "Scroll Spy" in `ReviewLayout.astro` for intelligent TOC highlighting.
+* **Data Structure:** Migrated review Pros/Cons to Frontmatter for better AI indexing.

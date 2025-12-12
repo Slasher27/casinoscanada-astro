@@ -1,15 +1,13 @@
 ---
-// src/pages/banking/[id].astro
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import { db } from '../../db/client';
 import ListingLayout from '../../layouts/ListingLayout.astro';
+import BankingStats from '../../components/ui/BankingStats.astro';
+import BankingFAQ from '../../components/ui/BankingFAQ.astro';
 
-// 1. Generate a page for every Payment Method (Interac, Visa, etc.)
+// 1. Generate Pages
 export async function getStaticPaths() {
-	const methods = db.prepare('SELECT id, name FROM payment_methods').all() as {
-		id: string;
-		name: string;
-	}[];
+	const methods = db.prepare('SELECT * FROM payment_methods').all() as any[];
 
 	return methods.map((method) => ({
 		params: { id: method.id },
@@ -19,7 +17,7 @@ export async function getStaticPaths() {
 
 const { method } = Astro.props;
 
-// 2. Fetch all casinos that accept this method
+// 2. Fetch Casinos
 const casinos = db
 	.prepare(
 		`
@@ -30,82 +28,165 @@ const casinos = db
 	)
 	.all(method.id) as any[];
 
-// 3. Fetch Reviews to get Ratings & Slugs
-// (We need this because Rating is in MDX, not SQLite)
+// 3. Fetch Editorial Content (MDX)
+const bankingContent = await getCollection('banking');
+const currentGuide = bankingContent.find((g) => g.data.paymentId === method.id);
+let Content;
+if (currentGuide) {
+	const rendered = await render(currentGuide);
+	Content = rendered.Content;
+}
+
+// 4. Fetch Reviews (for Ratings)
 const allReviews = await getCollection('reviews');
 const reviewMap = new Map(
 	allReviews.map((r) => [
 		r.data.casinoId,
-		{
-			rating: r.data.rating,
-			slug: r.slug,
-		},
+		{ rating: r.data.rating, slug: r.slug },
 	])
 );
 
-const breadcrumbs = [
-	{ text: 'Banking', href: '/guides/banking' },
-	{ text: `${method.name} Casinos`, href: Astro.url.pathname },
+// 5. Parse JSON Data
+const pros = method.pros ? JSON.parse(method.pros) : [];
+const cons = method.cons ? JSON.parse(method.cons) : [];
+
+// 6. Generate FAQ Data (If missing, use defaults for schema)
+const faqs = [
+	{
+		question: `Is ${method.name} safe for online casinos?`,
+		answer: `Yes, ${method.name} is a trusted payment method offering high security encryption and widely accepted in Canada.`,
+	},
+	{
+		question: `Are there any fees for using ${method.name}?`,
+		answer: `${method.fees}. Most casinos cover the deposit fees, but always check with your bank.`,
+	},
+	{
+		question: `How fast are ${method.name} withdrawals?`,
+		answer: `Withdrawals typically take ${method.avg_speed}. It is one of the faster options available.`,
+	},
 ];
+
+// 7. Schema.org (FinancialProduct)
+const schema = {
+	'@context': 'https://schema.org',
+	'@type': 'FinancialProduct',
+	name: `${method.name} Casino Payments`,
+	description: method.description,
+	feesAndCommissionsSpecification: method.fees,
+	areaServed: 'CA',
+};
 ---
 
 <ListingLayout
-	title={`Best ${method.name} Casinos in Canada (2025)`}
-	description={`List of top rated online casinos in Canada that accept ${method.name}. Fast deposits and withdrawals.`}
+	title={`Best ${method.name} Casinos Canada (2025) | Fast Payouts`}
+	description={`Top rated ${method.name} online casinos. Speed: ${method.avg_speed}, Fees: ${method.fees}. Read our full guide.`}
 	heroTitle={`Best ${method.name} Casinos`}
-	heroDescription={`Browse the safest online casinos accepting ${method.name}. We tested the deposit limits and withdrawal speeds for you.`}
-	breadcrumbs={breadcrumbs}
+	heroDescription={method.description}
+	breadcrumbs={[
+		{ text: 'Banking', href: '/banking' },
+		{ text: method.name, href: Astro.url.pathname },
+	]}
 >
-	<div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
+	<!-- 1. Rich Stats Card -->
+	<BankingStats
+		avg_speed={method.avg_speed}
+		fees={method.fees}
+		min_deposit={method.min_deposit}
+		max_withdrawal={method.max_withdrawal}
+	/>
+
+	<!-- 2. Pros & Cons -->
+	<div class='grid md:grid-cols-2 gap-6 mb-12'>
+		<div class='bg-green-50 p-6 rounded-xl border border-green-100'>
+			<h3 class='font-bold text-green-800 mb-4 flex items-center gap-2'>
+				<svg
+					class='w-5 h-5'
+					fill='none'
+					stroke='currentColor'
+					viewBox='0 0 24 24'
+					><path
+						stroke-linecap='round'
+						stroke-linejoin='round'
+						stroke-width='2'
+						d='M5 13l4 4L19 7'></path></svg
+				>
+				Pros
+			</h3>
+			<ul class='space-y-2'>
+				{
+					pros.map((pro: string) => (
+						<li class='flex items-start gap-2 text-green-700 text-sm'>
+							<span>•</span> {pro}
+						</li>
+					))
+				}
+			</ul>
+		</div>
+		<div class='bg-red-50 p-6 rounded-xl border border-red-100'>
+			<h3 class='font-bold text-red-800 mb-4 flex items-center gap-2'>
+				<svg
+					class='w-5 h-5'
+					fill='none'
+					stroke='currentColor'
+					viewBox='0 0 24 24'
+					><path
+						stroke-linecap='round'
+						stroke-linejoin='round'
+						stroke-width='2'
+						d='M6 18L18 6M6 6l12 12'></path></svg
+				>
+				Cons
+			</h3>
+			<ul class='space-y-2'>
+				{
+					cons.map((con: string) => (
+						<li class='flex items-start gap-2 text-red-700 text-sm'>
+							<span>•</span> {con}
+						</li>
+					))
+				}
+			</ul>
+		</div>
+	</div>
+
+	<!-- 3. Casino List -->
+	<h2 class='text-2xl font-bold text-gray-900 mb-6'>
+		Top Casinos accepting {method.name}
+	</h2>
+	<div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16'>
 		{
 			casinos.map((casino) => {
-				// Get Rating & Link from the MDX map
 				const reviewData = reviewMap.get(casino.id);
 				const rating = reviewData ? reviewData.rating : 'N/A';
 				const link = reviewData ? `/reviews/${reviewData.slug}` : '#';
-
 				return (
 					<a href={link} class='group no-underline'>
-						<article class='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-xl hover:border-blue-300 transition-all duration-300 h-full flex flex-col'>
+						<article class='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 h-full flex flex-col'>
 							<div class='p-6 border-b border-gray-100 bg-gray-50 group-hover:bg-blue-50 transition-colors'>
-								<div class='flex justify-between items-center'>
-									<h2 class='text-2xl font-bold text-gray-800 m-0 group-hover:text-blue-700'>
-										{casino.name}
-									</h2>
-									{/* Optional: You could show the payment logo here too */}
-								</div>
+								<h2 class='text-xl font-bold text-gray-800 group-hover:text-blue-700'>
+									{casino.name}
+								</h2>
 								<p class='text-sm text-gray-500 mt-1'>{casino.owner}</p>
 							</div>
-
 							<div class='p-6 flex-grow'>
 								<div class='flex justify-between items-center mb-4'>
 									<div class='flex flex-col'>
-										<span class='text-[10px] uppercase text-gray-400 font-bold tracking-wider'>
+										<span class='text-[10px] uppercase text-gray-400 font-bold'>
 											Rating
 										</span>
-										<span class='text-xl font-bold text-yellow-600'>
+										<span class='text-lg font-bold text-yellow-600'>
 											★ {rating}/5
 										</span>
 									</div>
 									<div class='flex flex-col text-right'>
-										<span class='text-[10px] uppercase text-gray-400 font-bold tracking-wider'>
+										<span class='text-[10px] uppercase text-gray-400 font-bold'>
 											Speed
 										</span>
-										<span class='text-xl font-bold text-green-600'>
-											{casino.payout_speed_minutes} Mins
+										<span class='text-lg font-bold text-green-600'>
+											{casino.payout_speed_minutes}m
 										</span>
 									</div>
 								</div>
-
-								<div class='text-center bg-yellow-50 p-2 rounded border border-yellow-100 mb-4'>
-									<span class='text-sm font-bold text-gray-900'>
-										{casino.bonus_offer}
-									</span>
-								</div>
-							</div>
-
-							<div class='p-4 bg-gray-50 border-t border-gray-100 text-center text-blue-600 font-bold group-hover:bg-blue-600 group-hover:text-white transition-colors'>
-								Read Review &rarr;
 							</div>
 						</article>
 					</a>
@@ -114,14 +195,27 @@ const breadcrumbs = [
 		}
 	</div>
 
+	<!-- 4. Editorial Content (MDX) -->
 	{
-		casinos.length === 0 && (
-			<div class='text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300'>
-				<p class='text-gray-500 text-lg'>
-					No casinos currently listed for {method.name}. <br />
-					<span class='text-sm'>We are adding more soon!</span>
+		Content ? (
+			<div class='prose prose-lg max-w-none mb-12'>
+				<Content />
+			</div>
+		) : (
+			<div class='bg-blue-50 p-8 rounded-xl text-center mb-12'>
+				<h3 class='text-xl font-bold text-blue-900 mb-2'>
+					Detailed Guide Coming Soon
+				</h3>
+				<p class='text-blue-700'>
+					We are currently writing the in-depth review for {method.name}.
 				</p>
 			</div>
 		)
 	}
+
+	<!-- 5. FAQ Section -->
+	<BankingFAQ faqs={faqs} />
+
+	<!-- 6. JSON-LD -->
+	<script type='application/ld+json' set:html={JSON.stringify(schema)} />
 </ListingLayout>

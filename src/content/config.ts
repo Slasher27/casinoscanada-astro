@@ -20,6 +20,10 @@ const reviewsCollection = defineCollection({
 		payoutTime: z.string(), // <--- This was missing
 		wageringReq: z.number().optional(),
 		minDeposit: z.number().optional(),
+
+		// Rich Data for Schema
+		pros: z.array(z.string()).optional(),
+		cons: z.array(z.string()).optional(),
 	}),
 });
 
@@ -37,9 +41,22 @@ const guidesCollection = defineCollection({
 	}),
 });
 
-// Export both collections
+// NEW: Schema for Banking Guides
+const bankingCollection = defineCollection({
+	type: 'content',
+	schema: z.object({
+		title: z.string(),
+		metaDescription: z.string(),
+		pubDate: z.date(),
+		updatedDate: z.date().optional(),
+		author: z.string().default('Casinos Canada Team'),
+		paymentId: z.string(), // Links to SQLite ID
+	}),
+});
 
+// Export all collections
 export const collections = {
 	reviews: reviewsCollection,
 	guides: guidesCollection,
+	banking: bankingCollection,
 };

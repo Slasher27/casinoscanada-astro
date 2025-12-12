@@ -13,7 +13,7 @@ const casino = db
 	.prepare('SELECT * FROM casinos WHERE id = ?')
 	.get(casinoId) as any;
 
-// 2. Get Payment Methods for this specific casino
+// 2. Get All Payment Methods (For List)
 const payments = db
 	.prepare(
 		`
@@ -24,6 +24,23 @@ const payments = db
 `
 	)
 	.all(casinoId) as { name: string; logo_url: string }[];
+
+// 3. Find Lowest Min Deposit (Smart Calculation)
+const paymentStats = db
+	.prepare(
+		`
+	SELECT pm.name, pm.min_deposit
+	FROM payment_methods pm
+	JOIN casino_payment_methods cpm ON pm.id = cpm.method_id
+	WHERE cpm.casino_id = ?
+	AND pm.min_deposit IS NOT NULL
+	ORDER BY pm.min_deposit ASC
+	LIMIT 1
+`
+	)
+	.get(casinoId) as { name: string; min_deposit: number };
+
+const bestDeposit = paymentStats || { min_deposit: 20, name: 'Standard' };
 ---
 
 {
@@ -59,7 +76,12 @@ const payments = db
 					</div>
 					<div class='flex justify-between'>
 						<dt class='text-gray-500 font-medium'>Min Deposit</dt>
-						<dd class='font-bold text-gray-900'>$20</dd>
+						<dd class='font-bold text-gray-900'>
+							${bestDeposit.min_deposit}{' '}
+							<span class='text-xs text-gray-400 font-normal'>
+								({bestDeposit.name})
+							</span>
+						</dd>
 					</div>
 				</dl>
 			</div>

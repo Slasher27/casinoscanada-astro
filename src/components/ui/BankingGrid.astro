@@ -1,0 +1,88 @@
+---
+import { db } from '../../db/client';
+
+interface PaymentSql {
+	id: string;
+	name: string;
+	logo_url: string;
+	avg_speed: string;
+    type: string;
+}
+
+// Fetch top 6 payment methods
+const payments = db
+	.prepare(
+		`SELECT id, name, logo_url, avg_speed, type FROM payment_methods LIMIT 6`
+	)
+	.all() as PaymentSql[];
+---
+
+<section class='py-16 bg-gray-50 border-t border-gray-200'>
+	<div class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+		<div class='flex flex-col sm:flex-row justify-between items-end mb-10 gap-4'>
+			<div>
+				<h2 class='text-3xl font-bold text-gray-900 tracking-tight'>
+					Fastest Banking Methods
+				</h2>
+				<p class='mt-2 text-lg text-gray-600'>
+					Secure deposit & withdrawal options for Canadian players.
+				</p>
+			</div>
+			<a
+				href='/banking'
+				class='hidden sm:inline-flex group items-center text-blue-600 hover:text-blue-800 font-semibold transition-colors'
+			>
+				See All Options
+				<svg
+					class='w-5 h-5 ml-1 transform group-hover:translate-x-1 transition-transform'
+					fill='none'
+					stroke='currentColor'
+					viewBox='0 0 24 24'
+					><path
+						stroke-linecap='round'
+						stroke-linejoin='round'
+						stroke-width='2'
+						d='M17 8l4 4m0 0l-4 4m4-4H3'></path></svg
+				>
+			</a>
+		</div>
+
+		<div class='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4'>
+			{
+				payments.map((method) => (
+					<a
+						href={`/banking/${method.id}`}
+						class='group bg-white rounded-xl p-4 shadow-sm border border-gray-200 hover:shadow-md hover:border-blue-200 transition-all flex flex-col items-center text-center'
+					>
+						<div class='h-12 w-auto mb-3 flex items-center justify-center grayscale group-hover:grayscale-0 transition-all duration-300 opacity-80 group-hover:opacity-100'>
+							<img
+								src={method.logo_url}
+								alt={method.name}
+								class='max-h-full max-w-full object-contain'
+							    onerror="this.style.display='none'"
+                            />
+                            <!-- Fallback Text if image fails -->
+                            <span class="text-xs font-bold text-gray-400 hidden group-hover:hidden">LOGO</span>
+						</div>
+						<h3 class='font-bold text-gray-900 group-hover:text-blue-700 transition-colors'>
+							{method.name}
+						</h3>
+						<span class='text-xs text-gray-500 mt-1 font-medium bg-gray-100 flex items-center gap-1 px-2 py-0.5 rounded-full'>
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+							{method.avg_speed}
+						</span>
+					</a>
+				))
+			}
+		</div>
+        
+        <div class='mt-8 text-center sm:hidden'>
+			<a
+				href='/banking'
+				class='inline-block w-full px-6 py-3 border border-gray-300 rounded-lg text-base font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors'
+			>
+				View All Banking
+			</a>
+		</div>
+	</div>
+</section>
