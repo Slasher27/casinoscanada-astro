@@ -1,4 +1,6 @@
 ---
+import Button from './Button.astro';
+
 interface Props {
 	casinoName: string;
 	bonus: string;
@@ -10,10 +12,10 @@ const { casinoName, bonus, link, logo } = Astro.props;
 ---
 
 <div
-	class='not-prose my-8 p-6 bg-slate-900 rounded-xl border border-slate-700 shadow-xl flex flex-col md:flex-row items-center gap-6'
+	class='not-prose my-8 p-card-lg bg-primary-900 rounded-card border border-primary-700 shadow-card-hover flex flex-col md:flex-row items-center gap-6'
 >
 	<div
-		class='w-16 h-16 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-2xl shrink-0'
+		class='w-16 h-16 bg-accent-600 rounded-full flex items-center justify-center text-white font-bold text-2xl shrink-0'
 	>
 		{
 			logo ? (
@@ -28,13 +30,15 @@ const { casinoName, bonus, link, logo } = Astro.props;
 		<h3 class='text-white text-lg font-bold m-0'>
 			{casinoName} Exclusive Offer
 		</h3>
-		<p class='text-yellow-400 text-2xl font-black m-0 mt-1'>{bonus}</p>
+		<p class='text-bonus-400 text-2xl font-black m-0 mt-1'>{bonus}</p>
 	</div>
 
-	<a
+	<Button
 		href={link}
-		class='bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg transition transform hover:scale-105 no-underline'
+		variant="primary"
+		size="md"
+		class="no-underline"
 	>
 		Claim Bonus &rarr;
-	</a>
+	</Button>
 </div>

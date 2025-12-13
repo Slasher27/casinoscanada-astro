@@ -56,7 +56,7 @@ insertCasino.run(
 	2020,
 	'Curacao',
 	'Dama N.V.',
-	30,
+	9,
 	96.8,
 	'#3b82f6',
 	'/images/casinos/logos/woo-casino-200x200.png',
@@ -72,13 +72,29 @@ insertCasino.run(
 	2019,
 	'Curacao',
 	'Dama N.V.',
-	30,
+	6,
 	96.8,
 	'#8cc63f',
 	'/images/casinos/logos/fastpay-casino-200x200.png',
 	'/images/casinos/thumbnails/fastpay-casino.jpg',
 	'Up To $150',
 	100
+);
+
+insertCasino.run(
+	'bodog',
+	'Bodog Casino',
+	'https://bodog.eu',
+	1994,
+	'Antigua and Barbuda',
+	'II Nido Limited',
+	60,
+	96.8,
+	'#8cc63f',
+	'/images/casinos/logos/bodog-casino-200x200.png',
+	'/images/casinos/thumbnails/bodog-casino.jpg',
+	'$3,500 On First 5 Deposits',
+	400
 );
 
 // 4. Insert Software Providers
@@ -103,6 +119,18 @@ insertProvider.run(
 	'Microgaming',
 	'/images/software/microgaming.png'
 );
+insertProvider.run(
+	'gaming-corps',
+	'Gaming Corps',
+	'/images/software/gaming-corps.png'
+);
+insertProvider.run('reelplay', 'ReelPlay', '/images/software/reelplay.png');
+insertProvider.run(
+	'relax-gaming',
+	'Relax Gaming',
+	'/images/software/relax-gaming.png'
+);
+insertProvider.run('swintt', 'Swintt', '/images/software/swintt.png');
 
 // Link Casinos to Software
 const linkSoftware = db.prepare(
@@ -110,10 +138,22 @@ const linkSoftware = db.prepare(
 );
 linkSoftware.run('bitstarz', 'netent');
 linkSoftware.run('bitstarz', 'evolution');
+linkSoftware.run('bitstarz', 'pragmatic');
 linkSoftware.run('spin', 'microgaming');
+linkSoftware.run('spin', 'evolution');
+linkSoftware.run('spin', 'pragmatic');
+linkSoftware.run('spin', 'netent');
 linkSoftware.run('woo', 'netent');
 linkSoftware.run('woo', 'evolution');
+linkSoftware.run('woo', 'pragmatic');
 linkSoftware.run('fastpay', 'pragmatic');
+linkSoftware.run('fastpay', 'netent');
+linkSoftware.run('fastpay', 'evolution');
+linkSoftware.run('fastpay', 'microgaming');
+linkSoftware.run('bodog', 'pragmatic');
+linkSoftware.run('bodog', 'netent');
+linkSoftware.run('bodog', 'evolution');
+linkSoftware.run('bodog', 'microgaming');
 
 console.log('✅ Software seeded!');
 
@@ -329,6 +369,12 @@ linkPayment.run('woo', 'visa');
 linkPayment.run('fastpay', 'bitcoin');
 linkPayment.run('fastpay', 'interac');
 linkPayment.run('fastpay', 'muchbetter');
+
+// Link Bodog
+linkPayment.run('bodog', 'bitcoin');
+linkPayment.run('bodog', 'interac');
+linkPayment.run('bodog', 'visa');
+linkPayment.run('bodog', 'mastercard');
 
 console.log('✅ Payments Seeded!');
 console.log('🚀 Database Ready!');

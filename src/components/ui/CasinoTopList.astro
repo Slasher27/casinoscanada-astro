@@ -1,5 +1,8 @@
 ---
 import { db } from '../../db/client';
+import Button from './Button.astro';
+import Badge from './Badge.astro';
+import Heading from './Heading.astro';
 
 // 1. Define Types
 type Entity = { id: string; name: string; logo_url: string };
@@ -54,18 +57,18 @@ if (casinoIds.length > 0) {
 const topCasinos = topCasinosRaw.map((casino) => {
 	const methods = allPayments.filter((p) => p.casino_id === casino.id);
     const providers = allSoftware.filter((s) => s.casino_id === casino.id);
-	
+
     // Calculate lowest deposit
-    const minDeposit = methods.length > 0 
-        ? Math.min(...methods.map(m => m.min_deposit || 20)) 
+    const minDeposit = methods.length > 0
+        ? Math.min(...methods.map(m => m.min_deposit || 20))
         : 20;
 
     // Sort entities purely for consistent display
 	const sortedMethods = methods.slice(0, 5); // Limit to 5
     const sortedSoftware = providers.slice(0, 4); // Limit to 4
 
-	return { 
-        ...casino, 
+	return {
+        ...casino,
         payments: sortedMethods,
         software: sortedSoftware,
         min_deposit: minDeposit
@@ -77,7 +80,7 @@ const FALLBACK_ICON = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy5
 
 <div class='flex flex-col gap-4'>
 	<!-- Desktop Header -->
-	<div class='hidden lg:grid grid-cols-12 gap-4 bg-gray-50 p-4 rounded-t-xl text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-200'>
+	<div class='hidden lg:grid grid-cols-12 gap-4 bg-primary-50 p-card-sm rounded-t-card text-xs font-bold text-primary-600 uppercase tracking-wider border-b border-primary-200'>
 		<div class='col-span-1 text-center'>Rank</div>
 		<div class='col-span-4'>Casino & Key Stats</div>
 		<div class='col-span-3'>Software & Banking</div>
@@ -86,64 +89,71 @@ const FALLBACK_ICON = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy5
 	</div>
 
 	{topCasinos.map((casino, index) => (
-		<div class='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow relative'>
-			
+		<div class='bg-white rounded-card shadow-card border border-primary-200 overflow-hidden hover:shadow-card-hover transition-shadow relative'>
+
 			<!-- MOBILE / TABLET VIEW (< 1024px) -->
-			<div class='lg:hidden p-5 flex flex-col gap-4'>
+			<div class='lg:hidden p-card flex flex-col gap-4'>
                 <!-- Top Row: Logo, Rank, Name, Info -->
 				<div class='flex items-start gap-4'>
                     <!-- Rank Badge -->
-                    <div class='absolute top-0 left-0 bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded-br-lg z-10'>
+                    <div class='absolute top-0 left-0 bg-primary-900 text-white text-xs font-bold px-3 py-1 rounded-br-lg z-10'>
                         #{index + 1}
                     </div>
 
-					<div class='w-24 h-24 flex-shrink-0 flex items-center justify-center mt-2 overflow-hidden rounded-xl'>
+					<div class='w-24 h-24 flex-shrink-0 flex items-center justify-center mt-2 overflow-hidden rounded-card'>
 						<img
 							src={casino.logo_url || FALLBACK_ICON}
 							alt={casino.name}
-							class='w-full h-full object-contain rounded-xl'
+							class='w-full h-full object-contain rounded-card'
 							onerror={`this.onerror=null; this.src='${FALLBACK_ICON}';`}
 						/>
 					</div>
 					<div class="flex-grow pt-1">
-						<h3 class='text-xl font-black text-slate-900 leading-none mb-1'>
+						<Heading level={3} as="card-title" class="mb-1">
 							{casino.name}
-						</h3>
-                        <div class="flex flex-wrap gap-2 text-xs font-bold text-gray-500 mb-2">
-                            <span class="bg-gray-100 px-2 py-0.5 rounded">{casino.license}</span>
-                             <span class="bg-green-50 text-green-700 px-2 py-0.5 rounded border border-green-100">
+						</Heading>
+                        <div class="flex flex-wrap gap-2 mb-2">
+                            <Badge variant="neutral" size="sm">{casino.license}</Badge>
+                            <Badge variant="success" size="sm">
                                 RTP {casino.payout_ratio}%
-                            </span>
+                            </Badge>
                         </div>
-                        <a href={`/reviews/${casino.id}-casino/`} class='text-sm text-blue-600 font-bold hover:underline'>
+                        <Button
+							href={`/reviews/${casino.id}-casino/`}
+							variant="link"
+							class='text-sm'
+						>
                             Read Review &rarr;
-                        </a>
+                        </Button>
 					</div>
 				</div>
 
                 <!-- Middle: Bonus Box -->
-				<div class='bg-yellow-50 border border-yellow-100 rounded-lg p-3 text-center'>
-					<span class='block text-xs font-bold text-yellow-700 uppercase tracking-wide mb-1'>Welcome Bonus</span>
-					<span class='block text-lg font-black text-slate-900'>{casino.bonus_offer}</span>
+				<div class='bg-bonus-50 border border-bonus-100 rounded-btn p-3 text-center'>
+					<span class='block text-xs font-bold text-bonus-700 uppercase tracking-wide mb-1'>Welcome Bonus</span>
+					<span class='block text-lg font-black text-primary-900'>{casino.bonus_offer}</span>
 				</div>
 
                 <!-- Bottom: Specs & CTA -->
-				<div class='flex flex-wrap items-center justify-between gap-4 border-t border-gray-100 pt-3'>
+				<div class='flex flex-wrap items-center justify-between gap-4 border-t border-primary-200 pt-3'>
                     <div class="flex flex-col gap-1">
-                        <span class="text-xs text-gray-500 font-bold">Fast Payouts</span>
-                         <span class="text-sm font-bold text-slate-800">⚡ {casino.payout_speed_minutes} mins</span>
+                        <span class="text-xs text-primary-600 font-bold">Fast Payouts</span>
+                         <span class="text-sm font-bold text-primary-700">⚡ {casino.payout_speed_minutes} mins</span>
                     </div>
-					<a
+					<Button
 						href={casino.website_url}
-						class='flex-grow sm:flex-grow-0 bg-red-600 text-white font-bold py-3 px-8 rounded-lg text-center shadow-md active:scale-95 transition-transform'
+						variant="primary"
+						size="md"
+						fullWidth
+						class="sm:flex-grow-0"
 					>
 						Play Now
-					</a>
+					</Button>
 				</div>
-                
+
                 <!-- Expanded Info (Tablet Optimization) -->
                 <div class="hidden sm:flex items-center gap-2 pt-2 overflow-hidden opacity-75">
-                     <span class="text-xs font-bold text-gray-400">Software:</span>
+                     <span class="text-xs font-bold text-primary-600">Software:</span>
                      {casino.software?.slice(0, 6).map(s => (
                         <img src={s.logo_url} class="h-12 w-auto grayscale" alt={s.name} />
                      ))}
@@ -151,41 +161,41 @@ const FALLBACK_ICON = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy5
 			</div>
 
 			<!-- DESKTOP VIEW (>= 1024px) -->
-			<div class='hidden lg:grid grid-cols-12 gap-4 items-center p-4 min-h-[100px]'>
-				
+			<div class='hidden lg:grid grid-cols-12 gap-4 items-center p-card-sm min-h-[100px]'>
+
                 <!-- Rank -->
                 <div class='col-span-1 flex justify-center'>
-					<div class='w-10 h-10 rounded-full bg-slate-100 text-slate-600 font-black text-lg flex items-center justify-center border border-slate-200'>
+					<div class='w-10 h-10 rounded-badge bg-primary-100 text-primary-600 font-black text-lg flex items-center justify-center border border-primary-200'>
 						{index + 1}
 					</div>
 				</div>
 
 				<!-- Info -->
                 <div class='col-span-4 flex items-center gap-4'>
-					<div class='w-24 h-24 flex-shrink-0 flex items-center justify-center overflow-hidden rounded-xl'>
+					<div class='w-24 h-24 flex-shrink-0 flex items-center justify-center overflow-hidden rounded-card'>
 						<img
 							src={casino.logo_url || FALLBACK_ICON}
 							alt={casino.name}
-							class='w-full h-full object-contain rounded-xl'
+							class='w-full h-full object-contain rounded-card'
 							onerror={`this.onerror=null; this.src='${FALLBACK_ICON}';`}
 						/>
 					</div>
 					<div>
-						<h3 class='text-xl font-bold text-slate-900 leading-none'>
-							<a href={`/reviews/${casino.id}-casino/`} class='hover:text-blue-600 transition-colors'>
+						<h3 class='text-xl font-bold text-primary-900 leading-none'>
+							<a href={`/reviews/${casino.id}-casino/`} class='hover:text-accent-600 transition-colors'>
 								{casino.name}
 							</a>
 						</h3>
 						<div class='flex items-center gap-2 mt-1'>
-                            <span class="text-xs font-bold bg-gray-100 px-2 py-0.5 rounded text-gray-600 border border-gray-200" title="License">
+                            <Badge variant="neutral" size="sm" title="License">
                                 {casino.license}
-                            </span>
-                             <span class="text-xs font-bold text-green-600 flex items-center gap-1" title="Minimum Deposit">
+                            </Badge>
+                            <Badge variant="success" size="sm" border={false} title="Minimum Deposit">
                                 💰 Min ${casino.min_deposit}
-                            </span>
-                            <span class="text-xs font-bold text-blue-600 flex items-center gap-1" title="Payout Ratio">
+                            </Badge>
+                            <Badge variant="info" size="sm" border={false} title="Payout Ratio">
                                 📈 {casino.payout_ratio}%
-                            </span>
+                            </Badge>
 						</div>
 					</div>
 				</div>
@@ -193,13 +203,13 @@ const FALLBACK_ICON = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy5
                 <!-- Logos (Software & Banking Mixed) -->
 				<div class='col-span-3 flex flex-col justify-center gap-3'>
                    <div class="flex items-center gap-2 overflow-hidden">
-                       <span class="text-[10px] uppercase font-bold text-gray-400 w-12 shrink-0">Games</span>
+                       <span class="text-[10px] uppercase font-bold text-primary-600 w-12 shrink-0">Games</span>
                        {casino.software?.map(s => (
                            <img src={s.logo_url} title={s.name} alt={s.name} class="h-16 w-auto object-contain grayscale hover:grayscale-0 opacity-80 hover:opacity-100 transition-all cursor-help" />
                        ))}
                    </div>
                    <div class="flex items-center gap-2 overflow-hidden">
-                       <span class="text-[10px] uppercase font-bold text-gray-400 w-12 shrink-0">Bank</span>
+                       <span class="text-[10px] uppercase font-bold text-primary-600 w-12 shrink-0">Bank</span>
                        {casino.payments?.map(p => (
                            <img src={p.logo_url} title={p.name} alt={p.name} class="h-6 w-auto object-contain" />
                        ))}
@@ -208,25 +218,30 @@ const FALLBACK_ICON = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy5
 
                 <!-- Bonus -->
 				<div class='col-span-2 text-center flex flex-col justify-center'>
-					<span class='font-bold text-slate-900 text-lg leading-tight'>{casino.bonus_offer}</span>
+					<span class='font-bold text-primary-900 text-lg leading-tight'>{casino.bonus_offer}</span>
 					{(casino.bonus_spins || 0) > 0 && (
-						<span class='text-xs text-red-600 font-bold bg-red-50 inline-block mx-auto px-2 py-0.5 rounded-full mt-1 border border-red-100'>
+						<Badge variant="accent" size="sm" class="mt-1 inline-block mx-auto">
 							+ {casino.bonus_spins} Free Spins
-						</span>
+						</Badge>
 					)}
 				</div>
 
                 <!-- CTA -->
 				<div class='col-span-2 flex flex-col gap-2 justify-center text-center'>
-					<a
+					<Button
 						href={casino.website_url}
-						class='bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm hover:shadow-md transition-all hover:scale-105'
+						variant="primary"
+						size="md"
 					>
 						Play Now
-					</a>
-                    <a href={`/reviews/${casino.id}-casino/`} class='text-xs font-bold text-gray-500 hover:text-gray-800 hover:underline'>
+					</Button>
+                    <Button
+						href={`/reviews/${casino.id}-casino/`}
+						variant="link"
+						class='text-xs'
+					>
                         View Review
-                    </a>
+                    </Button>
 				</div>
 			</div>
 		</div>

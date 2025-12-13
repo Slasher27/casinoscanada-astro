@@ -1,0 +1,98 @@
+---
+/**
+ * Card Component - Design System
+ *
+ * A base card component with consistent styling for all card-based layouts.
+ * Provides slots for header, body, and footer sections with standardized padding.
+ *
+ * @param padding - Internal padding size
+ *   - 'sm': p-4 (16px)
+ *   - 'md': p-5 (20px) - default, standard card padding
+ *   - 'lg': p-6 (24px)
+ *
+ * @param shadow - Shadow intensity
+ *   - 'none': No shadow
+ *   - 'sm': shadow-card (default)
+ *   - 'md': shadow-card-hover
+ *
+ * @param border - Show border
+ *   - true: Shows border (default)
+ *   - false: No border
+ *
+ * @param hover - Enable hover effect (shadow lift)
+ *   - true: Adds hover:shadow-card-hover
+ *   - false: No hover effect (default)
+ *
+ * @param class - Additional CSS classes
+ */
+
+export interface Props {
+	padding?: 'sm' | 'md' | 'lg';
+	shadow?: 'none' | 'sm' | 'md';
+	border?: boolean;
+	hover?: boolean;
+	class?: string;
+}
+
+const {
+	padding = 'md',
+	shadow = 'sm',
+	border = true,
+	hover = false,
+	class: className = '',
+} = Astro.props;
+
+// Padding styles
+const paddingStyles = {
+	sm: 'p-card-sm',  // p-4
+	md: 'p-card',     // p-5
+	lg: 'p-card-lg',  // p-6
+};
+
+// Shadow styles
+const shadowStyles = {
+	none: '',
+	sm: 'shadow-card',
+	md: 'shadow-card-hover',
+};
+
+// Hover effect
+const hoverStyles = hover ? 'hover:shadow-card-hover transition-shadow duration-200' : '';
+
+// Border
+const borderStyles = border ? 'border border-primary-200' : '';
+
+// Combine styles
+const cardClasses = [
+	'bg-white',
+	'rounded-card',
+	'overflow-hidden',
+	shadowStyles[shadow],
+	borderStyles,
+	hoverStyles,
+	className,
+]
+	.filter(Boolean)
+	.join(' ');
+---
+
+<div class={cardClasses}>
+	<!-- Header slot (optional) -->
+	{Astro.slots.has('header') && (
+		<div class="card-header">
+			<slot name="header" />
+		</div>
+	)}
+
+	<!-- Body slot (main content) -->
+	<div class={paddingStyles[padding]}>
+		<slot />
+	</div>
+
+	<!-- Footer slot (optional) -->
+	{Astro.slots.has('footer') && (
+		<div class="card-footer bg-primary-50 border-t border-primary-200 p-4">
+			<slot name="footer" />
+		</div>
+	)}
+</div>

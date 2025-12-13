@@ -1,0 +1,96 @@
+---
+/**
+ * Badge Component - Design System
+ *
+ * A unified badge/pill component for tags, ratings, labels, and status indicators.
+ * Consistent styling with color-coded variants for different purposes.
+ *
+ * @param variant - Badge color variant
+ *   - 'bonus': Yellow (bonus offers, free spins)
+ *   - 'success': Green (license info, verified, RTP)
+ *   - 'info': Blue (features, payment methods)
+ *   - 'accent': Red (featured, hot, new)
+ *   - 'neutral': Gray (general tags)
+ *
+ * @param size - Badge size
+ *   - 'sm': Small (px-2 py-0.5 text-xs)
+ *   - 'md': Medium (px-3 py-1 text-sm) - default
+ *   - 'lg': Large (px-4 py-1.5 text-base)
+ *
+ * @param rounded - Border radius style
+ *   - 'full': rounded-badge (pill shape) - default
+ *   - 'md': rounded-md (subtle rounded)
+ *
+ * @param border - Show border
+ *   - true: Shows subtle border (default)
+ *   - false: No border
+ *
+ * @param class - Additional CSS classes
+ */
+
+export interface Props {
+	variant?: 'bonus' | 'success' | 'info' | 'accent' | 'neutral';
+	size?: 'sm' | 'md' | 'lg';
+	rounded?: 'full' | 'md';
+	border?: boolean;
+	class?: string;
+}
+
+const {
+	variant = 'neutral',
+	size = 'md',
+	rounded = 'full',
+	border = true,
+	class: className = '',
+} = Astro.props;
+
+// Base styles
+const baseStyles = 'inline-flex items-center justify-center font-semibold whitespace-nowrap';
+
+// Variant styles (background + text color + border)
+const variantStyles = {
+	bonus: border
+		? 'bg-bonus-50 text-bonus-700 border border-bonus-100'
+		: 'bg-bonus-50 text-bonus-700',
+	success: border
+		? 'bg-success-50 text-success-700 border border-success-100'
+		: 'bg-success-50 text-success-700',
+	info: border
+		? 'bg-info-50 text-info-700 border border-info-100'
+		: 'bg-info-50 text-info-700',
+	accent: border
+		? 'bg-accent-50 text-accent-700 border border-accent-100'
+		: 'bg-accent-50 text-accent-700',
+	neutral: border
+		? 'bg-primary-100 text-primary-700 border border-primary-200'
+		: 'bg-primary-100 text-primary-700',
+};
+
+// Size styles
+const sizeStyles = {
+	sm: 'px-2 py-0.5 text-xs',
+	md: 'px-3 py-1 text-sm',
+	lg: 'px-4 py-1.5 text-base',
+};
+
+// Border radius
+const roundedStyles = {
+	full: 'rounded-badge',  // rounded-full
+	md: 'rounded-md',
+};
+
+// Combine all styles
+const badgeClasses = [
+	baseStyles,
+	variantStyles[variant],
+	sizeStyles[size],
+	roundedStyles[rounded],
+	className,
+]
+	.filter(Boolean)
+	.join(' ');
+---
+
+<span class={badgeClasses}>
+	<slot />
+</span>

@@ -1,0 +1,92 @@
+---
+/**
+ * Button Component - Design System
+ *
+ * A unified button component with consistent styling across the entire app.
+ * Supports multiple variants, sizes, and states while maintaining mobile responsiveness.
+ *
+ * @param variant - Button style variant
+ *   - 'primary': Solid red background, rounded-full (Hero CTAs like "Play Now")
+ *   - 'secondary': Outlined style (Read Review, secondary actions)
+ *   - 'outline': White background with border (alternative style)
+ *   - 'link': Text-only link style (View All, navigation)
+ *
+ * @param size - Button size
+ *   - 'sm': Small (py-2 px-4)
+ *   - 'md': Medium (py-3 px-6) - default
+ *   - 'lg': Large (py-4 px-8) - hero buttons
+ *
+ * @param href - Link destination (required)
+ * @param external - Open in new tab (default: true for external links)
+ * @param fullWidth - Make button full width on mobile (default: false)
+ * @param class - Additional CSS classes
+ */
+
+export interface Props {
+	variant?: 'primary' | 'secondary' | 'outline' | 'link';
+	size?: 'sm' | 'md' | 'lg';
+	href: string;
+	external?: boolean;
+	fullWidth?: boolean;
+	class?: string;
+}
+
+const {
+	variant = 'primary',
+	size = 'md',
+	href,
+	external = href.startsWith('http'),
+	fullWidth = false,
+	class: className = '',
+} = Astro.props;
+
+// Base styles (all buttons)
+const baseStyles = 'inline-flex items-center justify-center font-bold transition-all duration-200 no-underline';
+
+// Variant styles
+const variantStyles = {
+	primary: 'bg-accent-600 hover:bg-accent-700 text-white shadow-button hover:scale-105 active:scale-95',
+	secondary: 'bg-white border-2 border-primary-200 hover:border-primary-900 text-primary-600 hover:text-primary-900 hover:shadow-card-hover',
+	outline: 'bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-900',
+	link: 'text-info-600 hover:text-info-700 hover:underline',
+};
+
+// Size styles
+const sizeStyles = {
+	sm: 'py-2 px-4 text-sm',
+	md: 'py-3 px-6 text-base',
+	lg: 'py-4 px-8 text-lg',
+};
+
+// Border radius based on variant
+const radiusStyles = {
+	primary: 'rounded-btn-primary',      // rounded-full
+	secondary: 'rounded-btn',            // rounded-lg
+	outline: 'rounded-btn',              // rounded-lg
+	link: '',                            // no border radius
+};
+
+// Full width on mobile
+const widthStyles = fullWidth ? 'w-full sm:w-auto' : '';
+
+// Combine all styles
+const buttonClasses = [
+	baseStyles,
+	variantStyles[variant],
+	variant !== 'link' ? sizeStyles[size] : '',
+	radiusStyles[variant],
+	widthStyles,
+	className,
+]
+	.filter(Boolean)
+	.join(' ');
+
+// Link attributes
+const linkAttrs = external
+	? { target: '_blank', rel: 'noopener noreferrer' }
+	: {};
+---
+
+<a href={href} class={buttonClasses} {...linkAttrs}>
+	<slot />
+</a>

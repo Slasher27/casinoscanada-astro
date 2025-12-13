@@ -1,0 +1,61 @@
+---
+/**
+ * Heading Component - Design System
+ *
+ * A typography component that enforces consistent heading hierarchy and sizing.
+ * Mobile-responsive with automatic scaling on larger screens.
+ *
+ * @param level - Semantic HTML heading level (h1-h6)
+ *   - 1: Page hero titles
+ *   - 2: Section headings
+ *   - 3: Subsection headings
+ *   - 4-6: Minor headings
+ *
+ * @param as - Visual style to use (can differ from semantic level)
+ *   - 'hero': Large hero style (text-4xl md:text-6xl font-black)
+ *   - 'h1': Page heading style (text-3xl md:text-4xl font-bold)
+ *   - 'h2': Section heading (text-2xl md:text-3xl font-bold)
+ *   - 'h3': Subsection heading (text-xl md:text-2xl font-semibold)
+ *   - 'h4': Minor heading (text-lg font-semibold)
+ *   - 'card-title': Card title style (text-lg font-bold)
+ *
+ * @param class - Additional CSS classes
+ */
+
+export interface Props {
+	level: 1 | 2 | 3 | 4 | 5 | 6;
+	as?: 'hero' | 'h1' | 'h2' | 'h3' | 'h4' | 'card-title';
+	class?: string;
+}
+
+const {
+	level,
+	as = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4',
+	class: className = '',
+} = Astro.props;
+
+// Semantic HTML element
+const Tag = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+
+// Base styles for all headings
+const baseStyles = 'text-primary-900 leading-tight';
+
+// Visual styles based on 'as' prop
+const visualStyles = {
+	hero: 'text-hero md:text-hero-lg',           // 36px → 60px, font-black
+	h1: 'text-heading-1 md:text-heading-1-lg',   // 30px → 36px, font-bold
+	h2: 'text-heading-2 md:text-heading-2-lg',   // 24px → 30px, font-bold
+	h3: 'text-heading-3 md:text-heading-3-lg',   // 20px → 24px, font-semibold
+	h4: 'text-lg font-semibold',                 // 18px, font-semibold
+	'card-title': 'text-card-title',             // 18px, font-bold
+};
+
+// Combine styles
+const headingClasses = [baseStyles, visualStyles[as], className]
+	.filter(Boolean)
+	.join(' ');
+---
+
+<Tag class={headingClasses}>
+	<slot />
+</Tag>
