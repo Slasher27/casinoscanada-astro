@@ -1,0 +1,93 @@
+-- src/db/schema.sql
+
+-- 1. Drop old tables to ensure a clean reset
+DROP TABLE IF EXISTS casino_payment_methods;
+DROP TABLE IF EXISTS payment_methods;
+DROP TABLE IF EXISTS slots;
+DROP TABLE IF EXISTS casino_software;
+DROP TABLE IF EXISTS software_providers;
+DROP TABLE IF EXISTS casinos;
+
+-- 2. Casinos Table
+CREATE TABLE casinos (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  website_url TEXT,
+  established INTEGER,
+  license TEXT,
+  owner TEXT,
+  payout_speed_minutes INTEGER,
+  payout_ratio REAL,
+  theme_color TEXT,
+  logo_url TEXT,
+  thumbnail_url TEXT,
+  bonus_offer TEXT,
+  bonus_spins INTEGER,
+  -- NEW FIELDS (migrated from MDX frontmatter)
+  rating REAL DEFAULT 4.0,                    -- 1-5 star rating
+  min_deposit INTEGER DEFAULT 20,             -- Minimum deposit in CAD
+  wagering_requirement INTEGER DEFAULT 40,    -- Wagering multiplier (e.g., 40x)
+  pros TEXT,                                  -- JSON array of pros
+  cons TEXT                                   -- JSON array of cons
+);
+
+-- 3. Software Providers Table
+CREATE TABLE software_providers (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  logo_url TEXT
+);
+
+-- 4. Connector: Casino <-> Software
+CREATE TABLE casino_software (
+  casino_id TEXT,
+  provider_id TEXT,
+  PRIMARY KEY (casino_id, provider_id),
+  FOREIGN KEY(casino_id) REFERENCES casinos(id),
+  FOREIGN KEY(provider_id) REFERENCES software_providers(id)
+);
+
+-- 5. Slots Table
+CREATE TABLE slots (
+  slug TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  provider_id TEXT,
+  rtp REAL,
+  volatility TEXT,
+  max_win TEXT,
+  paylines TEXT,
+  release_date TEXT,
+  description TEXT,
+  image_url TEXT,
+  featured INTEGER DEFAULT 0, -- 0 = false, 1 = true
+  -- NEW RICH DATA
+  min_bet REAL,
+  max_bet REAL,
+  layout TEXT, -- e.g. "5x3"
+  features TEXT, -- JSON array e.g. ["Free Spins", "Wilds"]
+  FOREIGN KEY(provider_id) REFERENCES software_providers(id)
+);
+
+-- 6. Payment Methods Table (NEW)
+CREATE TABLE payment_methods (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  logo_url TEXT,
+  description TEXT,
+  type TEXT,
+  avg_speed TEXT,
+  fees TEXT,
+  min_deposit INTEGER,
+  max_withdrawal INTEGER,
+  pros TEXT,
+  cons TEXT
+);
+
+-- 7. Connector: Casino <-> Payment (NEW)
+CREATE TABLE casino_payment_methods (
+  casino_id TEXT,
+  method_id TEXT,
+  PRIMARY KEY (casino_id, method_id),
+  FOREIGN KEY(casino_id) REFERENCES casinos(id),
+  FOREIGN KEY(method_id) REFERENCES payment_methods(id)
+);

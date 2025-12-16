@@ -1,0 +1,29 @@
+---
+/**
+ * CasinoProsCons.astro
+ * Fetches pros/cons from the database and displays them
+ */
+import ProsCons from '../ui/ProsCons.astro';
+import { getCasinoById } from '../../db/queries';
+import { parseJsonField } from '../../types/database';
+
+interface Props {
+	casinoId: string;
+}
+
+const { casinoId } = Astro.props;
+
+// Fetch casino data
+const casino = getCasinoById(casinoId);
+
+if (!casino) {
+	console.error(`Casino not found: ${casinoId}`);
+	return null;
+}
+
+// Parse pros/cons from JSON
+const pros = parseJsonField<string[]>(casino.pros);
+const cons = parseJsonField<string[]>(casino.cons);
+---
+
+<ProsCons pros={pros} cons={cons} />
