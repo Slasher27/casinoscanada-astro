@@ -1,0 +1,44 @@
+{
+	"name": "Casinos Canada - Top-Rated Online Casinos",
+	"short_name": "Casinos Canada",
+	"description": "Top-rated online casinos for Canadian players. Honest reviews, fast payouts, and safe & licensed casinos.",
+	"start_url": "/",
+	"display": "standalone",
+	"background_color": "#0f172a",
+	"theme_color": "#dc2626",
+	"orientation": "portrait-primary",
+	"icons": [
+		{
+			"src": "/icons/android-chrome-192x192.png",
+			"sizes": "192x192",
+			"type": "image/png",
+			"purpose": "any"
+		},
+		{
+			"src": "/icons/android-chrome-512x512.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "any"
+		},
+		{
+			"src": "/icons/android-chrome-maskable-512x512.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "maskable"
+		},
+		{
+			"src": "/icons/icon-192x192.png",
+			"sizes": "192x192",
+			"type": "image/png"
+		},
+		{
+			"src": "/icons/icon-512x512.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		}
+	],
+	"categories": ["entertainment", "lifestyle"],
+	"lang": "en-CA",
+	"dir": "ltr",
+	"screenshots": []
+}

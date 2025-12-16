@@ -31,3 +31,6 @@ pnpm-debug.log*
 
 # test files
 test-output.css
+
+# documentation (don't deploy)
+docs/
