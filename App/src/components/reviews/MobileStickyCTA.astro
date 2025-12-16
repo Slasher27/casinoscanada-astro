@@ -1,0 +1,71 @@
+---
+import { getCasinoById } from '../../db/queries';
+
+interface Props {
+	casinoId: string;
+}
+
+const { casinoId } = Astro.props;
+const casino = getCasinoById(casinoId);
+
+if (!casino) return null;
+---
+
+<div
+	id='mobile-sticky-cta'
+	class='fixed bottom-0 left-0 w-full bg-white border-t border-primary-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] p-card-sm transform translate-y-full transition-transform duration-300 z-50 lg:hidden flex items-center justify-between gap-4'
+>
+	<div class='flex items-center gap-3'>
+		<img
+			src={casino.logo_url}
+			alt={casino.name}
+			class='w-12 h-12 object-contain rounded-lg border border-primary-100'
+		/>
+		<div>
+			<div class='font-bold text-primary-900 leading-tight'>
+				{casino.name}
+			</div>
+			<div class='flex items-center gap-1 text-xs text-bonus-400 font-bold'>
+				<span>⭐</span>
+				<span class='text-primary-900'>{casino.rating}/5</span>
+			</div>
+		</div>
+	</div>
+
+	<a
+		href={casino.website_url}
+		target='_blank'
+		rel='nofollow noopener'
+		class='bg-accent-600 hover:bg-accent-700 text-white font-bold py-2.5 px-6 rounded-btn-primary shadow-button whitespace-nowrap'
+	>
+		Play Now
+	</a>
+</div>
+
+<script>
+	const initStickyCTA = () => {
+		const cta = document.getElementById('mobile-sticky-cta');
+		const trigger = document.getElementById('hero-sentinel'); // We will add this ID to the hero or a marker
+
+		if (!cta) return;
+
+		// Fallback trigger if sentinel not found (e.g. scroll 500px)
+		const scrollThreshold = 600;
+
+		const onScroll = () => {
+			const scrollY = window.scrollY;
+
+			// Show if scrolled past threshold
+			if (scrollY > scrollThreshold) {
+				cta.classList.remove('translate-y-full');
+			} else {
+				cta.classList.add('translate-y-full');
+			}
+		};
+
+		window.addEventListener('scroll', onScroll, { passive: true });
+	};
+
+	document.addEventListener('astro:page-load', initStickyCTA);
+	document.addEventListener('DOMContentLoaded', initStickyCTA);
+</script>

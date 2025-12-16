@@ -1,0 +1,125 @@
+---
+interface Heading {
+	depth: number;
+	slug: string;
+	text: string;
+}
+
+interface Props {
+	headings: Heading[];
+}
+
+const { headings } = Astro.props;
+
+// Filter to only include h2 and h3
+const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{
+	tocHeadings.length > 0 && (
+		<nav class='sticky top-24 bg-white rounded-card p-card border border-primary-200 shadow-card transition-all duration-default ease-default'>
+			<h3 class='font-bold text-primary-900 mb-4 text-sm uppercase tracking-wider flex items-center gap-2'>
+				<svg
+					xmlns='http://www.w3.org/2000/svg'
+					width='16'
+					height='16'
+					viewBox='0 0 24 24'
+					fill='none'
+					stroke='currentColor'
+					stroke-width='2'
+					stroke-linecap='round'
+					stroke-linejoin='round'
+				>
+					<line x1='8' y1='6' x2='21' y2='6' />
+					<line x1='8' y1='12' x2='21' y2='12' />
+					<line x1='8' y1='18' x2='21' y2='18' />
+					<line x1='3' y1='6' x2='3.01' y2='6' />
+					<line x1='3' y1='12' x2='3.01' y2='12' />
+					<line x1='3' y1='18' x2='3.01' y2='18' />
+				</svg>
+				On this page
+			</h3>
+			<ul class='space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar pr-2'>
+				{tocHeadings.map((heading) => (
+					<li
+						class={`transition-all duration-default ease-default ${
+							heading.depth === 3 ? 'ml-4' : ''
+						}`}
+					>
+						<a
+							href={`#${heading.slug}`}
+							class='toc-link block text-sm text-primary-600 hover:text-accent-700 hover:bg-accent-50 py-1.5 px-3 rounded-md transition-colors border-l-2 border-transparent'
+							data-target={heading.slug}
+						>
+							{heading.text}
+						</a>
+					</li>
+				))}
+			</ul>
+		</nav>
+	)
+}
+
+<style>
+	.custom-scrollbar::-webkit-scrollbar {
+		width: 4px;
+	}
+	.custom-scrollbar::-webkit-scrollbar-track {
+		background: #f1f5f9; /* primary-100 */
+		border-radius: 4px;
+	}
+	.custom-scrollbar::-webkit-scrollbar-thumb {
+		background: #cbd5e1; /* primary-300 */
+		border-radius: 4px;
+	}
+	.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+		background: #94a3b8; /* slate-400 equivalent, sticking to close match since not in theme tokens explicitly for hover state of scrollbar */
+	}
+
+	/* Active states applied by JS */
+	:global(.toc-link.active) {
+		color: #b91c1c; /* accent-700 */
+		font-weight: 600;
+		background-color: #fef2f2; /* accent-50 */
+		border-left-color: #dc2626; /* accent-600 */
+	}
+</style>
+
+<script>
+	// Re-using the logic, but ensuring it targets the new component classes
+	const initTOC = () => {
+		const headings = Array.from(document.querySelectorAll('main h2, main h3'));
+		const links = document.querySelectorAll('.toc-link');
+
+		if (!headings.length || !links.length) return;
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				// We want to highlight the *first* visible header, OR the last one that was passed
+				// This simple observer logic highlights whatever intersects
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						const id = entry.target.getAttribute('id');
+						updateActiveLink(id);
+					}
+				});
+			},
+			{ rootMargin: '-10% 0px -80% 0px' }
+		);
+
+		headings.forEach((h) => observer.observe(h));
+
+		function updateActiveLink(id: string | null) {
+			links.forEach((link) => {
+				link.classList.remove('active');
+				if (link.getAttribute('href') === `#${id}`) {
+					link.classList.add('active');
+				}
+			});
+		}
+	};
+
+	// Run on load and nav
+	document.addEventListener('astro:page-load', initTOC);
+	document.addEventListener('DOMContentLoaded', initTOC);
+</script>

@@ -9,6 +9,8 @@ import CookieConsent from '../components/common/CookieConsent.svelte';
 
 import Analytics from '../components/common/Analytics.astro';
 
+import BackToTop from '../components/ui/BackToTop.astro';
+
 interface Props {
 	title: string;
 	description?: string;
@@ -40,5 +42,6 @@ const {
 		</main>
 
 		<Footer />
+		<BackToTop />
 	</body>
 </html>

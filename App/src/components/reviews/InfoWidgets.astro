@@ -1,0 +1,188 @@
+---
+/**
+ * Info Widgets - Consolidated 3-Card Grid
+ * Refactored to use Design System Tokens (primary-*, rounded-card, shadow-card)
+ */
+import { getCasinoWithRelations } from '../../db/queries';
+
+interface Props {
+	casinoId: string;
+}
+
+const { casinoId } = Astro.props;
+const casino = getCasinoWithRelations(casinoId);
+
+if (!casino) return null;
+
+// Helper to categorize payment methods
+const fiatMethods =
+	casino.payment_methods?.filter((pm) => !pm.type?.includes('crypto')) || [];
+const cryptoMethods =
+	casino.payment_methods?.filter((pm) => pm.type?.includes('crypto')) || [];
+const allMethods = [...fiatMethods, ...cryptoMethods];
+---
+
+<div class='grid grid-cols-1 lg:grid-cols-3 gap-6 my-8'>
+	<!-- 1. Banking & Payments -->
+	<div
+		class='bg-white rounded-card shadow-card hover:shadow-card-hover border border-primary-200 p-card transition-shadow duration-default ease-default flex flex-col'
+	>
+		<h3
+			class='font-bold text-primary-900 mb-4 flex items-center gap-2 border-b border-primary-100 pb-2'
+		>
+			<span class='text-xl'>💳</span>
+			Banking & Payments
+		</h3>
+
+		<div class='grid grid-cols-2 gap-4 mb-4'>
+			<div class='bg-primary-50 p-3 rounded-card text-center'>
+				<div class='text-xs text-primary-600 uppercase font-bold'>
+					Payout Speed
+				</div>
+				<div class='text-lg font-black text-primary-900'>
+					{
+						casino.payout_speed_minutes < 60
+							? `${casino.payout_speed_minutes} mins`
+							: `${Math.round(casino.payout_speed_minutes / 60)} hrs`
+					}
+				</div>
+			</div>
+			<div class='bg-success-50 p-3 rounded-card text-center'>
+				<div class='text-xs text-success-700 uppercase font-bold'>
+					RTP Score
+				</div>
+				<div class='text-lg font-black text-success-600'>
+					{casino.payout_ratio}%
+				</div>
+			</div>
+		</div>
+
+		<div class='space-y-3 flex-grow'>
+			<div>
+				<div
+					class='text-sm font-semibold text-primary-700 mb-2 flex justify-between'
+				>
+					<span>Accepted Methods</span>
+					<span class='text-xs font-normal text-primary-600'
+						>Min: ${casino.min_deposit}</span
+					>
+				</div>
+				<div class='flex flex-wrap gap-2'>
+					{
+						allMethods
+							.slice(0, 8)
+							.map((method) => (
+								<span
+									class={`text-xs px-2 py-1 rounded-badge border ${method.type?.includes('crypto') ? 'bg-bonus-50 border-bonus-100 text-bonus-700' : 'bg-primary-50 border-primary-200 text-primary-600'}`}
+								>
+									{method.name}
+								</span>
+							))
+					}
+					{
+						allMethods.length > 8 && (
+							<span class='text-xs px-2 py-1 rounded-badge bg-primary-100 text-primary-600'>
+								+{allMethods.length - 8}
+							</span>
+						)
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 2. Profile & Security -->
+	<div
+		class='bg-white rounded-card shadow-card hover:shadow-card-hover border border-primary-200 p-card transition-shadow duration-default ease-default flex flex-col'
+	>
+		<h3
+			class='font-bold text-primary-900 mb-4 flex items-center gap-2 border-b border-primary-100 pb-2'
+		>
+			<span class='text-xl'>🛡️</span>
+			Profile & Support
+		</h3>
+
+		<dl class='space-y-3 text-sm flex-grow'>
+			<div class='flex justify-between items-center'>
+				<dt class='text-primary-600'>Established</dt>
+				<dd class='font-semibold text-primary-900'>{casino.established}</dd>
+			</div>
+			<div class='flex justify-between items-center'>
+				<dt class='text-primary-600'>License</dt>
+				<dd class='font-semibold text-primary-900 truncate max-w-[150px]'>
+					{casino.license}
+				</dd>
+			</div>
+			<div class='flex justify-between items-center'>
+				<dt class='text-primary-600'>Owner</dt>
+				<dd class='font-semibold text-primary-900 truncate max-w-[150px]'>
+					{casino.owner}
+				</dd>
+			</div>
+
+			<div class='border-t border-primary-100 my-3 pt-3'>
+				<div class='font-semibold text-primary-900 mb-2'>Customer Support</div>
+				<div class='grid grid-cols-2 gap-2'>
+					<div
+						class='flex items-center gap-2 text-success-700 bg-success-50 px-2 py-1 rounded-badge'
+					>
+						<span class='text-xs'>●</span> Live Chat
+					</div>
+					<div
+						class='flex items-center gap-2 text-primary-700 bg-primary-50 px-2 py-1 rounded-badge'
+					>
+						<span class='text-xs'>✉</span> Email
+					</div>
+				</div>
+			</div>
+		</dl>
+	</div>
+
+	<!-- 3. Games & Software -->
+	<div
+		class='bg-white rounded-card shadow-card hover:shadow-card-hover border border-primary-200 p-card transition-shadow duration-default ease-default flex flex-col'
+	>
+		<h3
+			class='font-bold text-primary-900 mb-4 flex items-center gap-2 border-b border-primary-100 pb-2'
+		>
+			<span class='text-xl'>🎮</span>
+			Games & Software
+		</h3>
+
+		<div class='flex items-center gap-4 mb-4'>
+			<div class='text-4xl font-black text-primary-900'>
+				{casino.software_providers?.length || 0}+
+			</div>
+			<div class='text-sm text-primary-600 leading-tight'>
+				Top Tier<br />Providers
+			</div>
+		</div>
+
+		<div class='space-y-3 flex-grow'>
+			<div class='flex flex-wrap gap-2 text-xs'>
+				{
+					casino.software_providers
+						?.slice(0, 10)
+						.map((provider) => (
+							<span class='bg-info-50 text-info-600 px-2 py-1 rounded-badge'>
+								{provider.name}
+							</span>
+						))
+				}
+				{
+					(casino.software_providers?.length || 0) > 10 && (
+						<span class='bg-primary-100 text-primary-600 px-2 py-1 rounded-badge'>
+							+{(casino.software_providers?.length || 0) - 10} more
+						</span>
+					)
+				}
+			</div>
+
+			<div
+				class='text-xs text-primary-600 mt-4 pt-2 border-t border-primary-50 italic'
+			>
+				* Includes Slots, Live Dealer, and Table Games.
+			</div>
+		</div>
+	</div>
+</div>
