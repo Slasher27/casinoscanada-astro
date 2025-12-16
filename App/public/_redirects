@@ -1,0 +1,5 @@
+# Astro trailing slash redirect
+/*    /:splat/    301
+
+# 404 handling
+/*    /404/    404
