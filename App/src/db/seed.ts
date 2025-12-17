@@ -16,9 +16,10 @@ const insertCasino = db.prepare(`
     id, name, website_url, established, license, owner,
     payout_speed_minutes, payout_ratio, theme_color,
     logo_url, thumbnail_url, bonus_offer, bonus_spins,
-    rating, min_deposit, wagering_requirement, pros, cons
+    rating, min_deposit, wagering_requirement, pros, cons,
+    sports_betting, poker, live_casino, mobile_app
   )
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `);
 
 // 3. Insert Casinos
@@ -50,7 +51,12 @@ insertCasino.run(
 		'No telephone support (Chat only)',
 		'40x Wagering is slightly high',
 		'No sports betting section',
-	])
+	]),
+	// Feature flags
+	0, // sports_betting
+	0, // poker
+	1, // live_casino
+	0  // mobile_app
 );
 
 insertCasino.run(
@@ -81,7 +87,12 @@ insertCasino.run(
 		'No telephone support (Chat only)',
 		'45x wagering requirement',
 		'No sports betting section',
-	])
+	]),
+	// Feature flags
+	0, // sports_betting
+	1, // poker
+	1, // live_casino
+	1  // mobile_app
 );
 
 insertCasino.run(
@@ -113,7 +124,12 @@ insertCasino.run(
 		'40x wagering requirement',
 		'Slower than crypto-only competitors',
 		'Mission wagering can be complex',
-	])
+	]),
+	// Feature flags
+	1, // sports_betting
+	1, // poker
+	1, // live_casino
+	0  // mobile_app
 );
 
 insertCasino.run(
@@ -144,7 +160,12 @@ insertCasino.run(
 		'40x wagering requirement',
 		'Higher minimum deposit ($25 vs $20)',
 		'Limited traditional payment methods',
-	])
+	]),
+	// Feature flags
+	0, // sports_betting
+	0, // poker
+	1, // live_casino
+	1  // mobile_app
 );
 
 insertCasino.run(
@@ -174,7 +195,12 @@ insertCasino.run(
 	JSON.stringify([
 		'Limited support options (Helpcenter Only)',
 		'40x Wagering is slightly high',
-	])
+	]),
+	// Feature flags
+	1, // sports_betting
+	1, // poker
+	1, // live_casino
+	1  // mobile_app
 );
 
 // 4. Insert Software Providers

@@ -28,7 +28,12 @@ CREATE TABLE casinos (
   min_deposit INTEGER DEFAULT 20,             -- Minimum deposit in CAD
   wagering_requirement INTEGER DEFAULT 40,    -- Wagering multiplier (e.g., 40x)
   pros TEXT,                                  -- JSON array of pros
-  cons TEXT                                   -- JSON array of cons
+  cons TEXT,                                  -- JSON array of cons
+  -- FEATURE FLAGS
+  sports_betting INTEGER DEFAULT 0,           -- 0 = false, 1 = true
+  poker INTEGER DEFAULT 0,                    -- 0 = false, 1 = true
+  live_casino INTEGER DEFAULT 0,              -- 0 = false, 1 = true
+  mobile_app INTEGER DEFAULT 0                -- 0 = false, 1 = true
 );
 
 -- 3. Software Providers Table

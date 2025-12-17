@@ -1,0 +1,57 @@
+---
+interface Props {
+	label: string;
+	available: boolean;
+}
+
+const { label, available } = Astro.props;
+---
+
+<div
+	class={`
+		flex items-center gap-2 px-3 py-1.5 rounded-lg backdrop-blur-sm
+		text-xs md:text-sm font-medium
+		${available
+			? 'bg-success-50 border border-success-700 text-success-700'
+			: 'bg-accent-50 border border-accent-700 text-accent-700'
+		}
+	`}
+>
+	<span>{label}:</span>
+	{
+		available ? (
+			<span class='flex items-center gap-1 font-semibold'>
+				<svg
+					xmlns='http://www.w3.org/2000/svg'
+					width='14'
+					height='14'
+					viewBox='0 0 24 24'
+					fill='none'
+					stroke='currentColor'
+					stroke-width='3'
+					stroke-linecap='round'
+					stroke-linejoin='round'
+				>
+					<path d='M20 6 9 17l-5-5' />
+				</svg>
+			</span>
+		) : (
+			<span class='flex items-center gap-1 font-semibold'>
+				<svg
+					xmlns='http://www.w3.org/2000/svg'
+					width='14'
+					height='14'
+					viewBox='0 0 24 24'
+					fill='none'
+					stroke='currentColor'
+					stroke-width='3'
+					stroke-linecap='round'
+					stroke-linejoin='round'
+				>
+					<path d='M18 6 6 18' />
+					<path d='m6 6 12 12' />
+				</svg>
+			</span>
+		)
+	}
+</div>

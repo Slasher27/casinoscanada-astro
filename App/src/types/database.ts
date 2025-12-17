@@ -28,6 +28,11 @@ export interface Casino {
   wagering_requirement: number | null;    // Wagering multiplier (e.g., 40x)
   pros: string | null;                    // JSON array of pros
   cons: string | null;                    // JSON array of cons
+  // Feature flags
+  sports_betting: number | null;          // 0 = false, 1 = true
+  poker: number | null;                   // 0 = false, 1 = true
+  live_casino: number | null;             // 0 = false, 1 = true
+  mobile_app: number | null;              // 0 = false, 1 = true
 }
 
 /**

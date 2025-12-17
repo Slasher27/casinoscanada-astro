@@ -1,5 +1,7 @@
 ---
 import { getCasinoById } from '../../db/queries';
+import Button from '../ui/Button.astro';
+import Badge from '../ui/Badge.astro';
 
 interface Props {
 	casinoId: string;
@@ -8,38 +10,39 @@ interface Props {
 const { casinoId } = Astro.props;
 const casino = getCasinoById(casinoId);
 
-if (!casino) return null;
+if (!casino || !casino.website_url) return null;
 ---
 
 <div
 	id='mobile-sticky-cta'
-	class='fixed bottom-0 left-0 w-full bg-white border-t border-primary-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] p-card-sm transform translate-y-full transition-transform duration-300 z-50 lg:hidden flex items-center justify-between gap-4'
+	class='fixed bottom-0 left-0 w-full bg-primary-900 border-t border-primary-700 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.3)] p-card-sm transform translate-y-full transition-transform duration-300 z-50 lg:hidden flex items-center justify-between gap-4'
 >
 	<div class='flex items-center gap-3'>
 		<img
 			src={casino.logo_url}
 			alt={casino.name}
-			class='w-12 h-12 object-contain rounded-lg border border-primary-100'
+			class='w-14 h-14 object-contain rounded-full bg-white p-0.5'
 		/>
 		<div>
-			<div class='font-bold text-primary-900 leading-tight'>
+			<div class='font-bold text-white leading-tight mb-1'>
 				{casino.name}
 			</div>
-			<div class='flex items-center gap-1 text-xs text-bonus-400 font-bold'>
-				<span>⭐</span>
-				<span class='text-primary-900'>{casino.rating}/5</span>
+			<div class='flex items-center gap-1 text-body-sm'>
+				<Badge variant="bonus" size="sm">
+					★ {casino.rating}/5
+				</Badge>
 			</div>
 		</div>
 	</div>
 
-	<a
+	<Button
 		href={casino.website_url}
-		target='_blank'
-		rel='nofollow noopener'
-		class='bg-accent-600 hover:bg-accent-700 text-white font-bold py-2.5 px-6 rounded-btn-primary shadow-button whitespace-nowrap'
+		variant="primary"
+		size="sm"
+		external
 	>
 		Play Now
-	</a>
+	</Button>
 </div>
 
 <script>
