@@ -8,7 +8,8 @@
       "Bash(findstr:*)",
       "Bash(npm run seed:*)",
       "Bash(nul)",
-      "Bash(sqlite3:*)"
+      "Bash(sqlite3:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

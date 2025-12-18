@@ -1,5 +1,4 @@
-# Astro trailing slash redirect
-/*    /:splat/    301
+# SPA fallback for client-side routing (if needed)
+# /*    /index.html    200
 
-# 404 handling
-/*    /404/    404
+# 404 handling - this should be handled automatically by 404.html
