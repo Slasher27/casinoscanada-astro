@@ -5,6 +5,17 @@ import Heading from './Heading.astro';
 
 const { casino, review, index } = Astro.props;
 
+// If only review is passed, map review.data to casino shape
+const casinoData = casino || {
+	name: review.data.name,
+	logo_url: review.data.logo,
+	thumbnail_url: review.data.thumbnail,
+	website_url: review.data.website,
+	bonus_offer: review.data.bonus_offer,
+	payout_speed_minutes: review.data.withdrawal_speed,
+	payout_ratio: review.data.rtp,
+};
+
 const FALLBACK_ICON =
 	'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzlDQTNBRiI+PHBhdGggZD0iTTEyIDFMMyA1djZjMCA1LjU1IDMuODQgMTAuNzQgOSAxMiA1LjE2LTEuMjYgOS02LjQ1IDktMTJWNWwtOS00em0wIDEwLjk5aDdjLS41MyA0LjEyLTMuMjggNy43OS03IDguOTRWMTJINVY2LjNsNy0zLjExdjguOHoiLz48L3N2Zz4=';
 ---
@@ -19,7 +30,7 @@ const FALLBACK_ICON =
 		<!-- Background Thumbnail (Blurred Logo) -->
 		<div
 			class='absolute inset-0 opacity-100 bg-center bg-cover bg-no-repeat transition-transform group-hover:scale-110 duration-700'
-			style={`background-image: url(${casino.thumbnail_url || casino.logo_url});`}
+			style={`background-image: url(${casinoData.thumbnail_url || casinoData.logo_url});`}
 		>
 		</div>
 
@@ -41,8 +52,8 @@ const FALLBACK_ICON =
 			class='relative z-10 w-24 h-24 bg-white rounded-card shadow-button border border-primary-200 flex items-center justify-center p-0 overflow-hidden transform group-hover:scale-105 transition-transform'
 		>
 			<img
-				src={casino.logo_url || FALLBACK_ICON}
-				alt={`${casino.name} Logo`}
+				src={casinoData.logo_url || FALLBACK_ICON}
+				alt={`${casinoData.name} Logo`}
 				class='w-full h-full object-contain rounded-card'
 				onerror={`this.onerror=null; this.src='${FALLBACK_ICON}';`}
 			/>
@@ -59,7 +70,7 @@ const FALLBACK_ICON =
 				class='group-hover:text-accent-600 transition-colors'
 			>
 				<a href={`/reviews/${review.slug}/`} class='no-underline'>
-					{casino.name}
+					{casinoData.name}
 				</a>
 			</Heading>
 			<Badge variant='bonus' size='sm'>
@@ -74,7 +85,7 @@ const FALLBACK_ICON =
 				>Welcome Bonus</span
 			>
 			<p class='font-bold text-sm text-primary-700 leading-snug'>
-				{casino.bonus_offer}
+				{casinoData.bonus_offer}
 			</p>
 		</div>
 
@@ -90,12 +101,12 @@ const FALLBACK_ICON =
 			<div class='flex flex-col'>
 				<span class='uppercase text-primary-300'>Payout</span>
 				<span class='text-primary-700'
-					>⚡ {casino.payout_speed_minutes} mins</span
+					>⚡ {casinoData.payout_speed_minutes} mins</span
 				>
 			</div>
 			<div class='flex flex-col text-right'>
 				<span class='uppercase text-primary-300'>RTP</span>
-				<span class='text-success-600'>{casino.payout_ratio}%</span>
+				<span class='text-success-600'>{casinoData.payout_ratio}%</span>
 			</div>
 		</div>
 	</div>
@@ -111,7 +122,7 @@ const FALLBACK_ICON =
 			Read Review
 		</Button>
 		<Button
-			href={casino.website_url}
+			href={casinoData.website_url}
 			variant='primary'
 			size='sm'
 			class='flex-1 text-xs uppercase tracking-wide'

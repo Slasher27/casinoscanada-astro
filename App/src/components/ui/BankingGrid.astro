@@ -17,20 +17,20 @@ const payments = db
 	.all() as PaymentSql[];
 ---
 
-<section class='py-16 bg-gray-50 border-t border-gray-200'>
+<section class='py-16 bg-gray-50 dark:bg-primary-950 border-t border-gray-200 dark:border-primary-800'>
 	<div class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
 		<div class='flex flex-col sm:flex-row justify-between items-end mb-10 gap-4'>
 			<div>
-				<h2 class='text-3xl font-bold text-gray-900 tracking-tight'>
+				<h2 class='text-3xl font-bold dark:text-white tracking-tight'>
 					Fastest Banking Methods
 				</h2>
-				<p class='mt-2 text-lg text-gray-600'>
+				<p class='mt-2 text-lg text-gray-600 dark:text-primary-400'>
 					Secure deposit & withdrawal options for Canadian players.
 				</p>
 			</div>
 			<a
 				href='/banking/'
-				class='hidden sm:inline-flex group items-center text-blue-600 hover:text-blue-800 font-semibold transition-colors'
+				class='hidden sm:inline-flex group items-center text-accent-600 dark:text-accent-400 hover:text-accent-800 dark:hover:text-accent-300 font-bold transition-colors'
 			>
 				See All Options
 				<svg
@@ -52,7 +52,7 @@ const payments = db
 				payments.map((method) => (
 					<a
 						href={`/banking/${method.id}/`}
-						class='group bg-white rounded-xl p-4 shadow-sm border border-gray-200 hover:shadow-md hover:border-blue-200 transition-all flex flex-col items-center text-center'
+						class='group bg-white dark:bg-primary-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-primary-700 hover:shadow-md hover:border-accent-200 dark:hover:border-accent-500/50 transition-all flex flex-col items-center text-center'
 					>
 						<div class='h-12 w-auto mb-3 flex items-center justify-center grayscale group-hover:grayscale-0 transition-all duration-300 opacity-80 group-hover:opacity-100'>
 							<img
@@ -64,10 +64,10 @@ const payments = db
                             <!-- Fallback Text if image fails -->
                             <span class="text-xs font-bold text-gray-400 hidden group-hover:hidden">LOGO</span>
 						</div>
-						<h3 class='font-bold text-gray-900 group-hover:text-blue-700 transition-colors'>
+						<h3 class='font-bold text-gray-900 dark:text-white group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors'>
 							{method.name}
 						</h3>
-						<span class='text-xs text-gray-500 mt-1 font-medium bg-gray-100 flex items-center gap-1 px-2 py-0.5 rounded-full'>
+						<span class='text-xs text-gray-500 dark:text-primary-400 mt-1 font-medium bg-gray-100 dark:bg-primary-900/50 flex items-center gap-1 px-2 py-0.5 rounded-full'>
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
 							{method.avg_speed}
 						</span>

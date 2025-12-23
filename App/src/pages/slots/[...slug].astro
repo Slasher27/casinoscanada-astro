@@ -170,14 +170,14 @@ const schema = {
 
 				<!-- CTA Box -->
 				<div
-					class='bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 p-6 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm'
+					class='bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-primary-900 dark:to-primary-800 border border-blue-100 dark:border-primary-700 p-6 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm'
 				>
 					<div>
-						<h3 class='font-bold text-blue-900 text-lg'>
+						<h3 class='font-bold text-blue-900 dark:text-white text-lg'>
 							Play {slot.title} for Real Money?
 						</h3>
-						<p class='text-blue-700 text-sm'>
-							We recommend <strong class='text-blue-900'
+						<p class='text-blue-700 dark:text-primary-300 text-sm'>
+							We recommend <strong class='text-blue-900 dark:text-white'
 								>{ctaCasino.name}</strong
 							> for {slot.provider_name} games.
 							<br />
@@ -188,7 +188,7 @@ const schema = {
 					</div>
 					<a
 						href={`/reviews/${ctaCasino.id}-casino/`}
-						class='bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg whitespace-nowrap transition-colors shadow-md transform hover:-translate-y-0.5'
+						class='bg-blue-600 hover:bg-blue-700 dark:bg-accent-600 dark:hover:bg-accent-700 text-white font-bold py-3 px-6 rounded-lg whitespace-nowrap transition-colors shadow-md transform hover:-translate-y-0.5'
 					>
 						Play at {ctaCasino.name}
 					</a>
@@ -196,7 +196,7 @@ const schema = {
 
 				<!-- Editorial Content -->
 				<article
-					class='prose prose-lg max-w-none prose-headings:font-bold prose-blue'
+					class='prose prose-lg max-w-none prose-headings:font-bold prose-blue dark:prose-invert dark:prose-headings:text-white dark:prose-p:text-primary-300 dark:prose-li:text-primary-300 dark:prose-strong:text-white dark:prose-a:text-accent-400'
 				>
 					<h2>About the Game</h2>
 					<p>{slot.description}</p>

@@ -3,125 +3,138 @@
 import typography from '@tailwindcss/typography';
 
 export default {
+	darkMode: 'class', // Enable class-based dark mode
 	content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
 	theme: {
 		extend: {
-			// MINIMALIST COLOR PALETTE
-			// Primary: Slate (professional, clean)
-			// Accent: Red (CTAs only)
-			// Support: Green (success), Yellow (bonuses)
+			// PREMIUM "WOW" COLOR PALETTE
 			colors: {
-				// Primary brand colors (Slate family - consistent)
+				// Base Greys (Slate) - Kept for structure
 				primary: {
-					50: '#f8fafc',   // Lightest backgrounds
-					100: '#f1f5f9',  // Card hover states
-					200: '#e2e8f0',  // Borders, dividers
-					300: '#cbd5e1',  // Disabled states
-					600: '#475569',  // Secondary text
-					700: '#334155',  // Primary text (dark)
-					900: '#0f172a',  // Headings, hero sections
+					50: '#f8fafc',
+					100: '#f1f5f9',
+					200: '#e2e8f0',
+					300: '#cbd5e1',
+					400: '#94a3b8',
+					500: '#64748b',
+					600: '#475569',
+					700: '#334155',
+					800: '#1e293b',
+					900: '#0f172a',
+					950: '#020617', // Deepest background
 				},
-				// Accent color (Red - CTAs only)
+				// Premium High-End Accents (Gold & Purple)
+				premium: {
+					gold: {
+						50: '#fffbeb',
+						100: '#fef3c7',
+						200: '#fde68a',
+						300: '#fcd34d',
+						400: '#fbbf24',
+						500: '#f59e0b',
+						600: '#d97706',
+						700: '#b45309', // Rich gold
+						800: '#92400e',
+						900: '#78350f',
+					},
+					purple: {
+						50: '#faf5ff',
+						400: '#c084fc',
+						500: '#a855f7', // Electric purple
+						600: '#9333ea',
+						900: '#581c87',
+					},
+				},
+				// Legacy Accents (Red - for Urgent CTAs)
 				accent: {
-					50: '#fef2f2',   // Light backgrounds
-					100: '#fee2e2',  // Hover backgrounds
-					600: '#dc2626',  // Primary CTAs
-					700: '#b91c1c',  // CTA hover states
+					50: '#fef2f2',
+					100: '#fee2e2',
+					500: '#ef4444',
+					600: '#dc2626',
+					700: '#b91c1c',
 				},
-				// Success indicators (Green)
+				// Semantic Colors
 				success: {
-					50: '#f0fdf4',   // Light backgrounds
-					100: '#dcfce7',  // Borders
-					600: '#16a34a',  // Text, icons
-					700: '#15803d',  // Hover states
+					500: '#22c55e',
+					700: '#15803d',
 				},
-				// Bonus/Highlight (Yellow)
 				bonus: {
-					50: '#fefce8',   // Light backgrounds
-					100: '#fef9c3',  // Borders
-					400: '#facc15',  // Badges, highlights
-					700: '#a16207',  // Dark text
+					// Kept for familiarity but can blend with gold
+					400: '#facc15',
+					700: '#a16207',
 				},
-				// Info/Feature (Blue - minimal use)
-				info: {
-					50: '#eff6ff',   // Light backgrounds
-					100: '#dbeafe',  // Borders
-					600: '#2563eb',  // Links, info text
-					700: '#1d4ed8',  // Hover states
+				// Dark Mode Specific Surfaces
+				surface: {
+					100: '#1e293b', // Lighter cards
+					200: '#334155', // Hover states
+					900: '#020617', // Main background
 				},
 			},
 
-			// SPACING SCALE (4px base for consistency)
+			// SPACING SCALE
 			spacing: {
-				// Card padding standard
-				'card': '1.25rem',      // 20px (p-5 equivalent)
-				'card-sm': '1rem',      // 16px (p-4 equivalent)
-				'card-lg': '1.5rem',    // 24px (p-6 equivalent)
-				// Button padding
-				'btn-sm': '0.5rem',     // 8px
-				'btn-md': '0.75rem',    // 12px
-				'btn-lg': '1rem',       // 16px
-				// Section spacing
-				'section': '3rem',      // 48px
-				'section-lg': '4rem',   // 64px
+				card: '1.25rem', // 20px
+				'card-sm': '1rem', // 16px
+				'card-lg': '1.5rem', // 24px
+				'btn-sm': '0.5rem', // 8px
+				'btn-md': '0.75rem', // 12px
+				'btn-lg': '1rem', // 16px
+				section: '3rem', // 48px
+				'section-lg': '4rem', // 64px
 			},
 
-			// BORDER RADIUS (Minimalist hierarchy)
+			// BORDER RADIUS
 			borderRadius: {
-				'card': '0.75rem',      // 12px (rounded-xl for cards)
-				'btn': '0.5rem',        // 8px (rounded-lg for secondary buttons)
-				'btn-primary': '9999px', // rounded-full for primary CTAs
-				'badge': '9999px',       // rounded-full for pills/badges
+				card: '1rem', // 16px (slightly rounder for modern look)
+				btn: '0.75rem', // 12px
+				'btn-primary': '9999px',
+				badge: '9999px',
 			},
 
-			// SHADOW HIERARCHY (Minimal - only 3 levels)
+			// SHADOWS with Glow Effects
 			boxShadow: {
-				'card': '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',           // shadow-sm (default card)
-				'card-hover': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)', // shadow-md (hover)
-				'button': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',     // shadow-md (buttons)
+				card: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+				'card-hover':
+					'0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+				glow: '0 0 15px rgba(217, 119, 6, 0.3)', // Gold glow
+				'glow-purple': '0 0 15px rgba(168, 85, 247, 0.3)', // Purple glow
+				glass: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
 			},
 
-			// TYPOGRAPHY SCALE (Mobile-first with responsive scaling)
-			fontSize: {
-				// Hero headings (h1)
-				'hero': ['2.25rem', { lineHeight: '2.5rem', fontWeight: '900' }],        // 36px mobile
-				'hero-lg': ['3.75rem', { lineHeight: '1', fontWeight: '900' }],          // 60px desktop
-				// Page headings (h1)
-				'heading-1': ['1.875rem', { lineHeight: '2.25rem', fontWeight: '700' }], // 30px mobile
-				'heading-1-lg': ['2.25rem', { lineHeight: '2.5rem', fontWeight: '700' }],// 36px desktop
-				// Section headings (h2)
-				'heading-2': ['1.5rem', { lineHeight: '2rem', fontWeight: '700' }],      // 24px
-				'heading-2-lg': ['1.875rem', { lineHeight: '2.25rem', fontWeight: '700' }], // 30px desktop
-				// Subsection headings (h3)
-				'heading-3': ['1.25rem', { lineHeight: '1.75rem', fontWeight: '600' }],  // 20px
-				'heading-3-lg': ['1.5rem', { lineHeight: '2rem', fontWeight: '600' }],   // 24px desktop
-				// Card titles
-				'card-title': ['1.125rem', { lineHeight: '1.75rem', fontWeight: '700' }], // 18px
-				// Body text
-				'body': ['1rem', { lineHeight: '1.75rem', fontWeight: '400' }],          // 16px
-				'body-sm': ['0.875rem', { lineHeight: '1.5rem', fontWeight: '400' }],    // 14px
+			// ANIMATIONS
+			animation: {
+				'fade-in': 'fadeIn 0.5s ease-out forwards',
+				'slide-up': 'slideUp 0.5s ease-out forwards',
+				'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+				float: 'float 6s ease-in-out infinite',
 			},
-
-			// CONTAINER PADDING (Mobile-responsive)
-			container: {
-				center: true,
-				padding: {
-					DEFAULT: '1rem',    // 16px mobile
-					sm: '1.5rem',       // 24px tablet
-					lg: '2rem',         // 32px desktop
+			keyframes: {
+				fadeIn: {
+					'0%': { opacity: '0' },
+					'100%': { opacity: '1' },
+				},
+				slideUp: {
+					'0%': { opacity: '0', transform: 'translateY(20px)' },
+					'100%': { opacity: '1', transform: 'translateY(0)' },
+				},
+				float: {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-10px)' },
 				},
 			},
 
-			// TRANSITIONS (Smooth, minimalist)
-			transitionDuration: {
-				'default': '200ms',
+			// TYPOGRAPHY
+			fontSize: {
+				hero: ['2.5rem', { lineHeight: '1.1', fontWeight: '900' }],
+				'hero-lg': ['4.5rem', { lineHeight: '1.1', fontWeight: '900' }],
+				'heading-1': ['2rem', { lineHeight: '1.25', fontWeight: '700' }],
+				'heading-2': ['1.5rem', { lineHeight: '1.3', fontWeight: '700' }],
+				body: ['1rem', { lineHeight: '1.6', fontWeight: '400' }],
 			},
-			transitionTimingFunction: {
-				'default': 'cubic-bezier(0.4, 0, 0.2, 1)',
+			fontFamily: {
+				sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'], // Ensure a clean font stack
 			},
 		},
 	},
-	plugins: [
-		typography(),
-	],
+	plugins: [typography()],
 };

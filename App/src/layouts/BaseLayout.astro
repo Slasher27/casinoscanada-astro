@@ -6,6 +6,9 @@ import SEOHead from '../components/common/SEOHead.astro';
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
 import SearchPalette from '../components/interactive/SearchPalette.svelte';
 import CookieConsent from '../components/common/CookieConsent.svelte';
+import GeoDetector from '../components/interactive/GeoDetector.svelte';
+import ComplianceNotice from '../components/interactive/ComplianceNotice.svelte';
+import { ClientRouter } from 'astro:transitions';
 
 import Analytics from '../components/common/Analytics.astro';
 
@@ -29,10 +32,45 @@ const {
 	<head>
 		<SEOHead title={title} description={description} image={image} />
 		<Analytics />
+		<ClientRouter />
+		<script is:inline>
+			const applyTheme = () => {
+				const theme = (() => {
+					if (
+						typeof localStorage !== 'undefined' &&
+						localStorage.getItem('theme')
+					) {
+						return localStorage.getItem('theme');
+					}
+					if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+						return 'dark';
+					}
+					return 'light';
+				})();
+
+				if (theme === 'dark') {
+					document.documentElement.classList.add('dark');
+				} else {
+					document.documentElement.classList.remove('dark');
+				}
+
+				window.localStorage.setItem('theme', theme);
+			};
+
+			// Apply on initial load
+			applyTheme();
+
+			// Apply on view transition navigation
+			document.addEventListener('astro:after-swap', applyTheme);
+		</script>
 		<slot name='head' />
 	</head>
 
-	<body class='flex flex-col min-h-screen bg-slate-50'>
+	<body
+		class='flex flex-col min-h-screen bg-slate-50 dark:bg-primary-950 dark:text-gray-100 transition-colors duration-300'
+	>
+		<GeoDetector client:idle />
+		<ComplianceNotice client:load />
 		<SearchPalette client:idle />
 		<CookieConsent client:load />
 		<Header />

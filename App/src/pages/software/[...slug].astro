@@ -4,7 +4,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import {
 	getAllSoftwareProviders,
 	getSlotsByProvider,
-	getCasinosBySoftwareProvider,
 } from '../../db/queries';
 import type { SoftwareProvider } from '../../types/database';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
@@ -43,17 +42,11 @@ const maxWin =
 			}, 0)
 		: 0;
 
-// 2. Fetch Top Casinos for this Provider
-const linkedCasinos = getCasinosBySoftwareProvider(provider.id, 4);
-
-// 3. Match with Reviews (for the Card UI)
+// 2. Fetch Reviews for this Provider
 const allReviews = await getCollection('reviews');
-const topCasinos = linkedCasinos
-	.map((casino) => {
-		const review = allReviews.find((r) => r.data.casinoId === casino.id);
-		return review ? { casino, review } : null;
-	})
-	.filter((item) => item !== null) as { casino: any; review: any }[];
+const topCasinos = allReviews
+	.filter(review => review.data.software_providers?.includes(provider.id))
+	.slice(0, 4);
 
 // 4. Schema.org
 const faqSchema = {
@@ -75,7 +68,7 @@ const faqSchema = {
 				'@type': 'Answer',
 				text:
 					topCasinos.length > 0
-						? `We recommend ${topCasinos[0].casino.name} as a top choice for playing ${provider.name} games.`
+						? `We recommend ${topCasinos[0].data.name} as a top choice for playing ${provider.name} games.`
 						: `Check our list of top rated casinos to find sites offering ${provider.name} games.`,
 			},
 		},
@@ -171,8 +164,8 @@ const orgSchema = {
 						</div>
 
 						<div class='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
-							{topCasinos.map(({ casino, review }, index) => (
-								<CasinoGridCard casino={casino} review={review} index={index} />
+							{topCasinos.map((review, index) => (
+								<CasinoGridCard review={review} index={index} />
 							))}
 						</div>
 					</div>

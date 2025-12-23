@@ -5,9 +5,21 @@ import SlotsSection from '../components/ui/SlotsSection.astro';
 import BankingGrid from '../components/ui/BankingGrid.astro';
 import { getCollection } from 'astro:content';
 
+import CasinoWizard from '../components/interactive/CasinoWizard.svelte';
+
 // Fetch only the 3 latest reviews for a "Recent Updates" section
 const allReviews = await getCollection('reviews');
 const latestReviews = allReviews.slice(0, 3);
+
+// Data for Wizard
+const wizardCasinos = allReviews.map((r) => ({
+	id: r.data.casinoId,
+	name: r.data.name,
+	logo: r.data.logo,
+	rating: r.data.rating,
+	bonus: r.data.bonus_offer,
+	tags: r.data.pros || [],
+}));
 
 // Schema.org structured data for homepage
 const organizationSchema = {
@@ -16,7 +28,8 @@ const organizationSchema = {
 	name: 'Casinos Canada',
 	url: 'https://casinoscanada.online',
 	logo: 'https://casinoscanada.online/favicon.svg',
-	description: 'Independent reviews of online casinos for Canadian players. We test payout speeds, bonuses, and game fairness.',
+	description:
+		'Independent reviews of online casinos for Canadian players. We test payout speeds, bonuses, and game fairness.',
 	sameAs: [
 		// Add social media profiles here when available
 		// 'https://twitter.com/casinoscanada',
@@ -35,7 +48,8 @@ const websiteSchema = {
 	'@type': 'WebSite',
 	name: 'Casinos Canada',
 	url: 'https://casinoscanada.online',
-	description: 'Top-rated online casinos for Canadian players with honest reviews and fast payout testing.',
+	description:
+		'Top-rated online casinos for Canadian players with honest reviews and fast payout testing.',
 	publisher: {
 		'@type': 'Organization',
 		name: 'Casinos Canada',
@@ -66,23 +80,112 @@ const websiteSchema = {
 		slot='head'
 		set:html={JSON.stringify(websiteSchema)}
 	/>
+
+	<!-- Premium Hero Section -->
 	<section
-		class='bg-slate-900 text-white py-16 md:py-24 relative overflow-hidden'
+		class='relative min-h-[600px] flex items-center pt-24 pb-16 overflow-hidden bg-primary-950'
 	>
-		<div class='container mx-auto px-4 relative z-10 text-center'>
-			<h1 class='text-4xl md:text-6xl font-black mb-6 tracking-tight'>
-				Find the <span class='text-red-600'>Best</span> Online Casinos
-			</h1>
-			<p class='text-xl text-slate-300 max-w-2xl mx-auto mb-8'>
-				We personally test payout speeds, bonus terms, and game fairness so you
-				don't have to. Play with confidence at Canada's top rated sites.
-			</p>
-			<a
-				href='#top-list'
-				class='bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-10 rounded-full shadow-lg transition-transform hover:scale-105 inline-block'
+		<!-- Background Effects -->
+		<div class='absolute inset-0 z-0'>
+			<div
+				class='absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-premium-purple-600/30 rounded-full blur-[100px] animate-pulse-slow'
 			>
-				See Top Picks
-			</a>
+			</div>
+			<div
+				class='absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-accent-600/20 rounded-full blur-[120px]'
+			>
+			</div>
+			<div
+				class="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-5"
+			>
+			</div>
+		</div>
+
+		<div class='container mx-auto px-4 relative z-10'>
+			<div class='grid lg:grid-cols-2 gap-12 items-center'>
+				<!-- Text Content -->
+				<div class='text-center lg:text-left space-y-8'>
+					<div
+						class='inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm animate-fade-in'
+					>
+						<span class='w-2 h-2 rounded-full bg-green-500 animate-pulse'
+						></span>
+						<span
+							class='text-xs text-primary-200 font-bold tracking-wide uppercase'
+							>Updated for 2025</span
+						>
+					</div>
+
+					<h1
+						class='text-5xl lg:text-7xl font-black text-white tracking-tight leading-none'
+					>
+						Play <span
+							class='bg-clip-text text-transparent bg-gradient-to-r from-premium-gold-300 to-premium-gold-500'
+							>Smarter.</span
+						><br />
+						Win <span
+							class='bg-clip-text text-transparent bg-gradient-to-r from-accent-400 to-accent-600'
+							>Bigger.</span
+						>
+					</h1>
+
+					<p
+						class='text-xl text-primary-200 max-w-xl mx-auto lg:mx-0 leading-relaxed'
+					>
+						The #1 trusted resource for Canadian players. We verify payout
+						speeds, audit game integrity, and negotiate exclusive bonuses.
+					</p>
+
+					<div
+						class='flex flex-col sm:flex-row gap-4 justify-center lg:justify-start'
+					>
+						<a
+							href='#top-list'
+							class='bg-accent-600 hover:bg-accent-700 text-white font-bold py-4 px-8 rounded-full shadow-button hover:shadow-glow hover:scale-105 transition-all text-lg'
+						>
+							View Top Casinos
+						</a>
+						<a
+							href='/bonuses/'
+							class='bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold py-4 px-8 rounded-full backdrop-blur-sm transition-all text-lg'
+						>
+							Best Bonuses
+						</a>
+					</div>
+
+					<!-- Trust Indicators -->
+					<div
+						class='pt-8 grid grid-cols-3 gap-6 border-t border-white/10 opacity-70'
+					>
+						<div>
+							<div class='text-2xl font-black text-white'>50+</div>
+							<div class='text-xs text-primary-400 uppercase tracking-widest'>
+								Sites Tested
+							</div>
+						</div>
+						<div>
+							<div class='text-2xl font-black text-white'>98%</div>
+							<div class='text-xs text-primary-400 uppercase tracking-widest'>
+								Satisfaction
+							</div>
+						</div>
+						<div>
+							<div class='text-2xl font-black text-white'>$5M+</div>
+							<div class='text-xs text-primary-400 uppercase tracking-widest'>
+								Bonuses
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Wizard / Interactive Element -->
+				<div
+					class='hidden lg:block animate-slide-up'
+					style='animation-delay: 0.2s;'
+				>
+					<CasinoWizard client:load casinos={wizardCasinos} />
+				</div>
+			</div>
 		</div>
 	</section>
 
@@ -94,14 +197,22 @@ const websiteSchema = {
 
 	<BankingGrid />
 
-	<section class='py-16 bg-gray-50 border-t border-gray-200'>
+	<section
+		class='py-16 bg-gray-50 dark:bg-primary-950 border-t border-gray-200 dark:border-primary-800'
+	>
 		<div class='container mx-auto px-4'>
 			<div class='flex justify-between items-end mb-10'>
 				<div>
-					<h2 class='text-3xl font-bold text-gray-900'>Latest Reviews</h2>
-					<p class='text-gray-600 mt-2'>Freshly tested by our team.</p>
+					<h2 class='text-3xl font-bold text-gray-900 dark:text-white'>
+						Latest Reviews
+					</h2>
+					<p class='text-gray-600 dark:text-primary-400 mt-2'>
+						Freshly tested by our team.
+					</p>
 				</div>
-				<a href='/reviews/' class='text-blue-600 font-bold hover:underline'
+				<a
+					href='/reviews/'
+					class='text-accent-600 dark:text-accent-400 font-bold hover:underline'
 					>View All &rarr;</a
 				>
 			</div>
@@ -111,21 +222,21 @@ const websiteSchema = {
 					latestReviews.map((review) => (
 						<a
 							href={`/reviews/${review.slug}/`}
-							class='group bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all'
+							class='group bg-white dark:bg-primary-800 rounded-xl shadow-sm border border-gray-100 dark:border-primary-700 overflow-hidden hover:shadow-lg transition-all'
 						>
 							<div class='p-6'>
 								<div class='flex items-center gap-2 mb-3'>
-									<span class='text-xs font-bold uppercase tracking-wider text-gray-400'>
+									<span class='text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-primary-400'>
 										Review
 									</span>
-									<span class='text-xs font-bold text-yellow-600'>
+									<span class='text-xs font-bold text-yellow-600 dark:text-yellow-400'>
 										★ {review.data.rating}/5
 									</span>
 								</div>
-								<h3 class='font-bold text-xl text-gray-900 group-hover:text-blue-600 transition-colors mb-2'>
+								<h3 class='font-bold text-xl text-gray-900 dark:text-white group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors mb-2'>
 									{review.data.title.split(':')[0]}
 								</h3>
-								<p class='text-gray-600 text-sm line-clamp-2'>
+								<p class='text-gray-600 dark:text-primary-400 text-sm line-clamp-2'>
 									{review.data.metaDescription}
 								</p>
 							</div>

@@ -1,0 +1,120 @@
+---
+# Core SEO Fields
+title: 'CASINO NAME Review Canada 2025 - BONUS OFFER'
+metaDescription: 'Complete review of CASINO NAME - bonuses, games, banking options for Canadian players.'
+casinoCardText: 'SHORT DESCRIPTION FOR CARDS'
+
+# Publishing Info
+pubDate: 2025-01-15
+author: 'Casinos Canada Team'
+
+# Casino Identification
+casinoId: 'casino-slug'
+name: 'Casino Name'
+website: 'https://casino.com'
+
+# Basic Info
+established: 2020
+license: 'MGA'  # or 'Curacao', 'UKGC', etc.
+owner: 'Company Name'
+
+# Performance Metrics
+withdrawal_speed: 10  # in minutes
+rtp: 96.5
+rating: 4.5  # out of 5
+
+# Visual Assets
+theme_color: '#000000'
+logo: '/images/casinos/logos/casino-slug-200x200.png'
+thumbnail: '/images/casinos/thumbnails/casino-slug.jpg'
+
+# Bonus Information
+bonus_offer: '$500 + 100 Free Spins'
+bonus_spins: 100
+min_deposit: 20
+wagering: 40  # wagering requirement (e.g., 40x)
+
+# Feature Flags
+sports_betting: false
+poker: false
+live_casino: true
+mobile_app: true
+
+# Review Content
+pros:
+  - 'Fast withdrawals'
+  - 'Great game selection'
+  - 'Good customer support'
+cons:
+  - 'High wagering'
+  - 'Limited payment methods'
+
+# Relationships (use IDs from database)
+payment_methods:
+  - interac
+  - bitcoin
+  - visa
+
+software_providers:
+  - netent
+  - evolution
+  - pragmatic
+
+# Recommendations (optional - add if this is a top pick)
+recommended_for:
+  - type: 'payment'  # or 'game', 'feature'
+    context: 'bitcoin'  # payment method ID, game slug, or feature name
+    reason: 'Lightning-fast crypto withdrawals'
+    priority: 1
+---
+
+import BonusCard from '../../components/ui/BonusCard.astro';
+import WageringCalc from '../../components/interactive/WageringCalc.svelte';
+import CasinoProsCons from '../../components/reviews/CasinoProsCons.astro';
+
+export const casinoId = frontmatter.casinoId;
+
+## Casino Name Overview
+
+Write your review content here...
+
+<BonusCard
+  casinoName='Casino Name'
+  bonus='$500 + 100 Free Spins'
+  link='https://casino.com'
+  logo='/images/casinos/logos/casino-slug-200x200.png'
+/>
+
+---
+
+## Pros & Cons
+
+<CasinoProsCons casinoId={casinoId} />
+
+---
+
+## Welcome Bonuses
+
+### New Player Bonus
+
+Details about the bonus...
+
+<WageringCalc client:load initialAmount={100} wageringReq={40} />
+
+---
+
+## Banking Options
+
+Details about payment methods...
+
+---
+
+## Game Selection
+
+Details about games...
+
+---
+
+## Final Verdict
+
+Your conclusion...

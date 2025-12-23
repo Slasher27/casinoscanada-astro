@@ -9,39 +9,85 @@ const navLinks = [
 	{ text: 'Software', href: '/software/' },
 	{ text: 'Banking', href: '/banking/' },
 ];
+
+// Get current path for active state
+const currentPath = Astro.url.pathname;
+
+// Helper function to check if link is active
+const isActive = (href: string) => {
+	if (href === '/' && currentPath === '/') return true;
+	if (href !== '/' && currentPath.startsWith(href)) return true;
+	return false;
+};
 ---
 
-<header class='bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm'>
+<header
+	class='sticky top-0 z-40 w-full transition-all duration-300 border-b border-white/10 bg-white/80 dark:bg-primary-950/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-primary-950/60 shadow-glass'
+>
 	<div
-		class='container mx-auto px-4 h-16 flex items-center justify-between relative'
+		class='container mx-auto px-4 h-20 flex items-center justify-between relative max-w-screen-2xl'
 	>
-		<a href='/' class='flex items-center gap-2 no-underline'>
-			<span class='text-red-600 text-3xl'>🍁</span>
-			<span class='text-2xl font-black text-slate-900 tracking-tight'>
-				Casinos<span class='text-red-600'>Canada</span>
-			</span>
+		<!-- Logo -->
+		<a
+			href='/'
+			class='flex items-center gap-2 group'
+			aria-label='Casinos Canada Home'
+		>
+			<div
+				class='relative w-10 h-10 flex items-center justify-center bg-gradient-to-br from-accent-600 to-premium-purple-600 rounded-xl shadow-lg group-hover:shadow-glow-purple transition-shadow duration-300'
+			>
+				<span class='text-2xl filter drop-shadow-md' aria-hidden='true'>🍁</span
+				>
+			</div>
+			<div class='flex flex-col'>
+				<span
+					class='text-2xl font-black text-primary-900 dark:text-white tracking-tight leading-none'
+				>
+					Casinos<span class='text-accent-600 dark:text-accent-500'>Canada</span
+					>
+				</span>
+				<span
+					class='text-[0.65rem] font-bold uppercase tracking-[0.2em] text-primary-500 dark:text-primary-400'
+					>The #1 Guide</span
+				>
+			</div>
 		</a>
 
-		<nav class='hidden md:flex items-center gap-8'>
+		<!-- Desktop Navigation -->
+		<nav class='hidden lg:flex items-center gap-1' aria-label='Main navigation'>
 			{
-				navLinks.map((link) => (
-					<a
-						href={link.href}
-						class='text-sm font-bold text-slate-600 hover:text-red-600 uppercase tracking-wide transition-colors'
-					>
-						{link.text}
-					</a>
-				))
+				navLinks.map((link) => {
+					const active = isActive(link.href);
+					return (
+						<a
+							href={link.href}
+							class={`
+								relative px-4 py-2 text-sm font-bold uppercase tracking-wide rounded-lg transition-all border
+								${
+									active
+										? 'border-accent-200 dark:border-premium-gold-400/20 text-accent-600 dark:text-premium-gold-400 bg-accent-50 dark:bg-premium-gold-400/10'
+										: 'border-transparent text-primary-600 dark:text-primary-400 hover:text-accent-600 dark:hover:text-premium-gold-400 hover:bg-slate-100 dark:hover:bg-white/5'
+								}
+							`}
+							aria-current={active ? 'page' : undefined}
+						>
+							{link.text}
+						</a>
+					);
+				})
 			}
 
-			<!-- Search Trigger -->
+			<div class='w-px h-8 bg-slate-200 dark:bg-white/10 mx-4'></div>
+
+			<!-- Theme Toggle -->
 			<button
-				onclick="window.dispatchEvent(new CustomEvent('open-search-palette'))"
-				class='flex items-center gap-2 text-slate-500 hover:text-slate-900 bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-lg transition-colors border border-transparent hover:border-gray-200'
-				aria-label='Search'
+				id='theme-toggle'
+				class='p-2 text-primary-500 dark:text-primary-400 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg transition-colors'
+				aria-label='Toggle Dark Mode'
 			>
+				<!-- Sun Icon -->
 				<svg
-					class='w-4 h-4'
+					class='w-5 h-5 hidden dark:block'
 					fill='none'
 					stroke='currentColor'
 					viewBox='0 0 24 24'
@@ -49,19 +95,113 @@ const navLinks = [
 						stroke-linecap='round'
 						stroke-linejoin='round'
 						stroke-width='2'
-						d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'></path></svg
+						d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z'
+					></path></svg
 				>
-				<span class='text-xs font-bold text-slate-400'>⌘K</span>
+				<!-- Moon Icon -->
+				<svg
+					class='w-5 h-5 block dark:hidden'
+					fill='none'
+					stroke='currentColor'
+					viewBox='0 0 24 24'
+					><path
+						stroke-linecap='round'
+						stroke-linejoin='round'
+						stroke-width='2'
+						d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z'
+					></path></svg
+				>
 			</button>
 
+			<!-- Search Trigger -->
+			<button
+				onclick="window.dispatchEvent(new CustomEvent('open-search-palette'))"
+				class='flex items-center gap-2 text-primary-500 dark:text-primary-400 hover:text-primary-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 px-3 py-2 rounded-lg transition-colors ml-2'
+				aria-label='Open search'
+				title='Search (⌘K)'
+			>
+				<svg
+					class='w-5 h-5'
+					fill='none'
+					stroke='currentColor'
+					viewBox='0 0 24 24'
+					aria-hidden='true'
+					><path
+						stroke-linecap='round'
+						stroke-linejoin='round'
+						stroke-width='2'
+						d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'></path></svg
+				>
+			</button>
+
+			<!-- Compare CTA -->
 			<a
 				href='/compare/'
-				class='bg-red-600 hover:bg-red-700 text-white text-sm font-bold py-2 px-6 rounded-full transition-transform hover:scale-105 shadow-md hover:shadow-lg'
+				class={`
+					ml-4
+					bg-gradient-to-r from-accent-600 to-premium-purple-600 hover:from-accent-500 hover:to-premium-purple-500
+					text-white text-sm font-bold
+					py-2.5 px-6 rounded-full transition-all hover:scale-105 hover:shadow-glow-purple
+					shadow-button whitespace-nowrap
+				`}
 			>
-				Compare
+				Compare Casinos
 			</a>
 		</nav>
 
-		<MobileMenu client:load />
+		<!-- Mobile Menu Button -->
+		<div class='lg:hidden flex items-center gap-4'>
+			<button
+				id='theme-toggle-mobile'
+				class='p-2 text-primary-500 dark:text-primary-400'
+				aria-label='Toggle Dark Mode'
+			>
+				<svg
+					class='w-5 h-5 hidden dark:block'
+					fill='none'
+					stroke='currentColor'
+					viewBox='0 0 24 24'
+					><path
+						stroke-linecap='round'
+						stroke-linejoin='round'
+						stroke-width='2'
+						d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z'
+					></path></svg
+				>
+				<svg
+					class='w-5 h-5 block dark:hidden'
+					fill='none'
+					stroke='currentColor'
+					viewBox='0 0 24 24'
+					><path
+						stroke-linecap='round'
+						stroke-linejoin='round'
+						stroke-width='2'
+						d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z'
+					></path></svg
+				>
+			</button>
+			<MobileMenu client:load {navLinks} {currentPath} />
+		</div>
 	</div>
+
+	<script>
+		const handleThemeToggle = () => {
+			const element = document.documentElement;
+			element.classList.toggle('dark');
+
+			const isDark = element.classList.contains('dark');
+			localStorage.setItem('theme', isDark ? 'dark' : 'light');
+		};
+
+		// Re-attach listeners on every page navigation (for ClientRouter)
+		document.addEventListener('astro:page-load', () => {
+			document
+				.getElementById('theme-toggle')
+				?.addEventListener('click', handleThemeToggle);
+			document
+				.getElementById('theme-toggle-mobile')
+				?.addEventListener('click', handleThemeToggle);
+		});
+	</script>
 </header>

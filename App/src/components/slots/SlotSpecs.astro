@@ -31,10 +31,14 @@ const volColor =
 ---
 
 <div
-	class='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden'
+	class='bg-white dark:bg-primary-800 rounded-xl shadow-sm border border-gray-200 dark:border-primary-700 overflow-hidden'
 >
-	<div class='bg-gray-50 px-5 py-3 border-b border-gray-200'>
-		<h3 class='font-bold text-gray-900 text-sm uppercase tracking-wider'>
+	<div
+		class='bg-gray-50 dark:bg-primary-900 px-5 py-3 border-b border-gray-200 dark:border-primary-700'
+	>
+		<h3
+			class='font-bold text-gray-900 dark:text-white text-sm uppercase tracking-wider'
+		>
 			Game Specs
 		</h3>
 	</div>
@@ -42,48 +46,64 @@ const volColor =
 	<div class='p-5 space-y-4'>
 		<!-- Key Stat: RTP -->
 		<div
-			class='flex justify-between items-center pb-3 border-b border-gray-100'
+			class='flex justify-between items-center pb-3 border-b border-gray-100 dark:border-primary-700'
 		>
-			<span class='text-gray-500 text-sm font-medium'>RTP</span>
-			<span class='font-bold text-gray-900'>{rtp}%</span>
+			<span class='text-gray-500 dark:text-primary-400 text-sm font-medium'
+				>RTP</span
+			>
+			<span class='font-bold text-gray-900 dark:text-white'>{rtp}%</span>
 		</div>
 
 		<!-- Key Stat: Volatility -->
 		<div
-			class='flex justify-between items-center pb-3 border-b border-gray-100'
+			class='flex justify-between items-center pb-3 border-b border-gray-100 dark:border-primary-700'
 		>
-			<span class='text-gray-500 text-sm font-medium'>Volatility</span>
-			<span class={`font-bold ${volColor}`}>{volatility}</span>
+			<span class='text-gray-500 dark:text-primary-400 text-sm font-medium'
+				>Volatility</span
+			>
+			<span class={`font-bold ${volColor} dark:brightness-110`}
+				>{volatility}</span
+			>
 		</div>
 
 		<!-- Grid Layout -->
 		<div
-			class='flex justify-between items-center pb-3 border-b border-gray-100'
+			class='flex justify-between items-center pb-3 border-b border-gray-100 dark:border-primary-700'
 		>
-			<span class='text-gray-500 text-sm font-medium'>Reels / Rows</span>
-			<span class='font-bold text-gray-900'>{layout || 'N/A'}</span>
+			<span class='text-gray-500 dark:text-primary-400 text-sm font-medium'
+				>Reels / Rows</span
+			>
+			<span class='font-bold text-gray-900 dark:text-white'
+				>{layout || 'N/A'}</span
+			>
 		</div>
 
 		<!-- Paylines -->
 		<div
-			class='flex justify-between items-center pb-3 border-b border-gray-100'
+			class='flex justify-between items-center pb-3 border-b border-gray-100 dark:border-primary-700'
 		>
-			<span class='text-gray-500 text-sm font-medium'>Paylines</span>
-			<span class='font-bold text-gray-900'>{paylines}</span>
+			<span class='text-gray-500 dark:text-primary-400 text-sm font-medium'
+				>Paylines</span
+			>
+			<span class='font-bold text-gray-900 dark:text-white'>{paylines}</span>
 		</div>
 
 		<!-- Max Win -->
 		<div
-			class='flex justify-between items-center pb-3 border-b border-gray-100'
+			class='flex justify-between items-center pb-3 border-b border-gray-100 dark:border-primary-700'
 		>
-			<span class='text-gray-500 text-sm font-medium'>Max Win</span>
-			<span class='font-bold text-gray-900'>{maxWin}</span>
+			<span class='text-gray-500 dark:text-primary-400 text-sm font-medium'
+				>Max Win</span
+			>
+			<span class='font-bold text-gray-900 dark:text-white'>{maxWin}</span>
 		</div>
 
 		<!-- Betting Range -->
 		<div class='flex justify-between items-center'>
-			<span class='text-gray-500 text-sm font-medium'>Min/Max Bet</span>
-			<span class='font-bold text-gray-900'>
+			<span class='text-gray-500 dark:text-primary-400 text-sm font-medium'
+				>Min/Max Bet</span
+			>
+			<span class='font-bold text-gray-900 dark:text-white'>
 				${minBet} - ${maxBet}
 			</span>
 		</div>
@@ -91,7 +111,7 @@ const volColor =
 
 	<!-- Footer Info -->
 	<div
-		class='bg-gray-50 px-5 py-3 border-t border-gray-100 text-xs text-center text-gray-400'
+		class='bg-gray-50 dark:bg-primary-900 px-5 py-3 border-t border-gray-100 dark:border-primary-700 text-xs text-center text-gray-400 dark:text-primary-500'
 	>
 		Released: {releaseDate}
 	</div>
