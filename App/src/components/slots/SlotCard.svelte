@@ -9,10 +9,10 @@
     }
   </script>
 
-  <article class='bg-white rounded-card shadow-card border border-primary-200 overflow-hidden hover:shadow-card-hover transition-all duration-300 flex flex-col h-full group'>
+  <article class='bg-white dark:bg-primary-800 rounded-card shadow-card border border-primary-200 dark:border-primary-700 overflow-hidden hover:shadow-card-hover transition-all duration-300 flex flex-col h-full group'>
 
     <!-- Hero / Mock Game Window Header -->
-    <div class="relative bg-primary-900 border-b border-primary-200 pt-8 pb-0 overflow-hidden group-hover:bg-primary-700 transition-colors aspect-video flex items-end justify-center">
+    <div class="relative bg-primary-900 border-b border-primary-200 dark:border-primary-700 pt-8 pb-0 overflow-hidden group-hover:bg-primary-700 transition-colors aspect-video flex items-end justify-center">
         <!-- Background Thumbnail (The Slot Image) -->
         <div class="absolute inset-0 bg-cover bg-center transition-transform group-hover:scale-110 duration-700" style="background-image: url('{slot.image_url}');"></div>
         <div class="absolute inset-0 bg-gradient-to-t from-primary-900/90 to-transparent"></div>
@@ -44,26 +44,26 @@
 
     <!-- Body -->
     <div class='p-card-sm flex-col flex flex-grow'>
-      <h3 class='font-bold text-primary-900 leading-tight mb-2 group-hover:text-accent-600 transition-colors'>
+      <h3 class='font-bold text-primary-900 dark:text-white leading-tight mb-2 group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors'>
         <a href={`/slots/${slot.slug}/`} class="no-underline">
           {slot.title}
         </a>
       </h3>
 
-      <div class="grid grid-cols-2 gap-2 mt-auto text-[11px] font-bold text-primary-600 border-t border-primary-200 pt-3">
+      <div class="grid grid-cols-2 gap-2 mt-auto text-[11px] font-bold text-primary-600 dark:text-primary-400 border-t border-primary-200 dark:border-primary-700 pt-3">
         <div class="flex flex-col">
-          <span class="uppercase text-primary-300 text-[9px]">RTP</span>
-          <span class="text-success-600">{slot.rtp}%</span>
+          <span class="uppercase text-primary-300 dark:text-primary-500 text-[9px]">RTP</span>
+          <span class="text-success-600 dark:text-success-400">{slot.rtp}%</span>
         </div>
         <div class="flex flex-col text-right">
-          <span class="uppercase text-primary-300 text-[9px]">Volatility</span>
-          <span class="text-primary-700">{slot.volatility}</span>
+          <span class="uppercase text-primary-300 dark:text-primary-500 text-[9px]">Volatility</span>
+          <span class="text-primary-700 dark:text-primary-300">{slot.volatility}</span>
         </div>
       </div>
     </div>
 
     <!-- Footer Link -->
-    <a href={`/slots/${slot.slug}/`} class="block bg-primary-50 hover:bg-accent-600 hover:text-white text-center py-2 text-xs font-bold uppercase tracking-wide text-primary-600 transition-colors border-t border-primary-200 rounded-b-btn">
+    <a href={`/slots/${slot.slug}/`} class="block bg-primary-50 dark:bg-primary-900 hover:bg-accent-600 dark:hover:bg-accent-600 hover:text-white text-center py-2 text-xs font-bold uppercase tracking-wide text-primary-600 dark:text-primary-400 transition-colors border-t border-primary-200 dark:border-primary-700 rounded-b-btn">
         Play Demo
     </a>
 

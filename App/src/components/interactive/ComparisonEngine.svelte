@@ -8,7 +8,6 @@
       name: string;
       logo_url: string;
       website_url: string;
-      rating_Global: number;
       payout_speed_minutes: number;
       payout_ratio: number;
       bonus_offer: string;
@@ -90,91 +89,91 @@
 <div class="max-w-7xl mx-auto px-2 md:px-4 py-8">
 
   <!-- Main Grid (1 col mobile, 3 col desktop) -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-0 bg-white md:rounded-3xl md:shadow-xl md:border md:border-gray-200 overflow-hidden divide-y md:divide-y-0 md:divide-x divide-gray-100">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-0 bg-white dark:bg-primary-900 md:rounded-3xl md:shadow-xl md:border md:border-gray-200 dark:border-primary-800 overflow-hidden divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-primary-800">
       
       {#each selections as selectedId, index}
         {@const casino = selectedCasinos[index]}
         
-        <div class="flex flex-col relative min-h-[500px] {index === 1 ? 'z-10 bg-white' : ''}"> <!-- Middle col z-index if needed -->
+        <div class="flex flex-col relative min-h-[500px] {index === 1 ? 'z-10 bg-white dark:bg-primary-900' : ''}"> <!-- Middle col z-index if needed -->
             
             {#if !casino}
                 <!-- Empty State -->
-                <div class="h-full flex flex-col items-center justify-center p-8 text-center bg-gray-50/50">
+                <div class="h-full flex flex-col items-center justify-center p-8 text-center bg-gray-50/50 dark:bg-primary-800/50">
                     <button 
                         on:click={() => openSelection(index)}
-                        class="group flex flex-col items-center gap-4 p-8 rounded-2xl border-2 border-dashed border-gray-300 hover:border-red-500 hover:bg-white transition-all w-full max-w-xs"
+                        class="group flex flex-col items-center gap-4 p-8 rounded-2xl border-2 border-dashed border-gray-300 dark:border-primary-700 hover:border-red-500 hover:bg-white dark:hover:bg-primary-800 transition-all w-full max-w-xs"
                     >
-                        <div class="w-16 h-16 rounded-full bg-gray-200 group-hover:bg-red-50 text-gray-400 group-hover:text-red-600 flex items-center justify-center text-3xl font-bold transition-colors">
+                        <div class="w-16 h-16 rounded-full bg-gray-200 dark:bg-primary-700 group-hover:bg-red-50 dark:group-hover:bg-red-900/20 text-gray-400 dark:text-primary-500 group-hover:text-red-600 flex items-center justify-center text-3xl font-bold transition-colors">
                             +
                         </div>
-                        <span class="font-bold text-gray-500 group-hover:text-slate-900">Add Casino</span>
+                        <span class="font-bold text-gray-500 dark:text-primary-400 group-hover:text-slate-900 dark:group-hover:text-white">Add Casino</span>
                     </button>
                 </div>
             {:else}
                 <!-- Filled State -->
-                <div class="relative flex flex-col h-full bg-white">
-                    <button on:click={() => clearSlot(index)} class="absolute top-2 right-2 p-2 bg-gray-100 hover:bg-red-100 text-gray-500 hover:text-red-600 rounded-full z-10 transition-colors" aria-label="Remove Casino">
+                <div class="relative flex flex-col h-full bg-white dark:bg-primary-900">
+                    <button on:click={() => clearSlot(index)} class="absolute top-2 right-2 p-2 bg-gray-100 dark:bg-primary-800 hover:bg-red-100 dark:hover:bg-red-900/30 text-gray-500 dark:text-gray-400 hover:text-red-600 rounded-full z-10 transition-colors" aria-label="Remove Casino">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                     
                     <!-- Header -->
-                    <div class="p-6 text-center border-b border-gray-100 bg-gray-50/30 pt-10">
-                        <div class="w-24 h-24 mx-auto rounded-xl overflow-hidden shadow-sm border border-gray-100 mb-4 flex items-center justify-center bg-white">
-                                <img src={casino.logo_url || FALLBACK_ICON} alt={casino.name} class="w-full h-full object-contain" />
+                    <div class="p-6 text-center border-b border-gray-100 dark:border-primary-800 bg-gray-50/30 dark:bg-primary-950/30 pt-10">
+                        <div class="w-24 h-24 mx-auto rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-primary-800 mb-4 flex items-center justify-center bg-white dark:bg-primary-800 p-1">
+                                <img src={casino.logo_url || FALLBACK_ICON} alt={casino.name} class="w-full h-full object-contain rounded" />
                         </div>
-                        <h2 class="text-xl font-black text-slate-900 leading-none">{casino.name}</h2>
-                        <div class="mt-2 text-xs font-bold text-gray-400 uppercase tracking-widest">{casino.license || 'Licensed'}</div>
+                        <h2 class="text-xl font-black text-slate-900 dark:text-white leading-none">{casino.name}</h2>
+                        <div class="mt-2 text-xs font-bold text-gray-400 dark:text-primary-500 uppercase tracking-widest">{casino.license || 'Licensed'}</div>
                     </div>
 
                     <!-- Comparison Rows -->
-                    <div class="flex-grow flex flex-col divide-y divide-gray-100">
+                    <div class="flex-grow flex flex-col divide-y divide-gray-100 dark:divide-primary-800">
                         
                         <!-- Bonus -->
-                        <div class="p-4 text-center bg-yellow-50/50">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Welcome Bonus</span>
-                            <span class="text-lg font-black text-slate-900 leading-tight block">{casino.bonus_offer}</span>
-                            {#if casino.bonus_spins}<span class="text-xs font-bold text-red-600 mt-1 block">+ {casino.bonus_spins} Spins</span>{/if}
+                        <div class="p-4 text-center bg-yellow-50/50 dark:bg-yellow-900/10">
+                            <span class="text-[10px] font-bold text-gray-400 dark:text-primary-500 uppercase tracking-widest block mb-1">Welcome Bonus</span>
+                            <span class="text-lg font-black text-slate-900 dark:text-white leading-tight block">{casino.bonus_offer}</span>
+                            {#if casino.bonus_spins}<span class="text-xs font-bold text-red-600 dark:text-red-400 mt-1 block">+ {casino.bonus_spins} Spins</span>{/if}
                         </div>
 
                         <!-- Speed -->
                         <div class="p-4 text-center">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Payout Speed</span>
-                            <span class="text-lg font-bold text-slate-800">⚡ {casino.payout_speed_minutes} mins</span>
+                            <span class="text-[10px] font-bold text-gray-400 dark:text-primary-500 uppercase tracking-widest block mb-1">Payout Speed</span>
+                            <span class="text-lg font-bold text-slate-800 dark:text-primary-200">⚡ {casino.payout_speed_minutes} mins</span>
                         </div>
 
                         <!-- RTP -->
                         <div class="p-4 text-center">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">RTP Score</span>
-                            <span class="text-lg font-bold text-green-600">{casino.payout_ratio}%</span>
+                            <span class="text-[10px] font-bold text-gray-400 dark:text-primary-500 uppercase tracking-widest block mb-1">RTP Score</span>
+                            <span class="text-lg font-bold text-green-600 dark:text-green-400">{casino.payout_ratio}%</span>
                         </div>
 
                         <!-- Banking -->
-                        <div class="p-4 text-center bg-gray-50/30">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Banking</span>
+                        <div class="p-4 text-center bg-gray-50/30 dark:bg-primary-950/30">
+                            <span class="text-[10px] font-bold text-gray-400 dark:text-primary-500 uppercase tracking-widest block mb-2">Banking</span>
                             <div class="flex flex-wrap justify-center gap-2">
                                 {#each casino.payments.slice(0, 6) as pm}
-                                        <img src={pm.logo_url} title={pm.name} alt={pm.name} class="h-8 w-auto object-contain" />
+                                        <img src={pm.logo_url} title={pm.name} alt={pm.name} class="h-8 w-auto object-contain bg-white rounded px-1" />
                                     {/each}
                             </div>
                         </div>
 
                         <!-- Software -->
                         <div class="p-4 text-center">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Games</span>
+                            <span class="text-[10px] font-bold text-gray-400 dark:text-primary-500 uppercase tracking-widest block mb-2">Games</span>
                                 <div class="flex flex-wrap justify-center gap-2">
                                     {#each casino.software.slice(0, 8) as sw}
-                                        <img src={sw.logo_url} title={sw.name} alt={sw.name} class="h-12 w-auto object-contain grayscale opacity-80" />
+                                        <img src={sw.logo_url} title={sw.name} alt={sw.name} class="h-12 w-auto object-contain grayscale opacity-80 rounded bg-white p-0.5" />
                                     {/each}
                                 </div>
                         </div>
                     </div>
 
                     <!-- CTA -->
-                    <div class="p-6 bg-gray-50 text-center sticky bottom-0 z-10 border-t border-gray-100">
+                    <div class="p-6 bg-gray-50 dark:bg-primary-900 text-center sticky bottom-0 z-10 border-t border-gray-100 dark:border-primary-800">
                         <a href={casino.website_url} class="block w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-md transform hover:-translate-y-0.5 transition-all text-sm uppercase tracking-wide">
                             Play Now
                         </a>
-                        <a href={`/reviews/${casino.id}-casino/`} class="inline-block mt-3 text-xs font-bold text-gray-500 hover:text-slate-900 hover:underline">Read Review</a>
+                        <a href={`/reviews/${casino.id}-casino/`} class="inline-block mt-3 text-xs font-bold text-gray-500 dark:text-primary-400 hover:text-slate-900 dark:hover:text-white hover:underline">Read Review</a>
                     </div>
                 </div>
             {/if}
@@ -191,11 +190,11 @@
           <!-- svelte-ignore a11y-no-static-element-interactions -->
           <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" on:click={() => showModal = false}></div>
           
-          <div class="relative bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden max-h-[80vh] flex flex-col">
-              <div class="p-4 border-b border-gray-100 bg-gray-50">
+          <div class="relative bg-white dark:bg-primary-800 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden max-h-[80vh] flex flex-col">
+              <div class="p-4 border-b border-gray-100 dark:border-primary-700 bg-gray-50 dark:bg-primary-900">
                   <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-bold text-lg text-slate-900">Select Casino</h3>
-                    <button on:click={() => showModal = false} class="text-gray-400 hover:text-slate-900" aria-label="Close modal">
+                    <h3 class="font-bold text-lg text-slate-900 dark:text-white">Select Casino</h3>
+                    <button on:click={() => showModal = false} class="text-gray-400 hover:text-slate-900 dark:hover:text-white" aria-label="Close modal">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                   </div>
@@ -206,7 +205,7 @@
                           type="text" 
                           bind:value={searchQuery}
                           placeholder="Search casinos..." 
-                          class="w-full bg-white border border-gray-200 rounded-lg py-2.5 pl-10 pr-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                          class="w-full bg-white dark:bg-primary-700 border border-gray-200 dark:border-primary-600 rounded-lg py-2.5 pl-10 pr-4 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent placeholder:text-gray-400 dark:placeholder:text-gray-500"
                       />
                   </div>
               </div>
@@ -215,12 +214,12 @@
                   {#each filteredCasinos as casino}
                        <button 
                           on:click={() => selectCasino(casino.id)}
-                          class="w-full flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl transition-colors text-left group border border-transparent hover:border-gray-200"
+                          class="w-full flex items-center gap-4 p-3 hover:bg-gray-50 dark:hover:bg-primary-700 rounded-xl transition-colors text-left group border border-transparent hover:border-gray-200 dark:hover:border-primary-600"
                        >
-                           <img src={casino.logo_url || FALLBACK_ICON} alt={casino.name} class="w-12 h-12 object-contain rounded-lg bg-white p-1 border border-gray-100" />
+                           <img src={casino.logo_url || FALLBACK_ICON} alt={casino.name} class="w-12 h-12 object-contain rounded-lg bg-white p-1 border border-gray-100 dark:border-primary-600" />
                            <div>
-                               <div class="font-bold text-slate-900 group-hover:text-red-600">{casino.name}</div>
-                               <div class="text-xs text-gray-500">{casino.bonus_offer}</div>
+                               <div class="font-bold text-slate-900 dark:text-white group-hover:text-red-600">{casino.name}</div>
+                               <div class="text-xs text-gray-500 dark:text-primary-400">{casino.bonus_offer}</div>
                            </div>
                        </button>
                   {/each}

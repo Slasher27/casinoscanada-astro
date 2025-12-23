@@ -30,25 +30,25 @@
 <div class="flex flex-col gap-6">
 
   <!-- Filter Toolbar -->
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 flex flex-col md:flex-row gap-4 justify-between items-center sticky top-20 z-30">
+  <div class="bg-white dark:bg-primary-900/90 rounded-2xl shadow-sm border border-gray-100 dark:border-primary-700 p-4 md:p-6 flex flex-col md:flex-row gap-4 justify-between items-center sticky top-20 z-30 backdrop-blur-md">
       
       <!-- Categories -->
-      <div class="flex p-1 bg-gray-100 rounded-xl">
+      <div class="flex p-1 bg-gray-100 dark:bg-primary-950 rounded-xl">
           <button 
               on:click={() => activeCategory = 'all'}
-              class="px-4 py-2 rounded-lg text-sm font-bold transition-all {activeCategory === 'all' ? 'bg-white text-slate-900 shadow-sm' : 'text-gray-500 hover:text-slate-700'}"
+              class="px-4 py-2 rounded-lg text-sm font-bold transition-all {activeCategory === 'all' ? 'bg-white dark:bg-primary-800 text-slate-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-primary-400 hover:text-slate-700 dark:hover:text-primary-200'}"
           >
               All Bonuses
           </button>
           <button 
               on:click={() => activeCategory = 'spins'}
-              class="px-4 py-2 rounded-lg text-sm font-bold transition-all {activeCategory === 'spins' ? 'bg-white text-slate-900 shadow-sm' : 'text-gray-500 hover:text-slate-700'}"
+              class="px-4 py-2 rounded-lg text-sm font-bold transition-all {activeCategory === 'spins' ? 'bg-white dark:bg-primary-800 text-slate-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-primary-400 hover:text-slate-700 dark:hover:text-primary-200'}"
           >
               Free Spins
           </button>
           <button 
               on:click={() => activeCategory = 'deposit'}
-              class="px-4 py-2 rounded-lg text-sm font-bold transition-all {activeCategory === 'deposit' ? 'bg-white text-slate-900 shadow-sm' : 'text-gray-500 hover:text-slate-700'}"
+              class="px-4 py-2 rounded-lg text-sm font-bold transition-all {activeCategory === 'deposit' ? 'bg-white dark:bg-primary-800 text-slate-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-primary-400 hover:text-slate-700 dark:hover:text-primary-200'}"
           >
               Deposit Match
           </button>
@@ -61,7 +61,7 @@
               type="text" 
               bind:value={searchQuery}
               placeholder="Find casino or bonus..." 
-              class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-shadow"
+              class="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-primary-800 border border-gray-200 dark:border-primary-700 rounded-xl text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-shadow placeholder:text-gray-400"
           />
       </div>
   </div>
@@ -70,7 +70,7 @@
   <div class="flex flex-col gap-4">
       
     <!-- Desktop Header -->
-    <div class="hidden lg:grid grid-cols-12 gap-4 bg-gray-50 p-4 rounded-t-xl text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-200">
+    <div class="hidden lg:grid grid-cols-12 gap-4 bg-gray-50 dark:bg-primary-900 p-4 rounded-t-xl text-xs font-bold text-gray-500 dark:text-primary-400 uppercase tracking-wider border-b border-gray-200 dark:border-primary-800">
         <div class="col-span-1 text-center">Rank</div>
         <div class="col-span-4">Casino & Key Stats</div>
         <div class="col-span-3">Software & Banking</div>
@@ -79,18 +79,18 @@
     </div>
 
     {#each filteredCasinos as casino, index (casino.id)}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow relative">
+        <div class="bg-white dark:bg-primary-800 rounded-xl shadow-sm border border-gray-200 dark:border-primary-700 overflow-hidden hover:shadow-md transition-shadow relative">
             
             <!-- MOBILE / TABLET VIEW (< 1024px) -->
             <div class="lg:hidden p-5 flex flex-col gap-4">
                 <!-- Top Row: Logo, Rank, Name, Info -->
                 <div class="flex items-start gap-4">
                     <!-- Rank Badge -->
-                    <div class="absolute top-0 left-0 bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded-br-lg z-10">
+                    <div class="absolute top-0 left-0 bg-slate-900 dark:bg-primary-950 text-white text-xs font-bold px-3 py-1 rounded-br-lg z-10 w-10 text-center">
                         #{index + 1}
                     </div>
 
-                    <div class="w-24 h-24 flex-shrink-0 flex items-center justify-center mt-2 overflow-hidden rounded-xl">
+                    <div class="w-24 h-24 flex-shrink-0 flex items-center justify-center mt-2 overflow-hidden rounded-xl bg-white p-1">
                         <img
                             src={casino.logo_url || FALLBACK_ICON}
                             alt={casino.name}
@@ -98,36 +98,36 @@
                         />
                     </div>
                     <div class="flex-grow pt-1">
-                        <h3 class="text-xl font-black text-slate-900 leading-none mb-1">
+                        <h3 class="text-xl font-black text-slate-900 dark:text-white leading-none mb-1">
                             {casino.name}
                         </h3>
-                        <div class="flex flex-wrap gap-2 text-xs font-bold text-gray-500 mb-2">
-                            <span class="bg-gray-100 px-2 py-0.5 rounded">{casino.license}</span>
-                             <span class="bg-green-50 text-green-700 px-2 py-0.5 rounded border border-green-100">
+                        <div class="flex flex-wrap gap-2 text-xs font-bold text-gray-500 dark:text-primary-400 mb-2">
+                            <span class="bg-gray-100 dark:bg-primary-900 px-2 py-0.5 rounded border border-gray-200 dark:border-primary-700">{casino.license}</span>
+                             <span class="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 px-2 py-0.5 rounded border border-green-100 dark:border-green-900/30">
                                 RTP {casino.payout_ratio}%
                             </span>
                         </div>
-                        <a href={`/reviews/${casino.id}-casino/`} class="text-sm text-blue-600 font-bold hover:underline">
+                        <a href={`/reviews/${casino.id}-casino/`} class="text-sm text-blue-600 dark:text-accent-400 font-bold hover:underline">
                             Read Review &rarr;
                         </a>
                     </div>
                 </div>
 
                 <!-- Middle: Bonus Box -->
-                <div class="bg-yellow-50 border border-yellow-100 rounded-lg p-3 text-center">
-                    <span class="block text-xs font-bold text-yellow-700 uppercase tracking-wide mb-1">Welcome Bonus</span>
-                    <span class="block text-lg font-black text-slate-900">{casino.bonus_offer}</span>
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-100 dark:border-yellow-900/30 rounded-lg p-3 text-center">
+                    <span class="block text-xs font-bold text-yellow-700 dark:text-yellow-400 uppercase tracking-wide mb-1">Welcome Bonus</span>
+                    <span class="block text-lg font-black text-slate-900 dark:text-white">{casino.bonus_offer}</span>
                 </div>
 
                 <!-- Bottom: Specs & CTA -->
-                <div class="flex flex-wrap items-center justify-between gap-4 border-t border-gray-100 pt-3">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-t border-gray-100 dark:border-primary-700 pt-3">
                     <div class="flex flex-col gap-1">
-                        <span class="text-xs text-gray-500 font-bold">Fast Payouts</span>
-                         <span class="text-sm font-bold text-slate-800">⚡ {casino.payout_speed_minutes} mins</span>
+                        <span class="text-xs text-gray-500 dark:text-primary-400 font-bold">Fast Payouts</span>
+                         <span class="text-sm font-bold text-slate-800 dark:text-primary-200">⚡ {casino.payout_speed_minutes} mins</span>
                     </div>
                     <a
                         href={casino.website_url}
-                        class="flex-grow sm:flex-grow-0 bg-red-600 text-white font-bold py-3 px-8 rounded-lg text-center shadow-md active:scale-95 transition-transform"
+                        class="flex-grow sm:flex-grow-0 bg-red-600 hover:bg-red-700 dark:bg-accent-600 dark:hover:bg-accent-700 text-white font-bold py-3 px-8 rounded-lg text-center shadow-md active:scale-95 transition-transform"
                     >
                         Play Now
                     </a>
@@ -138,7 +138,7 @@
                      <span class="text-xs font-bold text-gray-400">Software:</span>
                      {#if casino.software}
                         {#each casino.software.slice(0, 6) as s}
-                            <img src={s.logo_url} class="h-12 w-auto grayscale" alt={s.name} />
+                            <img src={s.logo_url} class="h-12 w-auto grayscale rounded bg-white p-0.5" alt={s.name} />
                         {/each}
                      {/if}
                 </div>
@@ -149,14 +149,14 @@
                 
                 <!-- Rank -->
                 <div class="col-span-1 flex justify-center">
-                    <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 font-black text-lg flex items-center justify-center border border-slate-200">
+                    <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-primary-900 text-slate-600 dark:text-white font-black text-lg flex items-center justify-center border border-slate-200 dark:border-primary-700">
                         {index + 1}
                     </div>
                 </div>
 
                 <!-- Info -->
                 <div class="col-span-4 flex items-center gap-4">
-                    <div class="w-24 h-24 flex-shrink-0 flex items-center justify-center overflow-hidden rounded-xl">
+                    <div class="w-24 h-24 flex-shrink-0 flex items-center justify-center overflow-hidden rounded-xl bg-white p-1 shadow-sm">
                         <img
                             src={casino.logo_url || FALLBACK_ICON}
                             alt={casino.name}
@@ -164,17 +164,17 @@
                         />
                     </div>
                     <div>
-                        <a href={`/reviews/${casino.id}-casino/`} class="font-bold text-xl text-slate-900 hover:text-blue-600 transition-colors">
+                        <a href={`/reviews/${casino.id}-casino/`} class="font-bold text-xl text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-accent-400 transition-colors">
                             {casino.name}
                         </a>
                         <div class="flex items-center gap-2 mt-1">
-                            <span class="text-xs font-bold bg-gray-100 px-2 py-0.5 rounded text-gray-600 border border-gray-200" title="License">
+                            <span class="text-xs font-bold bg-gray-100 dark:bg-primary-900 px-2 py-0.5 rounded text-gray-600 dark:text-primary-300 border border-gray-200 dark:border-primary-700" title="License">
                                 {casino.license}
                             </span>
-                             <span class="text-xs font-bold text-green-600 flex items-center gap-1" title="Minimum Deposit">
+                             <span class="text-xs font-bold text-green-600 dark:text-green-400 flex items-center gap-1" title="Minimum Deposit">
                                 💰 Min ${casino.min_deposit || 20}
                             </span>
-                            <span class="text-xs font-bold text-blue-600 flex items-center gap-1" title="Payout Ratio">
+                            <span class="text-xs font-bold text-blue-600 dark:text-accent-400 flex items-center gap-1" title="Payout Ratio">
                                 📈 {casino.payout_ratio}%
                             </span>
                         </div>
@@ -187,7 +187,7 @@
                        <span class="text-[10px] uppercase font-bold text-gray-400 w-12 shrink-0">Games</span>
                        {#if casino.software}
                            {#each casino.software as s}
-                               <img src={s.logo_url} title={s.name} alt={s.name} class="h-16 w-auto object-contain grayscale hover:grayscale-0 opacity-80 hover:opacity-100 transition-all cursor-help" />
+                               <img src={s.logo_url} title={s.name} alt={s.name} class="h-16 w-auto object-contain grayscale hover:grayscale-0 opacity-80 hover:opacity-100 transition-all cursor-help rounded bg-white p-0.5" />
                            {/each}
                        {/if}
                    </div>
@@ -195,7 +195,7 @@
                        <span class="text-[10px] uppercase font-bold text-gray-400 w-12 shrink-0">Bank</span>
                        {#if casino.payments}
                            {#each casino.payments as p}
-                               <img src={p.logo_url} title={p.name} alt={p.name} class="h-6 w-auto object-contain" />
+                               <img src={p.logo_url} title={p.name} alt={p.name} class="h-6 w-auto object-contain bg-white rounded px-1" />
                            {/each}
                        {/if}
                    </div>
@@ -203,9 +203,9 @@
 
                 <!-- Bonus -->
                 <div class="col-span-2 text-center flex flex-col justify-center">
-                    <span class="font-bold text-slate-900 text-lg leading-tight">{casino.bonus_offer}</span>
+                    <span class="font-bold text-slate-900 dark:text-white text-lg leading-tight">{casino.bonus_offer}</span>
                     {#if (casino.bonus_spins || 0) > 0}
-                        <span class="text-xs text-red-600 font-bold bg-red-50 inline-block mx-auto px-2 py-0.5 rounded-full mt-1 border border-red-100">
+                        <span class="text-xs text-red-600 dark:text-red-400 font-bold bg-red-50 dark:bg-red-900/20 inline-block mx-auto px-2 py-0.5 rounded-full mt-1 border border-red-100 dark:border-red-900/30">
                             + {casino.bonus_spins} Free Spins
                         </span>
                     {/if}
@@ -215,11 +215,11 @@
                 <div class="col-span-2 flex flex-col gap-2 justify-center text-center">
                     <a
                         href={casino.website_url}
-                        class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm hover:shadow-md transition-all hover:scale-105"
+                        class="bg-red-600 hover:bg-red-700 dark:bg-accent-600 dark:hover:bg-accent-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm hover:shadow-md transition-all hover:scale-105"
                     >
                         Play Now
                     </a>
-                    <a href={`/reviews/${casino.id}-casino/`} class="text-xs font-bold text-gray-500 hover:text-gray-800 hover:underline">
+                    <a href={`/reviews/${casino.id}-casino/`} class="text-xs font-bold text-gray-500 dark:text-primary-400 hover:text-gray-800 dark:hover:text-white hover:underline">
                         View Review
                     </a>
                 </div>
@@ -228,11 +228,11 @@
     {/each}
     
     {#if filteredCasinos.length === 0}
-        <div class="text-center py-20 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
+        <div class="text-center py-20 bg-gray-50 dark:bg-primary-900 rounded-2xl border border-dashed border-gray-300 dark:border-primary-700">
             <div class="text-4xl mb-4">🔍</div>
-            <h3 class="text-xl font-bold text-slate-900">No bonuses found</h3>
-            <p class="text-gray-500">Try adjusting your search or filters.</p>
-            <button on:click={() => {searchQuery = ''; activeCategory = 'all'}} class="mt-4 text-red-600 font-bold hover:underline">Clear Filters</button>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">No bonuses found</h3>
+            <p class="text-gray-500 dark:text-primary-400">Try adjusting your search or filters.</p>
+            <button on:click={() => {searchQuery = ''; activeCategory = 'all'}} class="mt-4 text-red-600 dark:text-accent-400 font-bold hover:underline">Clear Filters</button>
         </div>
     {/if}
 

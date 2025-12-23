@@ -23,11 +23,11 @@ const breadcrumbs = [{ text: 'Guides', href: '/guides/' }];
 
 		<div class='text-center mb-16'>
 			<h1
-				class='text-4xl md:text-5xl font-black mb-6 tracking-tight text-slate-900'
+				class='text-4xl md:text-5xl font-black mb-6 tracking-tight text-slate-900 dark:text-white'
 			>
 				Casino <span class='text-red-600'>Guides</span> & Strategies
 			</h1>
-			<p class='text-xl text-gray-600 max-w-2xl mx-auto'>
+			<p class='text-xl text-gray-600 dark:text-primary-300 max-w-2xl mx-auto'>
 				Master the games before you play. Our expert guides cover everything
 				from fast payouts to wagering requirements.
 			</p>
@@ -40,27 +40,27 @@ const breadcrumbs = [{ text: 'Guides', href: '/guides/' }];
 						href={`/guides/${guide.slug}`}
 						class='group no-underline flex h-full'
 					>
-						<article class='flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:border-red-200 transition-all duration-300 w-full'>
-							<div class='h-48 bg-slate-100 flex items-center justify-center group-hover:bg-red-50 transition-colors'>
+						<article class='flex flex-col bg-white dark:bg-primary-800 rounded-2xl shadow-sm border border-gray-100 dark:border-primary-700 overflow-hidden hover:shadow-xl hover:border-red-200 dark:hover:border-red-900/50 transition-all duration-300 w-full'>
+							<div class='h-48 bg-slate-100 dark:bg-primary-900 flex items-center justify-center group-hover:bg-red-50 dark:group-hover:bg-red-900/20 transition-colors'>
 								<span class='text-6xl'>📚</span>
 							</div>
 
 							<div class='p-8 flex-grow flex flex-col'>
-								<div class='mb-4 flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-wider'>
+								<div class='mb-4 flex items-center gap-2 text-xs font-bold text-gray-400 dark:text-primary-400 uppercase tracking-wider'>
 									<span>{guide.data.author}</span>
 									<span>•</span>
 									<span>{guide.data.pubDate.toLocaleDateString('en-CA')}</span>
 								</div>
 
-								<h2 class='text-2xl font-bold text-gray-900 mb-3 group-hover:text-red-600 transition-colors leading-tight'>
+								<h2 class='text-2xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors leading-tight'>
 									{guide.data.title}
 								</h2>
 
-								<p class='text-gray-600 line-clamp-3 mb-6 flex-grow'>
+								<p class='text-gray-600 dark:text-primary-300 line-clamp-3 mb-6 flex-grow'>
 									{guide.data.metaDescription}
 								</p>
 
-								<span class='text-red-600 font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all'>
+								<span class='text-red-600 dark:text-red-400 font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all'>
 									Read Guide <span class='text-lg'>→</span>
 								</span>
 							</div>
